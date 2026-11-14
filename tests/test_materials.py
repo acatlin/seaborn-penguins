@@ -115,6 +115,23 @@ def test_instructor_edition_has_solutions_and_figures(docs):
     assert len(docs["inst"].inline_shapes) >= 7
 
 
+def test_both_editions_explain_the_scoring_scale(docs):
+    for name in ("inst", "stud"):
+        joined = "\n".join(_texts(docs[name]))
+        assert "How the rubrics are scored." in joined, name
+        assert SPEC["scoring"].split(".")[0] in joined, name
+
+
+def test_task_lists_restart_at_one_for_every_assignment(docs):
+    for name in ("inst", "stud"):
+        paragraphs = docs[name].paragraphs
+        starts = [i for i, p in enumerate(paragraphs) if p.text == "Tasks" and p.style.name.startswith("Heading")]
+        assert len(starts) == 3, name
+        for i in starts:
+            assert paragraphs[i + 1].text.startswith("1.\t"), f"{name}: tasks after paragraph {i} don't start at 1"
+        assert not any(p.text.startswith(("5.\t", "9.\t")) for p in paragraphs), f"{name}: numbering ran on"
+
+
 def test_guide_docx_has_structure(docs):
     headings = [p.text for p in docs["guide"].paragraphs if p.style.name.startswith("Heading")]
     assert "Lesson-by-lesson notes" in headings

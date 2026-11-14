@@ -217,8 +217,8 @@ def render_quiz(block, slug, report, start_number):
             for j, opt in enumerate(opts)
         )
         out.append(f"""
-<div class="quiz-q" data-answer="{q['answer']}" id="{qid}">
-  <p class="quiz-stem"><span class="quiz-num">Q{number}.</span> {inline_md(q['q'])}</p>
+<div class="quiz-q" data-answer="{q['answer']}" id="{qid}" role="group" aria-labelledby="{qid}-stem">
+  <p class="quiz-stem" id="{qid}-stem"><span class="quiz-num">Q{number}.</span> {inline_md(q['q'])}</p>
   <ol class="quiz-options">{items}</ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
@@ -299,8 +299,9 @@ def render_page(page, site, out_dir, img_dir):
         nb = f"{slug}.ipynb"
         colab = (f"https://colab.research.google.com/github/{site['github_user']}/{site['repo']}"
                  f"/blob/main/docs/notebooks/{nb}")
-        lesson_tools = (f'<div class="lesson-tools"><a href="{colab}" target="_blank" rel="noopener">'
-                        f"Open in Colab</a><a href=\"notebooks/{nb}\" download>Download notebook</a>"
+        lesson_tools = (f'<div class="lesson-tools"><a href="{colab}" target="_blank" rel="noopener" '
+                        f'title="Opens in a new tab">Open in Colab</a>'
+                        f'<a href="notebooks/{nb}" download>Download notebook</a>'
                         f'<a href="notebooks/{slug}-solutions.ipynb" download>Solutions notebook</a></div>')
 
     template = (SITE_SRC / "page.html").read_text(encoding="utf-8")
@@ -331,9 +332,45 @@ def _nb_cell(kind, source):
     return cell
 
 
+ADMONITION_LABELS = {"few": "Design principle", "warning": "Warning", "note": "Note"}
+ADMONITION_RE = re.compile(r'^!!!\s+(\w+)\s*(?:"([^"]*)")?\s*$')
+
+
+def _admonitions_to_blockquotes(prose):
+    """Rewrite `!!! kind "Title"` callouts as blockquotes for the notebooks.
+
+    Jupyter has no admonition extension: left alone, the marker line shows as
+    text and the indented body renders as a code block.
+    """
+    lines = prose.splitlines()
+    out = []
+    i = 0
+    while i < len(lines):
+        m = ADMONITION_RE.match(lines[i])
+        if not m:
+            out.append(lines[i])
+            i += 1
+            continue
+        label = ADMONITION_LABELS.get(m.group(1), m.group(1).title())
+        heading = f"**{label}: {m.group(2)}**" if m.group(2) else f"**{label}**"
+        body = []
+        i += 1
+        while i < len(lines) and (lines[i].startswith("    ") or not lines[i].strip()):
+            body.append(lines[i][4:] if lines[i].startswith("    ") else "")
+            i += 1
+        while body and not body[-1].strip():
+            body.pop()
+        out.append(f"> {heading}")
+        out.append(">")
+        out.extend(f"> {b}".rstrip() for b in body)
+        out.append("")
+    return "\n".join(out)
+
+
 def _clean_prose(prose):
     prose = re.sub(r"<!--.*?-->", "", prose, flags=re.S)
     prose = re.sub(r"\{[:#.][^}]*\}", "", prose)  # attr_list markers
+    prose = _admonitions_to_blockquotes(prose)
     return prose.strip()
 
 

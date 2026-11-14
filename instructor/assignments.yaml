@@ -10,6 +10,17 @@ setup: |
   sns.set_theme(style="ticks")
   penguins = sns.load_dataset("penguins")
   PENGUIN_COLORS = {"Adelie": "#FF8C00", "Chinstrap": "#A034F0", "Gentoo": "#159090"}
+  SEX_COLORS = {"Female": "#8c8c8c", "Male": "#333333"}
+
+# Rendered once at the top of Part 2 in both editions, so students know the
+# scale before they start and graders apply it consistently.
+scoring: >-
+  Score each criterion on three levels. Full points when the work matches the
+  "full credit" description. About half when the element is present but has a
+  design flaw or a missing piece, for example a correctly sorted chart that
+  still shows raw column names, or a verdict that cites no panel. Zero when it
+  is missing or wrong. Round to whole points and leave a one-line comment per
+  criterion so the student knows which level they reached and why.
 
 assignments:
   - title: "Assignment 1 - Island Census"
@@ -98,8 +109,8 @@ assignments:
       - title: "Chart 2 - Female vs. male means"
         code: |
           ax = sns.pointplot(data=penguins, x="species", y="body_mass_g", hue="sex",
-                             palette={"Female": "#9a9a9a", "Male": "#333333"},
-                             dodge=0.35, linestyle="none", markers=["o", "s"])
+                             palette=SEX_COLORS, dodge=0.35, linestyle="none",
+                             markers=["o", "s"])
           ax.set(xlabel="", ylabel="Body mass (g), mean with 95% CI",
                  title="Males are heavier in all three species")
           ax.legend(title="", frameon=False)

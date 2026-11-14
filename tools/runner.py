@@ -22,10 +22,27 @@ import matplotlib
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 import seaborn as sns  # noqa: E402
 
 DATA_PATH = "penguins.csv"
+RANDOM_SEED = 0
+_default_rng = np.random.default_rng
+
+
+def _seeded_default_rng(seed=None):
+    """numpy's default_rng, seeded when the caller gives no seed.
+
+    seaborn draws its bootstrapped confidence intervals (barplot, pointplot,
+    lineplot, regplot) from ``np.random.default_rng(None)``, so without this every
+    build and every browser run would shade a slightly different band. A fixed
+    seed makes the rendered figures reproducible byte for byte.
+    """
+    return _default_rng(RANDOM_SEED if seed is None else seed)
+
+
+np.random.default_rng = _seeded_default_rng
 _original_load_dataset = sns.load_dataset
 
 
@@ -159,6 +176,7 @@ def run_cell(code, setup="", check="", dpi=110, encode=False):
     """
     plt.close("all")
     matplotlib.rcdefaults()
+    np.random.seed(RANDOM_SEED)  # stripplot jitter and any np.random call in a cell
     ns = {"__name__": "__main__"}
     out = io.StringIO()
     result = {

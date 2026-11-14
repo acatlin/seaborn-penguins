@@ -81,7 +81,7 @@ sns.scatterplot(
 
 Every "axes-level" seaborn function (`scatterplot`, `histplot`, `boxplot`, ...) draws onto a matplotlib **Axes** and returns it. Keep that object and you can finish the chart with matplotlib:
 
-```python run fig=01-scatter-labeled alt="Labeled scatter plot titled 'Longer flippers, heavier penguins' with axis labels including units."
+```python run fig=01-scatter-labeled alt="Labeled scatter plot titled 'Longer flippers, heavier penguins' with axis labels including units and a legend titled Species."
 ax = sns.scatterplot(
     data=penguins,
     x="flipper_length_mm",
@@ -94,7 +94,10 @@ ax.set(
     ylabel="Body mass (g)",
     title="Longer flippers, heavier penguins",
 )
+ax.get_legend().set_title("Species")
 ```
+
+The legend's title is a label too. Seaborn copies it from the column name, so the last line rewrites it in the same plain English as the axes.
 
 !!! few "A title should state the finding"
     "Flipper length vs body mass" just names the axes, which the reader can already see. "Longer flippers, heavier penguins" tells them what to notice. Always include **units** in axis labels: raw names like `body_mass_g` read as code, not English.
@@ -121,6 +124,7 @@ ax = sns.scatterplot(
 )
 ax.set(xlabel="Bill length (mm)", ylabel="Bill depth (mm)",
        title="Within every species, longer bills are deeper")
+ax.get_legend().set_title("Species")
 ```
 
 Within **each** species the trend goes *up*. The downward slope came from mixing groups: Gentoos have long but shallow bills, Adelies short but deep ones. This is **Simpson's paradox**, and one `hue=` argument exposed it. Whenever you see a trend, ask: *what grouping might be hiding in here?*
@@ -140,7 +144,7 @@ ax.set(xlabel="Bill length (mm)", ylabel="Bill depth (mm)")
 sns.move_legend(ax, "upper left", bbox_to_anchor=(1, 1))  # park the legend outside the data
 ```
 
-Within each species, the males (circles) sit up and to the right. They have bigger bills. Seaborn hands out markers, and colors, in the order the categories first appear in the data. The first penguin in the table is male, so males got the circle. Pass `hue_order=` or `style_order=` when you want to fix that order yourself. `sns.move_legend` moved the now-crowded legend off the data. Use these extra channels sparingly. Each one adds a legend entry the reader must decode, and shape is much weaker than position or color.
+Within each species, the males (circles) sit up and to the right. They have bigger bills. Seaborn hands out markers, and colors, in the order the categories first appear in the data. The first penguin in the table is male, so males got the circle. Pass `hue_order=` or `style_order=` when you want to fix that order yourself. `sns.move_legend` moved the now-crowded legend off the data. Use these extra channels sparingly. Each one adds a block to the legend that the reader must decode (seaborn heads each block with the raw column name), and shape is much weaker than position or color.
 
 ## Your turn
 
@@ -168,6 +172,7 @@ ax = sns.scatterplot(
     palette=PENGUIN_COLORS,
 )
 ax.set(xlabel="Bill length (mm)", ylabel="Flipper length (mm)")
+ax.get_legend().set_title("Species")
 ```
 
 ```python check for=1.1
@@ -202,6 +207,7 @@ ax.set(
     ylabel="Body mass (g)",
     title="Within each species, deeper bills mean heavier penguins",
 )
+ax.get_legend().set_title("Species")
 ```
 
 ```python check for=1.2
@@ -255,4 +261,4 @@ print("Overall, deeper bills look LIGHTER (Gentoos are heavy with shallow bills)
 !!! note "Key takeaways"
     - Pass a tidy DataFrame with `data=`, then map columns to channels: `x`, `y`, `hue`, `style`, `size`.
     - Use a **dict** palette so each category keeps its color on every chart.
-    - Keep the returned `ax` and finish the chart: plain-English labels with units, and a title that states the finding.
+    - Keep the returned `ax` and finish the chart: plain-English labels with units (the legend title too), and a title that states the finding.

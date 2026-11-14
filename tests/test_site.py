@@ -1,5 +1,6 @@
 """Validate the generated website: pages, links, images, exercises, quizzes, notebooks."""
 import collections
+import functools
 import json
 import re
 from html.parser import HTMLParser
@@ -132,11 +133,17 @@ def test_notebook_callouts_render_as_blockquotes(built_site, slug):
         assert "> **Note: Key takeaways**" in prose or "> **Note: Course takeaways**" in prose, name
 
 
-@pytest.mark.parametrize("slug", LESSONS)
-def test_no_cell_changes_global_style_for_later_cells(slug):
-    """Run a lesson's cells in notebook order, in one namespace, and check that no
-    example or solution leaves seaborn/matplotlib defaults changed. Otherwise a
-    notebook user would see later charts drawn in a theme the site never shows."""
+Cell = collections.namedtuple("Cell", "name first_line changed legends")
+
+
+@functools.lru_cache(maxsize=None)
+def cells_in_notebook_order(slug):
+    """Run a lesson's example and solution cells in notebook order, in one namespace.
+
+    Returns one record per cell: its figure name, its first line, the rcParams it
+    left changed, and the (title, entries) of every legend it drew. Cached, so the
+    tests that read these records execute each lesson only once between them.
+    """
     import contextlib
     import io
     import warnings
@@ -154,6 +161,7 @@ def test_no_cell_changes_global_style_for_later_cells(slug):
     ns = {"__name__": "__main__"}
     exec(compile(setup, "<setup>", "exec"), ns)
     baseline = dict(matplotlib.rcParams)
+    cells = []
     with warnings.catch_warnings():
         for pattern in runner.LIBRARY_WARNINGS:  # same allowance as the runner itself
             warnings.filterwarnings("ignore", message=pattern)
@@ -162,19 +170,160 @@ def test_no_cell_changes_global_style_for_later_cells(slug):
                 continue
             with contextlib.redirect_stdout(io.StringIO()):
                 exec(compile(block.body, "<cell>", "exec"), ns)
+            legends = []
+            for num in plt.get_fignums():
+                fig = plt.figure(num)
+                for legend in [*fig.legends, *(ax.get_legend() for ax in fig.axes)]:
+                    if legend is not None:
+                        legends.append((legend.get_title().get_text(), [t.get_text() for t in legend.get_texts()]))
             plt.close("all")
             changed = {k: (baseline[k], v) for k, v in matplotlib.rcParams.items() if baseline[k] != v}
-            assert not changed, f"{slug}: cell starting {block.body.splitlines()[0]!r} changed {changed}"
+            name = block.opts.get("fig") or (f"sol-{block.opts.get('for')}" if block.kind == "solution" else "")
+            cells.append(Cell(name, block.body.splitlines()[0], changed, legends))
     matplotlib.rcdefaults()
+    return tuple(cells)
+
+
+@pytest.mark.parametrize("slug", LESSONS)
+def test_no_cell_changes_global_style_for_later_cells(slug):
+    """Run a lesson's cells in notebook order, in one namespace, and check that no
+    example or solution leaves seaborn/matplotlib defaults changed. Otherwise a
+    notebook user would see later charts drawn in a theme the site never shows."""
+    for cell in cells_in_notebook_order(slug):
+        assert not cell.changed, f"{slug}: cell starting {cell.first_line!r} changed {cell.changed}"
+
+
+# Charts that show seaborn's raw column names in a legend on purpose. Every other legend is relabelled.
+RAW_LEGENDS_ON_PURPOSE = {
+    "01-scatter-hue": "the bare first hue example; the next section relabels it",
+    "01-scatter-style": "two legend variables, so the column names are headings inside the legend, not a title",
+    "04-pairplot": "an exploration tool shown with seaborn's defaults, and the text says so",
+    "06-before": "the deliberately cluttered 'before' chart of the makeover",
+}
+
+
+def test_legends_are_titled_in_plain_english():
+    """Seaborn titles a legend with the raw column name ("species", "sex"). Lesson 1 teaches
+    learners to relabel it, so every finished chart on the site has to do the same."""
+    columns = set((ROOT / "data" / "penguins.csv").read_text(encoding="utf-8").splitlines()[0].split(","))
+    raw = {}
+    for slug in LESSONS:
+        for cell in cells_in_notebook_order(slug):
+            shown = {text for title, entries in cell.legends for text in (title, *entries)}
+            if shown & columns:
+                raw[cell.name or cell.first_line] = sorted(shown & columns)
+    unexpected = {name: names for name, names in raw.items() if name not in RAW_LEGENDS_ON_PURPOSE}
+    assert not unexpected, (f"legends showing raw column names: {unexpected}. Relabel them with "
+                            "ax.get_legend().set_title(...) or g.legend.set_title(...).")
+    no_longer_raw = sorted(set(RAW_LEGENDS_ON_PURPOSE) - set(raw))
+    assert not no_longer_raw, f"remove from RAW_LEGENDS_ON_PURPOSE, these legends are fine now: {no_longer_raw}"
+
+
+def test_exercise_2_1_only_accepts_step_outlines():
+    """The brief asks for outline-only step histograms, so every near miss has to earn a hint."""
+    import build_site
+    import runner
+
+    text = (ROOT / "content" / "02-distributions.md").read_text(encoding="utf-8")
+    _, blocks = build_site.split_blocks(text)
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == "2.1")
+    by_species = 'data=penguins, x="flipper_length_mm", hue="species", palette=PENGUIN_COLORS'
+    label = '\nax.set(xlabel="Flipper length (mm)")'
+    near_misses = {
+        f"ax = sns.histplot({by_species}, binwidth=3)": "element='step'",                             # bars
+        f"ax = sns.histplot({by_species}, binwidth=3, fill=False)": "element='step'",                 # hollow bars
+        f'ax = sns.histplot({by_species}, binwidth=3, element="step")': "fill=False",                  # filled steps
+        f'ax = sns.histplot({by_species}, binwidth=3, element="poly", fill=False)': "element='step'",  # not steps
+        f"ax = sns.kdeplot({by_species})": "element='step'",                                           # not a histogram
+        f"ax = sns.ecdfplot({by_species})": "element='step'",                                          # steps, no bins
+    }
+    for code, hint in near_misses.items():
+        result = runner.run_cell(code + label, setup=setup, check=check)
+        assert result["error"] is None, result["error"]
+        assert result["check_ok"] is False and hint in result["check_message"], (code, result["check_message"])
+    outlines = f'ax = sns.histplot({by_species}, binwidth=3, element="step", fill=False)'
+    unlabelled = runner.run_cell(outlines, setup=setup, check=check)  # seaborn's own label is "flipper_length_mm"
+    assert unlabelled["check_ok"] is False and "plain English" in unlabelled["check_message"]
+    result = runner.run_cell(outlines + label, setup=setup, check=check)
+    assert result["check_ok"] is True, result["check_message"]
+
+
+# Every exercise that asks for plain-English axis labels, with a line that puts seaborn's raw
+# column names back on the solution's axes. The checker has to notice.
+RAW_LABELS = {
+    ("01-first-plot", "1.1"): 'ax.set(xlabel="bill_length_mm", ylabel="flipper_length_mm")',
+    ("02-distributions", "2.1"): 'ax.set(xlabel="flipper_length_mm")',
+    ("03-categories", "3.2"): 'ax.set(ylabel="bill_depth_mm")',
+    ("04-relationships", "4.2"): 'g.set_axis_labels("Bill depth (mm)", "body_mass_g")',
+    ("05-small-multiples", "5.1"): 'g.set_axis_labels("flipper_length_mm", "Count")',
+    ("06-polish", "6.1"): 'ax.set(xlabel="bill_length_mm", ylabel="bill_depth_mm")',
+}
+
+
+@pytest.mark.parametrize("slug, ex_id", sorted(RAW_LABELS))
+def test_exercises_reject_raw_column_names_as_axis_labels(slug, ex_id):
+    """`flipper_length_mm` contains "mm", so a unit check alone passes a chart nobody labelled."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / f"{slug}.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    solution = next(b.body for b in blocks if b.kind == "solution" and b.opts.get("for") == ex_id)
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == ex_id)
+    result = runner.run_cell(solution + "\n" + RAW_LABELS[(slug, ex_id)], setup=setup, check=check)
+    assert result["error"] is None, result["error"]
+    assert result["check_ok"] is False, f"exercise {ex_id} accepts raw column names as axis labels"
+    assert re.search(r"plain.English", result["check_message"]), result["check_message"]
+
+
+def test_bin_width_panels_draw_the_widths_they_name():
+    """seaborn fits a whole number of bins to the data's range unless binrange= is given,
+    so a panel titled "binwidth = 1000 g" used to draw 900 g bins."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / "02-distributions.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    cell = next(b.body for b in blocks if b.opts.get("fig") == "02-binwidths")
+    probe = ("import json\n"
+             "print(json.dumps([[a.get_title(), sorted({round(p.get_width(), 6) for p in a.patches})]"
+             " for a in plt.gcf().axes]))")
+    panels = json.loads(runner.run_cell(cell, setup=setup, check=probe)["check_message"])
+    assert len(panels) == 3
+    for title, widths in panels:
+        named = float(re.search(r"binwidth = (\d+) g", title).group(1))
+        assert widths == [named], f"the panel titled {title!r} draws bins of {widths} g"
+
+
+def _without_carriage_returns(path):
+    """File contents with Windows line endings folded, so a checkout's autocrlf setting can't matter."""
+    return path.read_bytes().replace(b"\r\n", b"\n")
 
 
 def test_committed_docs_match_sources(built_site):
-    """docs/ is what GitHub Pages serves - it must be rebuilt after content edits."""
-    for fresh in built_site["out"].glob("*.html"):
-        committed = ROOT / "docs" / fresh.name
-        assert committed.exists(), f"run python tools/build_site.py ({fresh.name} missing)"
-        assert committed.read_text(encoding="utf-8") == fresh.read_text(encoding="utf-8"), (
-            f"docs/{fresh.name} is stale - run python tools/build_site.py")
+    """docs/ is what GitHub Pages serves - it must be rebuilt after content edits.
+
+    Pages, notebooks, scripts, styles and data are compared with a fresh build.
+    Figures are only checked for presence: a PNG's bytes depend on the machine that
+    drew it, so they differ between the Windows machine that builds docs/ and the
+    Linux CI runner.
+    """
+    fresh_root, docs = built_site["out"], ROOT / "docs"
+    problems = []
+    for fresh in sorted(p for p in fresh_root.rglob("*") if p.is_file()):
+        rel = fresh.relative_to(fresh_root).as_posix()
+        committed = docs / rel
+        if not committed.is_file():
+            problems.append(f"docs/{rel} is missing")
+        elif fresh.suffix != ".png" and _without_carriage_returns(committed) != _without_carriage_returns(fresh):
+            problems.append(f"docs/{rel} is stale")
+    # The build empties these two folders before it writes them, so anything extra is an orphan.
+    for folder, suffix in (("img", ".png"), ("notebooks", ".ipynb")):
+        built = {p.name for p in (fresh_root / folder).iterdir()}
+        problems += [f"docs/{folder}/{p.name} is no longer produced by the build"
+                     for p in sorted((docs / folder).glob(f"*{suffix}")) if p.name not in built]
+    assert not problems, "run python tools/build_site.py and commit docs/:\n  " + "\n  ".join(problems)
 
 
 @pytest.mark.parametrize("slug", LESSONS)

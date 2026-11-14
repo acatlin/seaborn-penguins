@@ -1,0 +1,231 @@
+# 25 multiple-choice questions for the summative assessment.
+# These are deliberately different from the practice quizzes on the website.
+# answer: the letter of the correct option. Keep the letters balanced -
+# tests/test_materials.py enforces it.
+- lesson: 1
+  q: "Which call colors each point by the penguin's species?"
+  options:
+    - "`sns.scatterplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\", color=\"species\")`"
+    - "`sns.scatterplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\", style=\"species\")`"
+    - "`sns.scatterplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\", hue=\"species\")`"
+    - "`sns.scatterplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\", palette=\"species\")`"
+  answer: C
+  explain: "`hue` maps a column to color. `color=` sets one fixed color, `style=` changes marker shape, and `palette=` chooses which colors `hue` uses."
+- lesson: 1
+  q: "Seaborn works best with \"tidy\" (long-form) data. What does that mean?"
+  options:
+    - "One row per observation and one column per variable"
+    - "Columns sorted alphabetically and rows sorted by the first column"
+    - "A table with every missing value removed in advance"
+    - "A wide table with one column per category, such as one column per species"
+  answer: A
+  explain: "Tidy data lets you name any column as x, y, hue, col, and so on. Seaborn drops missing values per plot, so they needn't be removed first."
+- lesson: 1
+  q: "Why does the course pass `palette=` a dictionary such as `{\"Adelie\": \"#FF8C00\", ...}` rather than a list of colors?"
+  options:
+    - "Dictionaries are drawn faster than lists, which matters for large datasets"
+    - "A dictionary is required whenever the `hue` column contains numbers rather than text"
+    - "Lists are limited to ten colors, dictionaries are not"
+    - "Each category keeps its color on every chart, even after filtering"
+  answer: D
+  explain: "A list assigns colors by position, so filtering out a category can repaint the others. A dict pins color to the entity."
+- lesson: 1
+  q: "After `ax = sns.histplot(data=penguins, x=\"body_mass_g\")`, why can you call `ax.set(xlabel=\"Body mass (g)\")`?"
+  options:
+    - "Because seaborn stores a global label setting that `ax.set` updates"
+    - "Because axes-level functions return the matplotlib `Axes` they drew on"
+    - "Because `ax` is a DataFrame and `set` renames its columns"
+    - "Because `sns.set_theme()` was called earlier in the notebook"
+  answer: B
+  explain: "Axes-level functions return a matplotlib `Axes`; everything after that is ordinary matplotlib."
+- lesson: 2
+  q: "Which function draws an empirical cumulative distribution function?"
+  options:
+    - "`sns.kdeplot`"
+    - "`sns.ecdfplot`"
+    - "`sns.histplot(cumulative=\"ecdf\")`"
+    - "`sns.rugplot`"
+  answer: B
+  explain: "`ecdfplot` plots the proportion of observations at or below each value, with no bins or smoothing to choose."
+- lesson: 2
+  q: "What is the main problem with this chart for comparing species?"
+  code: |
+    sns.histplot(data=penguins, x="body_mass_g", hue="species", multiple="stack")
+  options:
+    - "Penguins whose mass falls exactly on a bin edge are counted in two bins"
+    - "`hue` is ignored when `multiple=\"stack\"` is used"
+    - "Stacked histograms ignore `binwidth=`, so the bins are always chosen automatically"
+    - "Only the bottom layer shares a baseline, so the others are hard to compare"
+  answer: D
+  explain: "Upper layers float on the layers below. Use `element=\"step\"` overlays or small multiples to compare groups."
+- lesson: 2
+  q: "What will `sns.kdeplot(data=penguins, x=\"body_mass_g\", bw_adjust=0.2)` most likely show?"
+  options:
+    - "A wiggly curve with spurious bumps, because it is under-smoothed"
+    - "One smooth hill that hides the two groups, because it is over-smoothed"
+    - "A histogram with 20 bins"
+    - "An error, because bw_adjust must be greater than 1"
+  answer: A
+  explain: "Small `bw_adjust` values shrink the smoothing bandwidth, so the curve chases noise. Large values melt real peaks together."
+- lesson: 2
+  q: "Which argument stops a KDE curve from extending beyond the minimum and maximum of the data?"
+  options:
+    - "`clip_on=False`"
+    - "`fill=False`"
+    - "`cut=0`"
+    - "`common_norm=False`"
+  answer: C
+  explain: "By default the curve extends past the data. `cut=0` stops it at the observed range."
+- lesson: 3
+  q: "In seaborn 0.13, how do you make `sns.barplot` show the standard deviation of the data instead of a confidence interval?"
+  options:
+    - "`ci=None`"
+    - "`estimator=\"sd\"`"
+    - "`errorbar=\"sd\"`"
+    - "`yerr=\"sd\"`"
+  answer: C
+  explain: "`errorbar=` controls the interval: `(\"ci\", 95)` by default, or `\"sd\"`, `(\"pi\", 50)`, or `None`. `ci=` is the old, deprecated argument."
+- lesson: 3
+  q: "Which code draws mean body mass bars sorted from heaviest to lightest species?"
+  options:
+    - "`order = penguins.groupby(\"species\")[\"body_mass_g\"].mean().sort_values(ascending=False).index` then `sns.barplot(..., order=order)`"
+    - "`sns.barplot(data=penguins, x=\"species\", y=\"body_mass_g\", sort=True)`"
+    - "`ax = sns.barplot(data=penguins, x=\"species\", y=\"body_mass_g\")` followed by `ax.sort_bars()`"
+    - "`sns.barplot(data=penguins, x=\"species\", y=\"body_mass_g\", hue_order=\"descending\")`"
+  answer: A
+  explain: "Compute the ranking with pandas, then pass it to `order=`. The other arguments and methods don't exist."
+- lesson: 3
+  q: "A colleague's bar chart of mean body mass (3,700-5,100 g) has its y-axis starting at 3,500 g. Why is that a problem?"
+  options:
+    - "Matplotlib hides the error bars whenever the axis does not start at zero"
+    - "The chart becomes too tall to fit on a standard presentation slide"
+    - "Seaborn can't compute means when the axis is truncated"
+    - "Bar length no longer matches the value, exaggerating differences"
+  answer: D
+  explain: "Bars encode by length from zero. If zero isn't meaningful, switch to a dot or point plot instead of truncating bars."
+- lesson: 3
+  q: "Which function shows every individual observation for each category?"
+  options:
+    - "`sns.barplot`"
+    - "`sns.stripplot`"
+    - "`sns.countplot`"
+    - "`sns.pointplot`"
+  answer: B
+  explain: "`stripplot` (or `swarmplot`) draws one dot per observation. The others draw summaries."
+- lesson: 3
+  q: "Why does the course pass `linestyle=\"none\"` to `sns.pointplot` when x is species?"
+  options:
+    - "Lines would imply a path between unordered categories"
+    - "Connecting lines make the bootstrapped confidence intervals impossible to compute"
+    - "`pointplot` cannot draw lines and markers at the same time"
+    - "It makes the chart start at zero"
+  answer: A
+  explain: "There is nothing 'between' Adelie and Chinstrap, so a connecting line suggests a trend that doesn't exist."
+- lesson: 4
+  q: "What does `sns.regplot` fit by default?"
+  options:
+    - "A LOWESS curve that bends to follow local patterns, with no confidence band at all"
+    - "A third-order polynomial with no confidence band"
+    - "A least-squares straight line with a 95% confidence band"
+    - "A straight line through the first and last data points"
+  answer: C
+  explain: "Linear least squares with a bootstrapped CI is the default; `lowess=True` and `order=` change the model."
+- lesson: 4
+  q: "Which arguments make the colors of a correlation heatmap mean the same thing on every heatmap you draw?"
+  options:
+    - "`annot=True`"
+    - "`vmin=-1, vmax=1`"
+    - "`square=True`"
+    - "`linewidths=2`"
+  answer: B
+  explain: "Fixing the color limits to the full range of r keeps -1, 0 and +1 the same colors everywhere. Pair it with `center=0` and a diverging cmap."
+- lesson: 4
+  q: "`sns.lineplot` is given several penguins at each x value. What does it do by default?"
+  options:
+    - "Connects every point in the order the rows appear"
+    - "Raises an error asking you to aggregate first"
+    - "Keeps only the first penguin at each x value"
+    - "Aggregates to the mean at each x and shades a 95% confidence band"
+  answer: D
+  explain: "Use `errorbar=None` to remove the band or `estimator=` to change the summary."
+- lesson: 4
+  q: "Which statement best describes `sns.pairplot`?"
+  options:
+    - "A presentation chart that should be used as the headline figure"
+    - "A replacement for correlation heatmaps that prints r in each cell"
+    - "An exploration tool; usually too dense to present"
+    - "A function that only works with exactly two numeric columns"
+  answer: C
+  explain: "Pair plots are great for your first look at a dataset; pick one or two panels for an audience."
+- lesson: 5
+  q: "Which call makes one scatter panel per island?"
+  options:
+    - "`sns.relplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\", col=\"island\")`"
+    - "`sns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\", col=\"island\")`"
+    - "`sns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\", hue=\"island\")`"
+    - "`sns.relplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\", panel=\"island\")`"
+  answer: A
+  explain: "Only figure-level functions accept `col=`/`row=`. `hue=` colors within one panel; `panel=` doesn't exist."
+- lesson: 5
+  q: "What does `g.set_titles(\"{col_name}\")` do to a FacetGrid?"
+  options:
+    - "Sets every panel's x-axis label to the column name"
+    - "Adds one title above the whole figure"
+    - "Sorts the panels alphabetically by column name"
+    - "Replaces titles like \"species = Gentoo\" with just \"Gentoo\""
+  answer: D
+  explain: "`set_titles` takes a template; `{col_name}` and `{row_name}` are filled in for each panel."
+- lesson: 5
+  q: "You need a histogram and a box plot side by side in one figure. What's the best approach?"
+  options:
+    - "`sns.catplot(..., col=\"kind\")` with a column listing chart types"
+    - "Use `plt.subplots(1, 2)` and pass each `ax=` to an axes-level function"
+    - "`sns.displot(..., kind=[\"hist\", \"box\"])`"
+    - "Draw two separate figures, save both, and paste them next to each other in a word processor"
+  answer: B
+  explain: "Mixed chart types need a matplotlib layout; axes-level seaborn functions draw into whichever `ax` you give them."
+- lesson: 5
+  q: "What is the risk of `facet_kws={\"sharey\": False}` in a figure-level plot?"
+  options:
+    - "The figure can no longer be saved as a PNG file with `savefig`, only as SVG"
+    - "Seaborn will drop the legend"
+    - "Equal heights in two panels may mean different values"
+    - "Panels are drawn in random order"
+  answer: C
+  explain: "Shared scales make small multiples comparable. Unshare only when panels aren't meant to be compared, and tell the reader."
+- lesson: 6
+  q: "You want to color islands by the change in mean body mass since last season (some up, some down). Which palette type fits?"
+  options:
+    - "Categorical, such as `\"colorblind\"`"
+    - "Sequential, such as `\"crest\"`"
+    - "Rainbow, such as `\"hsv\"`"
+    - "Diverging, such as `\"vlag\"`, centered on zero"
+  answer: D
+  explain: "Data with a meaningful midpoint and two directions needs a diverging palette with a neutral center."
+- lesson: 6
+  q: "What does `sns.despine()` do?"
+  options:
+    - "Removes the top and right axis lines"
+    - "Removes all tick labels from both axes, keeping only the gridlines"
+    - "Rotates the x tick labels by 90 degrees"
+    - "Deletes the legend and moves its entries into the plot title"
+  answer: A
+  explain: "Despining removes non-data ink - Few's data-ink principle in one call."
+- lesson: 6
+  q: "What is `ax.annotate(...)` best used for?"
+  options:
+    - "Adding an extra legend entry for each category that was plotted"
+    - "Pointing out one data point with text and an arrow"
+    - "Writing the chart title"
+    - "Changing the number format of tick labels"
+  answer: B
+  explain: "`annotate` places text and an optional arrow (`xy=` target, `xytext=` label position)."
+- lesson: 7
+  q: "After `fig, axes = plt.subplots(2, 2)`, how do you refer to the bottom-left panel?"
+  options:
+    - "`axes[0, 1]`"
+    - "`axes[2]`"
+    - "`axes[1, 0]`"
+    - "`axes[\"bottom-left\"]`"
+  answer: C
+  explain: "`axes` is a 2D array indexed `[row, column]`, starting from zero at the top-left."

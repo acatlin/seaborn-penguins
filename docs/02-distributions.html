@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 2 - Distributions: how heavy is a penguin? · Seaborn with Penguins</title>
+<meta name="description" content="A hands-on, browser-runnable course in seaborn and matplotlib for people who already know Python and pandas.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/pygments.css">
+</head>
+<body data-page="02-distributions">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="nav-toggle" type="button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+  <a class="brand" href="index.html"><span aria-hidden="true">🐧</span> Seaborn with Penguins</a>
+  <span class="py-status" data-py-status title="In-browser Python status">Python: not loaded</span>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="Lessons">
+    <ol class="nav-list"><li><a href="index.html" data-page="index"><span class="nav-num">0</span><span class="nav-title">Start here</span></a></li><li><a href="01-first-plot.html" data-page="01-first-plot"><span class="nav-num">1</span><span class="nav-title">Your first plot</span></a></li><li><a href="02-distributions.html" data-page="02-distributions" aria-current=page><span class="nav-num">2</span><span class="nav-title">Distributions</span></a></li><li><a href="03-categories.html" data-page="03-categories"><span class="nav-num">3</span><span class="nav-title">Comparing categories</span></a></li><li><a href="04-relationships.html" data-page="04-relationships"><span class="nav-num">4</span><span class="nav-title">Relationships</span></a></li><li><a href="05-small-multiples.html" data-page="05-small-multiples"><span class="nav-num">5</span><span class="nav-title">Small multiples</span></a></li><li><a href="06-polish.html" data-page="06-polish"><span class="nav-num">6</span><span class="nav-title">Polish with matplotlib</span></a></li><li><a href="07-capstone.html" data-page="07-capstone"><span class="nav-num">7</span><span class="nav-title">Capstone: field report</span></a></li><li><a href="instructor-guide.html" data-page="instructor-guide"><span class="nav-num">★</span><span class="nav-title">Instructor guide</span></a></li></ol>
+    <div class="sidebar-foot">
+      <a href="https://github.com/maddogdatascience/seaborn-penguins">Source on GitHub</a>
+    </div>
+  </nav>
+  <main id="main" class="content">
+    <div class="lesson-tools"><a href="https://colab.research.google.com/github/maddogdatascience/seaborn-penguins/blob/main/docs/notebooks/02-distributions.ipynb" target="_blank" rel="noopener">Open in Colab</a><a href="notebooks/02-distributions.ipynb" download>Download notebook</a><a href="notebooks/02-distributions-solutions.ipynb" download>Solutions notebook</a></div>
+    <article>
+<h1 id="lesson-2-distributions-how-heavy-is-a-penguin">Lesson 2 - Distributions: how heavy is a penguin?</h1>
+<p class="lede">An average hides almost everything interesting. Before you compare means, look at the whole spread: where values pile up, how wide they range, and whether there's more than one peak.</p>
+
+<p><strong>By the end of this lesson you can:</strong></p>
+<ul>
+<li>draw histograms with <code>histplot</code> and choose bin widths on purpose</li>
+<li>compare groups with overlaid steps instead of stacked bars</li>
+<li>draw smooth density curves with <code>kdeplot</code> and know when they mislead</li>
+<li>read an ECDF (<code>ecdfplot</code>) to answer &ldquo;what fraction is below X?&rdquo;</li>
+</ul>
+<div class="cell cell-setup"><div class="code-label">Setup - run this first</div><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;ticks&quot;</span><span class="p">)</span>
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;penguins&quot;</span><span class="p">)</span>
+<span class="n">PENGUIN_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Adelie&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF8C00&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">:</span> <span class="s2">&quot;#A034F0&quot;</span><span class="p">,</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">:</span> <span class="s2">&quot;#159090&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<h2 id="a-histogram-in-one-line">A histogram in one line</h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Number of penguins&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.histplot(data=penguins, x=\"body_mass_g\")\nax.set(xlabel=\"Body mass (g)\", ylabel=\"Number of penguins\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/02-hist-basic.png" alt="Histogram of body mass for all penguins, ranging from about 2,700 to 6,300 grams with a lumpy, right-leaning shape." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>A histogram sorts values into <strong>bins</strong> and draws a bar for each bin&rsquo;s count. This one is lumpy, with a big hump on the left and a shoulder on the right. That&rsquo;s a clue that more than one group is mixed together.</p>
+<h2 id="bin-width-changes-the-story">Bin width changes the story</h2>
+<p>Seaborn picks a bin width for you. It&rsquo;s a reasonable guess, but still a guess. Here are three choices side by side. <code>plt.subplots</code> makes a row of empty Axes, and each seaborn call draws into one of them with <code>ax=</code> (Lesson 6 covers this properly):</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">width</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">1000</span><span class="p">]):</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;binwidth = </span><span class="si">{</span><span class="n">width</span><span class="si">}</span><span class="s2"> g&quot;</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Number of penguins&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "fig, axes = plt.subplots(1, 3, figsize=(11, 3.2), sharey=False)\nfor ax, width in zip(axes, [50, 250, 1000]):\n    sns.histplot(data=penguins, x=\"body_mass_g\", binwidth=width, ax=ax)\n    ax.set(title=f\"binwidth = {width} g\", xlabel=\"Body mass (g)\", ylabel=\"\")\naxes[0].set_ylabel(\"Number of penguins\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/02-binwidths.png" alt="Three histograms of body mass: 50 g bins look noisy, 250 g bins show two humps, 1,000 g bins hide the shape entirely." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Narrow bins show noise. Very wide bins wash out the two humps. Try a few widths, and pick one that shows real structure without inventing any. You can set <code>binwidth=</code> or <code>bins=</code> (a count).</p>
+<h2 id="compare-groups-layer-dont-stack">Compare groups: layer, don&rsquo;t stack</h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+                  <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">multiple</span><span class="o">=</span><span class="s2">&quot;stack&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Number of penguins&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Stacked: hard to read&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.histplot(data=penguins, x=\"body_mass_g\", hue=\"species\",\n                  palette=PENGUIN_COLORS, multiple=\"stack\")\nax.set(xlabel=\"Body mass (g)\", ylabel=\"Number of penguins\", title=\"Stacked: hard to read\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/02-hist-stack.png" alt="Stacked histogram of body mass by species; only the bottom layer, Adelie, sits on the axis, making the others hard to judge." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Stacking answers &ldquo;how many penguins in total per bin?&rdquo; To compare species, though, you have to judge the Chinstrap and Gentoo bars from a floating baseline. Overlaid <strong>step</strong> outlines put every group on the same zero line:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+                  <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                  <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Number of penguins&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Gentoos are a heavyweight class of their own&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.histplot(data=penguins, x=\"body_mass_g\", hue=\"species\",\n                  palette=PENGUIN_COLORS, element=\"step\", fill=False,\n                  linewidth=2, binwidth=200)\nax.set(xlabel=\"Body mass (g)\", ylabel=\"Number of penguins\",\n       title=\"Gentoos are a heavyweight class of their own\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/02-hist-step.png" alt="Overlaid step histograms of body mass by species: Adelie and Chinstrap overlap around 3,700 g while Gentoo sits higher around 5,000 g." loading="lazy"></figure><div class="cell-live"></div></div>
+<p><code>fill=False</code> draws outlines only. Filled layers would blend where they overlap: purple over orange turns muddy pink, a color that belongs to no species.</p>
+<div class="admonition few">
+<p class="admonition-title">Give comparisons a common baseline</p>
+<p>People judge position along a shared scale far more accurately than length from a floating start. When readers must compare groups, give each one the same baseline. Use layered steps, or separate panels on shared axes (Lesson 5).</p>
+</div>
+<h2 id="smooth-curves-kernel-density-estimates">Smooth curves: kernel density estimates</h2>
+<p>A KDE replaces bars with a smooth curve. It&rsquo;s easier to overlay, but it involves a choice you don&rsquo;t see.</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+                 <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">common_norm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Density&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.kdeplot(data=penguins, x=\"body_mass_g\", hue=\"species\",\n                 palette=PENGUIN_COLORS, fill=True, common_norm=False, alpha=0.3)\nax.set(xlabel=\"Body mass (g)\", ylabel=\"Density\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/02-kde.png" alt="Filled density curves of body mass for each species; Adelie and Chinstrap peak near 3,700 g and Gentoo near 5,000 g." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Two settings to know:</p>
+<ul>
+<li><strong><code>common_norm</code>.</strong> By default (<code>True</code>) all the curves <em>together</em> have area 1, so a small group (68 Chinstraps) gets a short curve. <code>common_norm=False</code> gives each species area 1, which compares <em>shapes</em> fairly.</li>
+<li><strong><code>bw_adjust</code>.</strong> This sets how much smoothing to use. Too little gives spurious wiggles. Too much melts real peaks together:</li>
+</ul>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">bw</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mi">3</span><span class="p">]):</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">bw_adjust</span><span class="o">=</span><span class="n">bw</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;bw_adjust = </span><span class="si">{</span><span class="n">bw</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "fig, axes = plt.subplots(1, 2, figsize=(9, 3.2), sharey=True)\nfor ax, bw in zip(axes, [0.25, 3]):\n    sns.kdeplot(data=penguins, x=\"body_mass_g\", bw_adjust=bw, fill=True, ax=ax)\n    ax.set(title=f\"bw_adjust = {bw}\", xlabel=\"Body mass (g)\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/02-kde-bw.png" alt="Two density plots of all body masses: bw_adjust 0.25 shows many spiky bumps; bw_adjust 3 shows a single smooth hill that hides the two groups." loading="lazy"></figure><div class="cell-live"></div></div>
+<div class="admonition warning">
+<p class="admonition-title">KDEs can draw data that doesn&rsquo;t exist</p>
+<p>A density curve spills past the real minimum and maximum. It would happily suggest penguins weighing 2,000 g. For bounded or small data, prefer a histogram, or pass <code>cut=0</code> to stop the curve at the data&rsquo;s range.</p>
+</div>
+<h2 id="ecdf-the-most-honest-distribution-plot">ECDF: the most honest distribution plot</h2>
+<p>An <strong>empirical cumulative distribution function</strong> answers questions like &ldquo;what fraction of penguins weigh 4,500 g or less?&rdquo; There are no bins and no smoothing to choose. Every point is plotted.</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">ecdfplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">4500</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Proportion at or below&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Only 1 in 7 Gentoos weighs 4,500 g or less&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.ecdfplot(data=penguins, x=\"body_mass_g\", hue=\"species\", palette=PENGUIN_COLORS)\nax.axvline(4500, color=\"gray\", linestyle=\"--\", linewidth=1)\nax.set(xlabel=\"Body mass (g)\", ylabel=\"Proportion at or below\",\n       title=\"Only 1 in 7 Gentoos weighs 4,500 g or less\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/02-ecdf.png" alt="ECDF of body mass by species with a dashed reference line at 4,500 g: about 95 percent of Adelies and Chinstraps fall below it, but only about 14 percent of Gentoos." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Follow the dashed line up. About 95% of Adelies and 97% of Chinstraps are at or below 4,500 g, but only about 14% of Gentoos. You can check that with pandas:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">penguins</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">])</span>
+    <span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">light</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">4500</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;species&quot;</span><span class="p">)[</span><span class="s2">&quot;light&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "(penguins.dropna(subset=[\"body_mass_g\"])\n    .assign(light=lambda d: d[\"body_mass_g\"] <= 4500)\n    .groupby(\"species\")[\"light\"].mean()\n    .round(2))"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><pre class="cell-stdout">species
+Adelie       0.95
+Chinstrap    0.97
+Gentoo       0.14
+Name: light, dtype: float64</pre><div class="cell-live"></div></div>
+<div class="admonition few">
+<p class="admonition-title">Show the distribution, not just the mean</p>
+<p>Two groups can share a mean and still look nothing alike. Readers deserve to see the spread, the skew, and the outliers. Once you know the distribution, a summary like a mean or median can follow.</p>
+</div>
+<h2 id="your-turn">Your turn</h2>
+
+<div class="exercise" id="ex-2.1" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 2.1</span>
+    <span class="exercise-title">Flipper lengths, species by species</span></div>
+  <textarea class="cell-editor" rows="6" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 2.1"># Draw overlaid STEP histograms of flipper_length_mm, one per species,
+# using PENGUIN_COLORS and a 3 mm bin width. Label the x-axis with units.
+ax = sns.histplot(data=penguins, x=&quot;flipper_length_mm&quot;)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+    <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+    <span class="n">element</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">,</span>
+    <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">binwidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Number of penguins&quot;</span><span class="p">)</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-2.1.png" alt="Solution chart for exercise 2.1" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# Draw overlaid STEP histograms of flipper_length_mm, one per species,\n# using PENGUIN_COLORS and a 3 mm bin width. Label the x-axis with units.\nax = sns.histplot(data=penguins, x=\"flipper_length_mm\")", "solution": "ax = sns.histplot(\n    data=penguins,\n    x=\"flipper_length_mm\",\n    hue=\"species\",\n    palette=PENGUIN_COLORS,\n    element=\"step\",\n    fill=False,\n    binwidth=3,\n)\nax.set(xlabel=\"Flipper length (mm)\", ylabel=\"Number of penguins\")", "check": "ax = chart_axes()[0]\nassert {\"Adelie\", \"Chinstrap\", \"Gentoo\"} <= set(legend_labels(ax)), \"Split the histogram by species with hue='species'.\"\nassert near_color(PENGUIN_COLORS[\"Chinstrap\"], colors_used(ax)), \"Use palette=PENGUIN_COLORS.\"\nassert len(ax.patches) == 0, \"Use element='step' so the groups are outlines on a shared baseline, not bars.\"\nlo, hi = ax.get_xlim()\nassert lo > 150 and hi < 250, \"x should be flipper_length_mm.\"\nassert \"mm\" in ax.get_xlabel(), \"Label the x-axis in plain English with units, e.g. 'Flipper length (mm)'.\"\nprint(\"Three clear peaks - flipper length alone nearly separates Gentoos from the rest.\")"}</script>
+</div>
+
+
+
+<div class="exercise" id="ex-2.2" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 2.2</span>
+    <span class="exercise-title">What share of Chinstraps have bills over 45 mm?</span></div>
+  <textarea class="cell-editor" rows="9" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 2.2"># 1. Draw an ECDF of bill_length_mm by species (PENGUIN_COLORS), with a
+#    vertical reference line at 45 mm (ax.axvline).
+# 2. Use pandas to print the share of Chinstraps with bill_length_mm &gt; 45.
+ax = sns.ecdfplot(data=penguins, x=___)
+
+chinstraps = penguins[penguins[&quot;species&quot;] == &quot;Chinstrap&quot;]
+print(___)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">ecdfplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">45</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Proportion at or below&quot;</span><span class="p">)</span>
+
+<span class="n">chinstraps</span> <span class="o">=</span> <span class="n">penguins</span><span class="p">[</span><span class="n">penguins</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">((</span><span class="n">chinstraps</span><span class="p">[</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">45</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+<pre class="cell-stdout">0.91</pre><figure class="cell-figure"><img src="img/sol-2.2.png" alt="Solution chart for exercise 2.2" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# 1. Draw an ECDF of bill_length_mm by species (PENGUIN_COLORS), with a\n#    vertical reference line at 45 mm (ax.axvline).\n# 2. Use pandas to print the share of Chinstraps with bill_length_mm > 45.\nax = sns.ecdfplot(data=penguins, x=___)\n\nchinstraps = penguins[penguins[\"species\"] == \"Chinstrap\"]\nprint(___)", "solution": "ax = sns.ecdfplot(data=penguins, x=\"bill_length_mm\", hue=\"species\", palette=PENGUIN_COLORS)\nax.axvline(45, color=\"gray\", linestyle=\"--\", linewidth=1)\nax.set(xlabel=\"Bill length (mm)\", ylabel=\"Proportion at or below\")\n\nchinstraps = penguins[penguins[\"species\"] == \"Chinstrap\"]\nprint((chinstraps[\"bill_length_mm\"] > 45).mean().round(2))", "check": "ax = chart_axes()[0]\nassert {\"Adelie\", \"Chinstrap\", \"Gentoo\"} <= set(legend_labels(ax)), \"Draw one ECDF per species with hue='species'.\"\nxs = [line.get_xdata() for line in ax.lines]\nassert any(len(set(x)) == 1 and abs(x[0] - 45) < 0.01 for x in xs), \"Add a vertical line at 45 with ax.axvline(45).\"\nlo, hi = ax.get_xlim()\nassert 25 < lo < 40 and 55 < hi < 65, \"x should be bill_length_mm.\"\nprint(\"About 0.91 - read it off the plot: the purple line crosses 45 mm near 0.09.\")"}</script>
+</div>
+
+
+<h2 id="quick-quiz">Quick quiz</h2>
+<section class="quiz" aria-label="Quiz">
+<div class="quiz-q" data-answer="C" id="02-distributions-q1">
+  <p class="quiz-stem"><span class="quiz-num">Q1.</span> You draw a histogram with very wide bins and see a single smooth hump. What&rsquo;s the risk?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="02-distributions-q1" value="A"> <span class="opt-letter">A.</span> None - wider bins always reduce noise, so the single hump is the truth</label></li><li><label><input type="radio" name="02-distributions-q1" value="B"> <span class="opt-letter">B.</span> Seaborn will raise an error when bins are wider than the data&rsquo;s standard deviation</label></li><li><label><input type="radio" name="02-distributions-q1" value="C"> <span class="opt-letter">C.</span> Wide bins can merge separate peaks, hiding groups such as species</label></li><li><label><input type="radio" name="02-distributions-q1" value="D"> <span class="opt-letter">D.</span> The y-axis switches from counts to densities, which changes the shape</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Bin width is a modelling choice. Too wide hides structure (two humps become one); too narrow shows noise. Try several.</div>
+</div>
+<div class="quiz-q" data-answer="A" id="02-distributions-q2">
+  <p class="quiz-stem"><span class="quiz-num">Q2.</span> With <code>hue="species"</code>, <code>kdeplot</code> uses <code>common_norm=True</code> by default. What does that mean?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="02-distributions-q2" value="A"> <span class="opt-letter">A.</span> Together the curves integrate to 1, so small groups look short</label></li><li><label><input type="radio" name="02-distributions-q2" value="B"> <span class="opt-letter">B.</span> Each curve is scaled to the same peak height so shapes are comparable</label></li><li><label><input type="radio" name="02-distributions-q2" value="C"> <span class="opt-letter">C.</span> The curves share a common bandwidth chosen from the largest group</label></li><li><label><input type="radio" name="02-distributions-q2" value="D"> <span class="opt-letter">D.</span> Values are standardized to z-scores before the densities are estimated</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>With a common normalization, curve area reflects group size. Use <code>common_norm=False</code> when you want to compare shapes.</div>
+</div>
+<div class="quiz-q" data-answer="D" id="02-distributions-q3">
+  <p class="quiz-stem"><span class="quiz-num">Q3.</span> On an ECDF of body mass, the Gentoo line has height 0.14 at x = 4,500. What does that mean?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="02-distributions-q3" value="A"> <span class="opt-letter">A.</span> 14 Gentoo penguins weigh exactly 4,500 g</label></li><li><label><input type="radio" name="02-distributions-q3" value="B"> <span class="opt-letter">B.</span> Gentoos are 14% heavier than average at 4,500 g</label></li><li><label><input type="radio" name="02-distributions-q3" value="C"> <span class="opt-letter">C.</span> The density of Gentoo weights peaks at 4,500 g</label></li><li><label><input type="radio" name="02-distributions-q3" value="D"> <span class="opt-letter">D.</span> About 14% of Gentoos weigh 4,500 g or less</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>An ECDF&rsquo;s height at x is the proportion of observations at or below x.</div>
+</div>
+<div class="quiz-q" data-answer="B" id="02-distributions-q4">
+  <p class="quiz-stem"><span class="quiz-num">Q4.</span> Why are stacked histograms a poor choice for comparing groups?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="02-distributions-q4" value="A"> <span class="opt-letter">A.</span> Stacking always double-counts observations that fall on bin edges</label></li><li><label><input type="radio" name="02-distributions-q4" value="B"> <span class="opt-letter">B.</span> Only the bottom layer sits on a shared baseline; the others float</label></li><li><label><input type="radio" name="02-distributions-q4" value="C"> <span class="opt-letter">C.</span> Stacked histograms cannot use more than two colors</label></li><li><label><input type="radio" name="02-distributions-q4" value="D"> <span class="opt-letter">D.</span> They require the data to be sorted before plotting</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Upper layers start wherever the layer below ends, so their heights can&rsquo;t be compared by eye. Layer steps or use small multiples.</div>
+</div><p class="quiz-score" aria-live="polite"></p></section>
+<div class="admonition note">
+<p class="admonition-title">Key takeaways</p>
+<ul>
+<li><code>histplot</code> for counts. Choose <code>binwidth</code> on purpose.</li>
+<li>Compare groups with <code>element="step"</code> or separate panels, not <code>multiple="stack"</code>.</li>
+<li><code>kdeplot</code> is smooth but invented. Mind <code>bw_adjust</code>, <code>common_norm</code>, and <code>cut</code>.</li>
+<li><code>ecdfplot</code> shows every point with no tuning, which makes it great for &ldquo;what share is below X?&rdquo;</li>
+</ul>
+</div>
+    </article>
+    <nav class="pager" aria-label="Previous and next lesson"><a class="pager-prev" href="01-first-plot.html"><small>Previous</small>Lesson 1 - Your first plot: the grammar of seaborn</a><a class="pager-next" href="03-categories.html"><small>Next</small>Lesson 3 - Comparing categories: bars, boxes and dots</a></nav>
+    <footer class="site-foot">
+      <p>Data: Palmer Station penguins (Gorman, Williams &amp; Fraser, 2014), via
+      <a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a>, CC0.
+      Lessons: CC BY 4.0. Code: MIT.</p>
+    </footer>
+  </main>
+</div>
+<script type="application/json" class="page-setup">{"setup": "import pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}"}</script>
+<script src="assets/app.js"></script>
+<script src="assets/live.js"></script>
+</body>
+</html>

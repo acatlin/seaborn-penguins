@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}} · {{site_title}}</title>
+<meta name="description" content="{{description}}">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/pygments.css">
+</head>
+<body data-page="{{slug}}">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="nav-toggle" type="button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+  <a class="brand" href="index.html"><span aria-hidden="true">🐧</span> {{site_title}}</a>
+  <span class="py-status" data-py-status title="In-browser Python status">Python: not loaded</span>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="Lessons">
+    <ol class="nav-list">{{nav}}</ol>
+    <div class="sidebar-foot">
+      <a href="{{repo_url}}">Source on GitHub</a>
+    </div>
+  </nav>
+  <main id="main" class="content">
+    {{lesson_tools}}
+    <article>
+{{content}}
+    </article>
+    {{pager}}
+    <footer class="site-foot">
+      <p>Data: Palmer Station penguins (Gorman, Williams &amp; Fraser, 2014), via
+      <a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a>, CC0.
+      Lessons: CC BY 4.0. Code: MIT.</p>
+    </footer>
+  </main>
+</div>
+{{setup_json}}
+<script src="assets/app.js"></script>
+<script src="assets/live.js"></script>
+</body>
+</html>

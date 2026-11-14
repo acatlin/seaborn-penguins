@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 4 - Relationships: trends, lines and correlations · Seaborn with Penguins</title>
+<meta name="description" content="A hands-on, browser-runnable course in seaborn and matplotlib for people who already know Python and pandas.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/pygments.css">
+</head>
+<body data-page="04-relationships">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="nav-toggle" type="button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+  <a class="brand" href="index.html"><span aria-hidden="true">🐧</span> Seaborn with Penguins</a>
+  <span class="py-status" data-py-status title="In-browser Python status">Python: not loaded</span>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="Lessons">
+    <ol class="nav-list"><li><a href="index.html" data-page="index"><span class="nav-num">0</span><span class="nav-title">Start here</span></a></li><li><a href="01-first-plot.html" data-page="01-first-plot"><span class="nav-num">1</span><span class="nav-title">Your first plot</span></a></li><li><a href="02-distributions.html" data-page="02-distributions"><span class="nav-num">2</span><span class="nav-title">Distributions</span></a></li><li><a href="03-categories.html" data-page="03-categories"><span class="nav-num">3</span><span class="nav-title">Comparing categories</span></a></li><li><a href="04-relationships.html" data-page="04-relationships" aria-current=page><span class="nav-num">4</span><span class="nav-title">Relationships</span></a></li><li><a href="05-small-multiples.html" data-page="05-small-multiples"><span class="nav-num">5</span><span class="nav-title">Small multiples</span></a></li><li><a href="06-polish.html" data-page="06-polish"><span class="nav-num">6</span><span class="nav-title">Polish with matplotlib</span></a></li><li><a href="07-capstone.html" data-page="07-capstone"><span class="nav-num">7</span><span class="nav-title">Capstone: field report</span></a></li><li><a href="instructor-guide.html" data-page="instructor-guide"><span class="nav-num">★</span><span class="nav-title">Instructor guide</span></a></li></ol>
+    <div class="sidebar-foot">
+      <a href="https://github.com/maddogdatascience/seaborn-penguins">Source on GitHub</a>
+    </div>
+  </nav>
+  <main id="main" class="content">
+    <div class="lesson-tools"><a href="https://colab.research.google.com/github/maddogdatascience/seaborn-penguins/blob/main/docs/notebooks/04-relationships.ipynb" target="_blank" rel="noopener">Open in Colab</a><a href="notebooks/04-relationships.ipynb" download>Download notebook</a><a href="notebooks/04-relationships-solutions.ipynb" download>Solutions notebook</a></div>
+    <article>
+<h1 id="lesson-4-relationships-trends-lines-and-correlations">Lesson 4 - Relationships: trends, lines and correlations</h1>
+<p class="lede">Do bigger flippers mean heavier penguins? How tightly do all the measurements move together? This lesson adds trend lines, line charts, correlation heatmaps and the "everything at once" pair plot to your toolkit.</p>
+
+<p><strong>By the end of this lesson you can:</strong></p>
+<ul>
+<li>add a fitted trend with <code>regplot</code> / <code>lmplot</code> and explain its shaded band</li>
+<li>use <code>lineplot</code> only where connecting the dots is meaningful</li>
+<li>build a correlation heatmap with a diverging palette centered on zero</li>
+<li>scan every pairwise relationship at once with <code>pairplot</code></li>
+</ul>
+<div class="cell cell-setup"><div class="code-label">Setup - run this first</div><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;ticks&quot;</span><span class="p">)</span>
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;penguins&quot;</span><span class="p">)</span>
+<span class="n">PENGUIN_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Adelie&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF8C00&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">:</span> <span class="s2">&quot;#A034F0&quot;</span><span class="p">,</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">:</span> <span class="s2">&quot;#159090&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<h2 id="a-trend-line-with-regplot">A trend line with <code>regplot</code></h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">regplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+                 <span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">},</span> <span class="n">line_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">})</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Each extra mm of flipper adds about 50 g&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.regplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\",\n                 scatter_kws={\"alpha\": 0.4, \"s\": 15}, line_kws={\"color\": \"black\"})\nax.set(xlabel=\"Flipper length (mm)\", ylabel=\"Body mass (g)\",\n       title=\"Each extra mm of flipper adds about 50 g\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/04-regplot.png" alt="Scatter of flipper length versus body mass with a fitted straight line and a narrow shaded confidence band." loading="lazy"></figure><div class="cell-live"></div></div>
+<p><code>regplot</code> fits a straight line by least squares and shades a <strong>95% confidence interval for the line</strong>. That band shows where the <em>average</em> trend plausibly lies, not where individual penguins fall. Notice how much narrower it is than the cloud of points.</p>
+<div class="admonition warning">
+<p class="admonition-title">A fitted line is a model, not the data</p>
+<p><code>regplot</code> draws a straight line through anything, even curved or clustered data. Look at the points first. Then ask whether a single line is honest, or whether groups need their own lines.</p>
+</div>
+<h2 id="one-line-per-group-with-lmplot">One line per group with <code>lmplot</code></h2>
+<p><code>lmplot</code> is the figure-level sibling of <code>regplot</code> (more on figure-level functions in Lesson 5). It understands <code>hue</code>, so you get one fit per species:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span>
+               <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">4.5</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">1.3</span><span class="p">,</span>
+               <span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">})</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "g = sns.lmplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\",\n               hue=\"species\", palette=PENGUIN_COLORS, height=4.5, aspect=1.3,\n               scatter_kws={\"alpha\": 0.5, \"s\": 15})\ng.set_axis_labels(\"Bill length (mm)\", \"Bill depth (mm)\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/04-lmplot.png" alt="Bill length versus bill depth with a separate upward-sloping regression line for each species." loading="lazy"></figure><div class="cell-live"></div></div>
+<h2 id="the-paradox-in-one-picture">The paradox, in one picture</h2>
+<p>Remember Lesson 1&rsquo;s bill paradox? Draw the overall fit and the per-species fits on the same Axes and it jumps out:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">regplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span> <span class="n">scatter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ci</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">line_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="s2">&quot;linestyle&quot;</span><span class="p">:</span> <span class="s2">&quot;--&quot;</span><span class="p">},</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;All penguins&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">species</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">penguins</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;species&quot;</span><span class="p">):</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">regplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">group</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">ci</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">[</span><span class="n">species</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">species</span><span class="p">,</span> <span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">})</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Overall trend: down. Within every species: up.&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.regplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\", scatter=False, ci=None,\n                 line_kws={\"color\": \"gray\", \"linestyle\": \"--\"}, label=\"All penguins\")\nfor species, group in penguins.groupby(\"species\"):\n    sns.regplot(data=group, x=\"bill_length_mm\", y=\"bill_depth_mm\", ax=ax, ci=None,\n                color=PENGUIN_COLORS[species], label=species, scatter_kws={\"s\": 12, \"alpha\": 0.4})\nax.legend(frameon=False)\nax.set(xlabel=\"Bill length (mm)\", ylabel=\"Bill depth (mm)\",\n       title=\"Overall trend: down. Within every species: up.\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/04-paradox.png" alt="Gray dashed line sloping down for all penguins combined, with three colored lines sloping up for each species: Simpson&#x27;s paradox." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Two useful patterns here: calling seaborn several times on the <strong>same <code>ax</code></strong>, and looping over <code>groupby</code> to control each group exactly.</p>
+<h2 id="line-charts-only-when-the-x-axis-has-an-order">Line charts: only when the x-axis has an order</h2>
+<p>A line says &ldquo;follow me from left to right.&rdquo; That only makes sense when x is ordered: time, a dose, or a binned measurement. Penguins weren&rsquo;t measured over time here, but flipper length is ordered. Bin it and plot the average mass per bin:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">binned</span> <span class="o">=</span> <span class="n">penguins</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">flipper_bin</span><span class="o">=</span><span class="p">(</span><span class="n">penguins</span><span class="p">[</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">]</span> <span class="o">//</span> <span class="mi">5</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">binned</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_bin&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+                  <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Flipper length, 5 mm bins&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Mean body mass (g)&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Within each species, mass climbs with flipper length&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "binned = penguins.assign(flipper_bin=(penguins[\"flipper_length_mm\"] // 5) * 5)\nax = sns.lineplot(data=binned, x=\"flipper_bin\", y=\"body_mass_g\",\n                  hue=\"species\", palette=PENGUIN_COLORS, marker=\"o\")\nax.set(xlabel=\"Flipper length, 5 mm bins\", ylabel=\"Mean body mass (g)\",\n       title=\"Within each species, mass climbs with flipper length\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/04-line.png" alt="Line chart of mean body mass by 5 mm flipper-length bin for each species, with shaded confidence bands; all three rise steadily." loading="lazy"></figure><div class="cell-live"></div></div>
+<p><code>lineplot</code> aggregates repeated x values (here, several penguins per bin) to a mean, and shades a 95% CI band. Pass <code>errorbar=None</code> to drop the band, or <code>errorbar="sd"</code> to show spread.</p>
+<div class="admonition few">
+<p class="admonition-title">Don&rsquo;t connect unordered categories</p>
+<p>Lines between &ldquo;Biscoe&rdquo;, &ldquo;Dream&rdquo; and &ldquo;Torgersen&rdquo; would suggest a path through islands. No such path exists. For nominal categories, use bars or dots.</p>
+</div>
+<h2 id="correlation-heatmaps">Correlation heatmaps</h2>
+<p>A correlation matrix gives a single number for every pair of numeric columns. A heatmap makes it scannable:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">nice</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">:</span> <span class="s2">&quot;Bill length&quot;</span><span class="p">,</span> <span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">:</span> <span class="s2">&quot;Bill depth&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">:</span> <span class="s2">&quot;Flipper length&quot;</span><span class="p">,</span> <span class="s2">&quot;body_mass_g&quot;</span><span class="p">:</span> <span class="s2">&quot;Body mass&quot;</span><span class="p">}</span>
+<span class="n">corr</span> <span class="o">=</span> <span class="n">penguins</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">nice</span><span class="p">)</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+<span class="n">lower</span> <span class="o">=</span> <span class="n">corr</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>                                  <span class="c1"># drop the always-empty row and column</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>       <span class="c1"># hide the mirror-image upper half</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;.2f&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;vlag&quot;</span><span class="p">,</span>
+                 <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">square</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">cbar_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shrink&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;Pearson r&quot;</span><span class="p">})</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Flipper length and body mass move together (r = 0.87)&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "nice = {\"bill_length_mm\": \"Bill length\", \"bill_depth_mm\": \"Bill depth\",\n        \"flipper_length_mm\": \"Flipper length\", \"body_mass_g\": \"Body mass\"}\ncorr = penguins.select_dtypes(\"number\").rename(columns=nice).corr()\nlower = corr.iloc[1:, :-1]                                  # drop the always-empty row and column\nmask = np.triu(np.ones_like(lower, dtype=bool), k=1)       # hide the mirror-image upper half\n\nax = sns.heatmap(lower, mask=mask, annot=True, fmt=\".2f\", cmap=\"vlag\",\n                 center=0, vmin=-1, vmax=1, square=True, linewidths=2,\n                 cbar_kws={\"shrink\": 0.7, \"label\": \"Pearson r\"})\nax.set(title=\"Flipper length and body mass move together (r = 0.87)\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/04-heatmap.png" alt="Lower-triangle heatmap of correlations between four penguin measurements; flipper length and body mass are most strongly correlated at 0.87." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>The settings that make this honest:</p>
+<ul>
+<li><strong><code>cmap="vlag"</code> with <code>center=0</code>.</strong> This is a <em>diverging</em> palette. Blue means negative, red means positive, and near-white means &ldquo;no relationship.&rdquo; A rainbow palette would give zero a random hue.</li>
+<li><strong><code>vmin=-1, vmax=1</code>.</strong> Colors mean the same thing on every heatmap you make.</li>
+<li><strong><code>annot=True</code>.</strong> Color gives the pattern and the printed numbers give exact values.</li>
+<li><strong><code>mask</code> and the slice.</strong> A correlation matrix is symmetric and its diagonal is always 1, so show each pair once and skip the rest.</li>
+</ul>
+<p>Bill depth correlates <em>negatively</em> with mass overall (−0.47). By now you can probably guess why that&rsquo;s misleading.</p>
+<h2 id="everything-at-once-pairplot">Everything at once: <code>pairplot</code></h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">pairplot</span><span class="p">(</span><span class="n">penguins</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+                 <span class="n">corner</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">plot_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">})</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "g = sns.pairplot(penguins, hue=\"species\", palette=PENGUIN_COLORS,\n                 corner=True, height=2, plot_kws={\"s\": 12, \"alpha\": 0.6})"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/04-pairplot.png" alt="Corner pair plot: scatter plots for every pair of the four measurements and density curves on the diagonal, colored by species." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>A pair plot is an <strong>exploration</strong> tool. It&rsquo;s great for your first ten minutes with a dataset, but too dense for a presentation. Notice how clearly the three species separate on the bill length panels.</p>
+<h2 id="your-turn">Your turn</h2>
+
+<div class="exercise" id="ex-4.1" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 4.1</span>
+    <span class="exercise-title">Correlations within Gentoos only</span></div>
+  <textarea class="cell-editor" rows="8" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 4.1"># Filter to Gentoo penguins, compute the correlation matrix of the
+# numeric columns, and draw it as a heatmap with annotations,
+# cmap=&quot;vlag&quot;, centered on 0, with vmin=-1 and vmax=1.
+gentoo = ___
+corr = ___
+ax = sns.heatmap(corr)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">gentoo</span> <span class="o">=</span> <span class="n">penguins</span><span class="p">[</span><span class="n">penguins</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">]</span>
+<span class="n">corr</span> <span class="o">=</span> <span class="n">gentoo</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="s2">&quot;number&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">corr</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;.2f&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;vlag&quot;</span><span class="p">,</span>
+                 <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">square</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Within Gentoos, every measurement correlates positively&quot;</span><span class="p">)</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-4.1.png" alt="Solution chart for exercise 4.1" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# Filter to Gentoo penguins, compute the correlation matrix of the\n# numeric columns, and draw it as a heatmap with annotations,\n# cmap=\"vlag\", centered on 0, with vmin=-1 and vmax=1.\ngentoo = ___\ncorr = ___\nax = sns.heatmap(corr)", "solution": "gentoo = penguins[penguins[\"species\"] == \"Gentoo\"]\ncorr = gentoo.select_dtypes(\"number\").corr()\nax = sns.heatmap(corr, annot=True, fmt=\".2f\", cmap=\"vlag\",\n                 center=0, vmin=-1, vmax=1, square=True)\nax.set(title=\"Within Gentoos, every measurement correlates positively\")", "check": "ax = plt.gcf().axes[0]\nmesh = [c for c in ax.collections if type(c).__name__ == \"QuadMesh\"]\nassert mesh, \"Draw the matrix with sns.heatmap.\"\nlo, hi = mesh[0].get_clim()\nassert (round(lo, 2), round(hi, 2)) == (-1, 1), \"Fix the color scale with vmin=-1, vmax=1.\"\ncmap = mesh[0].get_cmap()\nlow, mid, high = cmap(0.0), cmap(0.5), cmap(1.0)\nassert low[2] > low[0] and high[0] > high[2] and sum(mid[:3]) > 2.4, \"Use the diverging palette cmap='vlag' (blue = negative, red = positive).\"\nvalues = [float(t.get_text()) for t in ax.texts if t.get_text().strip()]\nassert len(values) >= 6, \"Print the numbers in the cells with annot=True.\"\nassert min(values) > 0, \"Those correlations don't look Gentoo-only - did you filter the rows?\"\nprint(\"Every pair is positive within Gentoos - the negative overall correlations came from mixing species.\")"}</script>
+</div>
+
+
+
+<div class="exercise" id="ex-4.2" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 4.2</span>
+    <span class="exercise-title">Deeper bills, heavier birds?</span></div>
+  <textarea class="cell-editor" rows="6" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 4.2"># Use lmplot to fit body_mass_g (y) against bill_depth_mm (x),
+# with one colored fit per species (PENGUIN_COLORS) and labeled axes.
+g = sns.lmplot(data=penguins, x=&quot;bill_depth_mm&quot;, y=&quot;body_mass_g&quot;)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+               <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">4.5</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">1.3</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">,</span> <span class="s2">&quot;Body mass (g)&quot;</span><span class="p">)</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-4.2.png" alt="Solution chart for exercise 4.2" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# Use lmplot to fit body_mass_g (y) against bill_depth_mm (x),\n# with one colored fit per species (PENGUIN_COLORS) and labeled axes.\ng = sns.lmplot(data=penguins, x=\"bill_depth_mm\", y=\"body_mass_g\")", "solution": "g = sns.lmplot(data=penguins, x=\"bill_depth_mm\", y=\"body_mass_g\",\n               hue=\"species\", palette=PENGUIN_COLORS, height=4.5, aspect=1.3)\ng.set_axis_labels(\"Bill depth (mm)\", \"Body mass (g)\")", "check": "ax = chart_axes()[0]\nassert {\"Adelie\", \"Chinstrap\", \"Gentoo\"} <= set(legend_labels()), \"Fit one line per species with hue='species'.\"\nassert len(ax.lines) >= 3, \"I expected three regression lines.\"\nassert near_color(PENGUIN_COLORS[\"Gentoo\"], colors_used(ax)), \"Use palette=PENGUIN_COLORS.\"\nassert \"_\" not in ax.get_xlabel() and \"mm\" in ax.get_xlabel(), \"Label the axes in plain English with units: g.set_axis_labels(...).\"\nprint(\"Three upward slopes - within species, deeper bills do go with heavier birds.\")"}</script>
+</div>
+
+
+<h2 id="quick-quiz">Quick quiz</h2>
+<section class="quiz" aria-label="Quiz">
+<div class="quiz-q" data-answer="A" id="04-relationships-q1">
+  <p class="quiz-stem"><span class="quiz-num">Q1.</span> When is a line chart (<code>lineplot</code>) the right choice?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="04-relationships-q1" value="A"> <span class="opt-letter">A.</span> When x has a natural order, such as time or binned measurements</label></li><li><label><input type="radio" name="04-relationships-q1" value="B"> <span class="opt-letter">B.</span> Whenever there are more than about ten categories on the x-axis</label></li><li><label><input type="radio" name="04-relationships-q1" value="C"> <span class="opt-letter">C.</span> When you want to compare islands, species, or other named groups</label></li><li><label><input type="radio" name="04-relationships-q1" value="D"> <span class="opt-letter">D.</span> When the y values are percentages that add up to 100</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>A line implies continuity from one x to the next. That only means something if x is ordered.</div>
+</div>
+<div class="quiz-q" data-answer="C" id="04-relationships-q2">
+  <p class="quiz-stem"><span class="quiz-num">Q2.</span> Why use a diverging palette such as <code>vlag</code> with <code>center=0</code> for a correlation heatmap?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="04-relationships-q2" value="A"> <span class="opt-letter">A.</span> Diverging palettes print more clearly in black and white</label></li><li><label><input type="radio" name="04-relationships-q2" value="B"> <span class="opt-letter">B.</span> It makes the strongest correlation stand out in bright yellow</label></li><li><label><input type="radio" name="04-relationships-q2" value="C"> <span class="opt-letter">C.</span> Zero becomes a neutral color, and the sign is shown by hue</label></li><li><label><input type="radio" name="04-relationships-q2" value="D"> <span class="opt-letter">D.</span> Seaborn refuses to draw negative numbers with sequential palettes</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Correlations have a meaningful midpoint (0) and two directions. Diverging palettes encode exactly that.</div>
+</div>
+<div class="quiz-q" data-answer="B" id="04-relationships-q3">
+  <p class="quiz-stem"><span class="quiz-num">Q3.</span> What does the shaded band around a <code>regplot</code> line show by default?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="04-relationships-q3" value="A"> <span class="opt-letter">A.</span> The range that contains 95% of individual penguins</label></li><li><label><input type="radio" name="04-relationships-q3" value="B"> <span class="opt-letter">B.</span> A 95% confidence interval for the fitted regression line</label></li><li><label><input type="radio" name="04-relationships-q3" value="C"> <span class="opt-letter">C.</span> One standard deviation above and below each point</label></li><li><label><input type="radio" name="04-relationships-q3" value="D"> <span class="opt-letter">D.</span> The region where the data were interpolated</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>It&rsquo;s uncertainty about the line (the mean trend), which is why it&rsquo;s much narrower than the scatter of points.</div>
+</div>
+<div class="quiz-q" data-answer="D" id="04-relationships-q4">
+  <p class="quiz-stem"><span class="quiz-num">Q4.</span> What does <code>corner=True</code> do in <code>sns.pairplot</code>?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="04-relationships-q4" value="A"> <span class="opt-letter">A.</span> It moves the legend into the bottom-right corner</label></li><li><label><input type="radio" name="04-relationships-q4" value="B"> <span class="opt-letter">B.</span> It only plots the first and last variables</label></li><li><label><input type="radio" name="04-relationships-q4" value="C"> <span class="opt-letter">C.</span> It rounds the corners of each panel for a softer look</label></li><li><label><input type="radio" name="04-relationships-q4" value="D"> <span class="opt-letter">D.</span> It drops the redundant upper triangle of mirror-image plots</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Every off-diagonal panel above the diagonal is a mirror of one below; <code>corner=True</code> hides them.</div>
+</div><p class="quiz-score" aria-live="polite"></p></section>
+<div class="admonition note">
+<p class="admonition-title">Key takeaways</p>
+<ul>
+<li><code>regplot</code>/<code>lmplot</code> add a fitted line plus a confidence band for the <strong>line</strong>. Use <code>hue</code> (in <code>lmplot</code>) or a <code>groupby</code> loop for per-group fits.</li>
+<li>Only connect points with <code>lineplot</code> when x is ordered.</li>
+<li>Correlation heatmaps: diverging palette, <code>center=0</code>, fixed <code>vmin</code>/<code>vmax</code>, annotate, mask the mirror half.</li>
+<li><code>pairplot</code> is for exploring, not presenting.</li>
+</ul>
+</div>
+    </article>
+    <nav class="pager" aria-label="Previous and next lesson"><a class="pager-prev" href="03-categories.html"><small>Previous</small>Lesson 3 - Comparing categories: bars, boxes and dots</a><a class="pager-next" href="05-small-multiples.html"><small>Next</small>Lesson 5 - Small multiples with figure-level functions</a></nav>
+    <footer class="site-foot">
+      <p>Data: Palmer Station penguins (Gorman, Williams &amp; Fraser, 2014), via
+      <a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a>, CC0.
+      Lessons: CC BY 4.0. Code: MIT.</p>
+    </footer>
+  </main>
+</div>
+<script type="application/json" class="page-setup">{"setup": "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}"}</script>
+<script src="assets/app.js"></script>
+<script src="assets/live.js"></script>
+</body>
+</html>

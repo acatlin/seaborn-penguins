@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 6 - From default to deliberate: polish with matplotlib · Seaborn with Penguins</title>
+<meta name="description" content="A hands-on, browser-runnable course in seaborn and matplotlib for people who already know Python and pandas.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/pygments.css">
+</head>
+<body data-page="06-polish">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="nav-toggle" type="button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+  <a class="brand" href="index.html"><span aria-hidden="true">🐧</span> Seaborn with Penguins</a>
+  <span class="py-status" data-py-status title="In-browser Python status">Python: not loaded</span>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="Lessons">
+    <ol class="nav-list"><li><a href="index.html" data-page="index"><span class="nav-num">0</span><span class="nav-title">Start here</span></a></li><li><a href="01-first-plot.html" data-page="01-first-plot"><span class="nav-num">1</span><span class="nav-title">Your first plot</span></a></li><li><a href="02-distributions.html" data-page="02-distributions"><span class="nav-num">2</span><span class="nav-title">Distributions</span></a></li><li><a href="03-categories.html" data-page="03-categories"><span class="nav-num">3</span><span class="nav-title">Comparing categories</span></a></li><li><a href="04-relationships.html" data-page="04-relationships"><span class="nav-num">4</span><span class="nav-title">Relationships</span></a></li><li><a href="05-small-multiples.html" data-page="05-small-multiples"><span class="nav-num">5</span><span class="nav-title">Small multiples</span></a></li><li><a href="06-polish.html" data-page="06-polish" aria-current=page><span class="nav-num">6</span><span class="nav-title">Polish with matplotlib</span></a></li><li><a href="07-capstone.html" data-page="07-capstone"><span class="nav-num">7</span><span class="nav-title">Capstone: field report</span></a></li><li><a href="instructor-guide.html" data-page="instructor-guide"><span class="nav-num">★</span><span class="nav-title">Instructor guide</span></a></li></ol>
+    <div class="sidebar-foot">
+      <a href="https://github.com/maddogdatascience/seaborn-penguins">Source on GitHub</a>
+    </div>
+  </nav>
+  <main id="main" class="content">
+    <div class="lesson-tools"><a href="https://colab.research.google.com/github/maddogdatascience/seaborn-penguins/blob/main/docs/notebooks/06-polish.ipynb" target="_blank" rel="noopener">Open in Colab</a><a href="notebooks/06-polish.ipynb" download>Download notebook</a><a href="notebooks/06-polish-solutions.ipynb" download>Solutions notebook</a></div>
+    <article>
+<h1 id="lesson-6-from-default-to-deliberate-polish-with-matplotlib">Lesson 6 - From default to deliberate: polish with matplotlib</h1>
+<p class="lede">Seaborn gets you a correct chart fast. Matplotlib gets you the last 20%: the labels, highlights and annotations that turn a chart into a message. This lesson is a makeover.</p>
+
+<p><strong>By the end of this lesson you can:</strong></p>
+<ul>
+<li>set a theme and context with <code>sns.set_theme</code></li>
+<li>choose categorical, sequential or diverging palettes for the right job</li>
+<li>lay out several charts with <code>plt.subplots</code> and <code>ax=</code></li>
+<li>highlight, annotate, directly label, and format a chart</li>
+<li>save publication-quality files</li>
+</ul>
+<div class="cell cell-setup"><div class="code-label">Setup - run this first</div><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;ticks&quot;</span><span class="p">)</span>
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;penguins&quot;</span><span class="p">)</span>
+<span class="n">PENGUIN_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Adelie&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF8C00&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">:</span> <span class="s2">&quot;#A034F0&quot;</span><span class="p">,</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">:</span> <span class="s2">&quot;#159090&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<h2 id="how-seaborn-and-matplotlib-fit-together">How seaborn and matplotlib fit together</h2>
+<p>A matplotlib <strong>Figure</strong> is the canvas. Each <strong>Axes</strong> is one plotting area on it, with its own x-axis, y-axis, title and legend. Seaborn&rsquo;s axes-level functions draw <em>into</em> an Axes. Everything you add afterwards (labels, lines, text, tick formats) is plain matplotlib called on that same <code>ax</code>.</p>
+<h2 id="themes-and-contexts">Themes and contexts</h2>
+<p><code>sns.set_theme(style=..., context=...)</code> changes defaults for every chart that follows. <code>style</code> controls the background and grid, and <code>context</code> scales fonts and lines for where the chart will be shown (<code>"paper"</code>, <code>"notebook"</code>, <code>"talk"</code>, <code>"poster"</code>).</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">2.8</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">style</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s2">&quot;darkgrid&quot;</span><span class="p">,</span> <span class="s2">&quot;whitegrid&quot;</span><span class="p">,</span> <span class="s2">&quot;ticks&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">]):</span>
+    <span class="k">with</span> <span class="n">sns</span><span class="o">.</span><span class="n">axes_style</span><span class="p">(</span><span class="n">style</span><span class="p">):</span>          <span class="c1"># temporarily switch style</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;style=&quot;</span><span class="si">{</span><span class="n">style</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "fig = plt.figure(figsize=(12, 2.8))\nfor i, style in enumerate([\"darkgrid\", \"whitegrid\", \"ticks\", \"white\"]):\n    with sns.axes_style(style):          # temporarily switch style\n        ax = fig.add_subplot(1, 4, i + 1)\n    sns.histplot(data=penguins, x=\"body_mass_g\", binwidth=250, ax=ax)\n    ax.set(title=f'style=\"{style}\"', xlabel=\"Body mass (g)\", ylabel=\"\")\nfig.tight_layout()"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/06-styles.png" alt="The same histogram drawn in four seaborn styles: darkgrid, whitegrid, ticks and white." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>This course uses <code>"ticks"</code>. It&rsquo;s quiet, with no gridlines competing with the data. Use <code>"whitegrid"</code> when readers need to read values off the axis.</p>
+<h2 id="palettes-do-jobs">Palettes do jobs</h2>
+<p>Pick a palette by what color has to <em>say</em>:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ListedColormap</span>
+
+<span class="n">palettes</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;Categorical - which group?   sns.color_palette(&quot;colorblind&quot;)&#39;</span><span class="p">:</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;colorblind&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+    <span class="s1">&#39;Sequential - how much?   sns.color_palette(&quot;crest&quot;)&#39;</span><span class="p">:</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;crest&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span>
+    <span class="s1">&#39;Diverging - above or below a midpoint?   sns.color_palette(&quot;vlag&quot;)&#39;</span><span class="p">:</span> <span class="n">sns</span><span class="o">.</span><span class="n">color_palette</span><span class="p">(</span><span class="s2">&quot;vlag&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">pal</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">palettes</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pal</span><span class="p">)))],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">ListedColormap</span><span class="p">(</span><span class="n">pal</span><span class="p">),</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "from matplotlib.colors import ListedColormap\n\npalettes = {\n    'Categorical - which group?   sns.color_palette(\"colorblind\")': sns.color_palette(\"colorblind\", 6),\n    'Sequential - how much?   sns.color_palette(\"crest\")': sns.color_palette(\"crest\", 7),\n    'Diverging - above or below a midpoint?   sns.color_palette(\"vlag\")': sns.color_palette(\"vlag\", 7),\n}\nfig, axes = plt.subplots(3, 1, figsize=(8, 3.4))\nfor ax, (name, pal) in zip(axes, palettes.items()):\n    ax.imshow([list(range(len(pal)))], cmap=ListedColormap(pal), aspect=\"auto\")\n    ax.set_title(name, loc=\"left\", fontsize=10)\n    ax.set_axis_off()\nfig.tight_layout()"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/06-palettes.png" alt="Three color strips: colorblind categorical colors, the crest sequential light-to-dark ramp, and the vlag blue-white-red diverging ramp." loading="lazy"></figure><div class="cell-live"></div></div>
+<ul>
+<li><strong>Categorical</strong> for identity (species, island). Hues differ, none &ldquo;bigger&rdquo; than another. <code>"colorblind"</code> is a safe default.</li>
+<li><strong>Sequential</strong> for magnitude (counts, mass). One hue, light to dark.</li>
+<li><strong>Diverging</strong> for data with a meaningful middle (correlation, change from average). Two hues with a neutral center.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Avoid rainbow palettes</p>
+<p>Rainbows (<code>"hsv"</code>, <code>"jet"</code>) have no natural order. They create false boundaries where hues shift, and they fail for colorblind readers. About 1 in 12 men has some color-vision deficiency. This course&rsquo;s <code>PENGUIN_COLORS</code> were tested to stay distinguishable under the common types.</p>
+</div>
+<h2 id="highlight-gray-is-your-best-color">Highlight: gray is your best color</h2>
+<p>When the story is about <em>one</em> group, make everything else gray:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">focus</span> <span class="o">=</span> <span class="s2">&quot;Gentoo&quot;</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="n">sp</span><span class="p">:</span> <span class="p">(</span><span class="n">PENGUIN_COLORS</span><span class="p">[</span><span class="n">sp</span><span class="p">]</span> <span class="k">if</span> <span class="n">sp</span> <span class="o">==</span> <span class="n">focus</span> <span class="k">else</span> <span class="s2">&quot;#cccccc&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">PENGUIN_COLORS</span><span class="p">}</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span>
+                     <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">55</span><span class="p">,</span> <span class="mf">14.2</span><span class="p">,</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">[</span><span class="n">focus</span><span class="p">],</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Gentoos have long but shallow bills&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "focus = \"Gentoo\"\ncolors = {sp: (PENGUIN_COLORS[sp] if sp == focus else \"#cccccc\") for sp in PENGUIN_COLORS}\n\nax = sns.scatterplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\",\n                     hue=\"species\", palette=colors, legend=False)\nax.text(55, 14.2, \"Gentoo\", color=PENGUIN_COLORS[focus], fontweight=\"bold\")\nax.set(xlabel=\"Bill length (mm)\", ylabel=\"Bill depth (mm)\",\n       title=\"Gentoos have long but shallow bills\")\nsns.despine()"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/06-highlight.png" alt="Bill scatter with Adelie and Chinstrap points in light gray and Gentoo points in teal, labeled directly on the chart." loading="lazy"></figure><div class="cell-live"></div></div>
+<div class="admonition few">
+<p class="admonition-title">Use color sparingly, and only to mean something</p>
+<p>Stephen Few&rsquo;s advice: use soft, muted colors for most of the data and save bright, saturated color for what you want noticed. If everything is bright, nothing stands out.</p>
+</div>
+<h2 id="layouts-pltsubplots-ax">Layouts: <code>plt.subplots</code> + <code>ax=</code></h2>
+<p>To combine <em>different</em> chart types, build the grid with matplotlib and hand each Axes to seaborn:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;constrained&quot;</span><span class="p">)</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+             <span class="n">element</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Penguins&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;By species&quot;</span><span class="p">)</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#bbbbbb&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;By sex&quot;</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;What drives a penguin&#39;s weight? Species first, sex second.&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "fig, axes = plt.subplots(1, 2, figsize=(10, 3.8), layout=\"constrained\")\n\nsns.histplot(data=penguins, x=\"body_mass_g\", hue=\"species\", palette=PENGUIN_COLORS,\n             element=\"step\", fill=False, binwidth=200, ax=axes[0])\naxes[0].set(xlabel=\"Body mass (g)\", ylabel=\"Penguins\", title=\"By species\")\n\nsns.boxplot(data=penguins, x=\"sex\", y=\"body_mass_g\", color=\"#bbbbbb\", ax=axes[1])\naxes[1].set(xlabel=\"\", ylabel=\"Body mass (g)\", title=\"By sex\")\n\nfig.suptitle(\"What drives a penguin's weight? Species first, sex second.\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/06-subplots.png" alt="Two side-by-side charts: a step histogram of body mass by species and box plots of body mass by sex, under one figure title." loading="lazy"></figure><div class="cell-live"></div></div>
+<p><code>layout="constrained"</code> spaces titles and labels automatically. Use it for every multi-panel figure.</p>
+<h2 id="the-makeover">The makeover</h2>
+<p>Here is a chart made with every default and every option turned on:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;darkgrid&quot;</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+                     <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;island&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;hsv&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "sns.set_theme(style=\"darkgrid\")\nax = sns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\",\n                     hue=\"species\", style=\"island\", size=\"bill_depth_mm\", palette=\"hsv\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/06-before.png" alt="A cluttered scatter plot with rainbow colors, three different marker shapes, varying point sizes and a large legend overlapping the data." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Three encodings, a rainbow palette, a legend covering the data, and raw column names. It <em>contains</em> the data, but it doesn&rsquo;t <em>say</em> anything. Here&rsquo;s the same data made deliberate:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">7.5</span><span class="p">,</span> <span class="mf">4.6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+                <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span>
+                <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+
+<span class="c1"># 1. Label the groups directly - no legend to decode</span>
+<span class="k">for</span> <span class="n">species</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;Adelie&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">171</span><span class="p">,</span> <span class="mi">4500</span><span class="p">),</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">204</span><span class="p">,</span> <span class="mi">3050</span><span class="p">),</span>
+                        <span class="s2">&quot;Gentoo&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">4300</span><span class="p">)}</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">[</span><span class="n">species</span><span class="p">],</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+
+<span class="c1"># 2. Annotate the one point worth talking about</span>
+<span class="n">heaviest</span> <span class="o">=</span> <span class="n">penguins</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">penguins</span><span class="p">[</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;Heaviest bird: a 6.3 kg Gentoo&quot;</span><span class="p">,</span>
+            <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">heaviest</span><span class="p">[</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">],</span> <span class="n">heaviest</span><span class="p">[</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">]),</span>
+            <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">186</span><span class="p">,</span> <span class="mi">6050</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;0.25&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+            <span class="n">arrowprops</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arrowstyle&quot;</span><span class="p">:</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;0.4&quot;</span><span class="p">})</span>
+
+<span class="c1"># 3. Units people think in</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">value</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> kg&quot;</span><span class="p">)</span>
+
+<span class="c1"># 4. Plain words, a title that makes the point, no box</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Body mass&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Gentoos are in a weight class of their own&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "fig, ax = plt.subplots(figsize=(7.5, 4.6))\nsns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\",\n                hue=\"species\", palette=PENGUIN_COLORS, s=22, alpha=0.75,\n                legend=False, ax=ax)\n\n# 1. Label the groups directly - no legend to decode\nfor species, (x, y) in {\"Adelie\": (171, 4500), \"Chinstrap\": (204, 3050),\n                        \"Gentoo\": (224, 4300)}.items():\n    ax.text(x, y, species, color=PENGUIN_COLORS[species], fontweight=\"bold\")\n\n# 2. Annotate the one point worth talking about\nheaviest = penguins.loc[penguins[\"body_mass_g\"].idxmax()]\nax.annotate(\"Heaviest bird: a 6.3 kg Gentoo\",\n            xy=(heaviest[\"flipper_length_mm\"], heaviest[\"body_mass_g\"]),\n            xytext=(186, 6050), color=\"0.25\", fontsize=9,\n            arrowprops={\"arrowstyle\": \"->\", \"color\": \"0.4\"})\n\n# 3. Units people think in\nax.yaxis.set_major_formatter(lambda value, pos: f\"{value / 1000:.1f} kg\")\n\n# 4. Plain words, a title that makes the point, no box\nax.set(xlabel=\"Flipper length (mm)\", ylabel=\"Body mass\",\n       title=\"Gentoos are in a weight class of their own\")\nsns.despine()"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/06-after.png" alt="Clean scatter of flipper length versus body mass with species colored and labeled directly, the heaviest penguin annotated, kilogram tick labels and the title &#x27;Gentoos are in a weight class of their own&#x27;." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Every change removes work for the reader. They don&rsquo;t look back and forth to a legend. Their eye goes to the one point worth mentioning. They read &ldquo;5.0 kg&rdquo; instead of &ldquo;5000&rdquo;, and the title tells them what to see.</p>
+<div class="admonition few">
+<p class="admonition-title">Stephen Few&rsquo;s checklist, applied</p>
+<table>
+<thead>
+<tr>
+<th>Principle</th>
+<th>In code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Maximize data-ink, cut non-data ink</td>
+<td><code>style="ticks"</code>, <code>sns.despine()</code>, no redundant legend</td>
+</tr>
+<tr>
+<td>One encoding per variable, only the ones you need</td>
+<td>drop <code>style=</code> and <code>size=</code> that don&rsquo;t serve the question</td>
+</tr>
+<tr>
+<td>Label directly when you can</td>
+<td><code>legend=False</code> + <code>ax.text(...)</code></td>
+</tr>
+<tr>
+<td>Highlight what matters</td>
+<td>gray context + one strong color, <code>ax.annotate(...)</code></td>
+</tr>
+<tr>
+<td>Titles and labels in plain language with units</td>
+<td><code>ax.set(title=..., xlabel=...)</code>, tick formatters</td>
+</tr>
+<tr>
+<td>Consistent color for the same thing</td>
+<td>one dict palette, reused everywhere</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="saving-your-work">Saving your work</h2>
+<div class="highlight"><pre><span></span><span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;penguin-makeover.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>  <span class="c1"># sharp raster for slides/docs</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;penguin-makeover.svg&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>            <span class="c1"># vector: crisp at any size</span>
+</pre></div>
+
+<p><code>bbox_inches="tight"</code> trims empty margins and keeps labels from being cut off. With a figure-level grid, call <code>g.savefig(...)</code> (or <code>g.figure.savefig(...)</code>).</p>
+<h2 id="your-turn">Your turn</h2>
+
+<div class="exercise" id="ex-6.1" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 6.1</span>
+    <span class="exercise-title">Make over a messy chart</span></div>
+  <textarea class="cell-editor" rows="10" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 6.1"># This chart works but says nothing. Make it deliberate:
+#  - PENGUIN_COLORS for species, and drop the style= and size= encodings
+#  - no legend (label the species directly with ax.text if you like)
+#  - axis labels in plain English with units, and a title that states a finding
+#  - remove the top and right spines with sns.despine()
+sns.set_theme(style=&quot;darkgrid&quot;)
+ax = sns.scatterplot(data=penguins, x=&quot;bill_length_mm&quot;, y=&quot;bill_depth_mm&quot;,
+                     hue=&quot;species&quot;, style=&quot;island&quot;, size=&quot;body_mass_g&quot;, palette=&quot;hsv&quot;)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;ticks&quot;</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span>
+                     <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">species</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;Adelie&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">33</span><span class="p">,</span> <span class="mf">21.6</span><span class="p">),</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">52</span><span class="p">,</span> <span class="mf">21.2</span><span class="p">),</span>
+                        <span class="s2">&quot;Gentoo&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">54</span><span class="p">,</span> <span class="mf">14.0</span><span class="p">)}</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">species</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">[</span><span class="n">species</span><span class="p">],</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Each species has a bill shape of its own&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-6.1.png" alt="Solution chart for exercise 6.1" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# This chart works but says nothing. Make it deliberate:\n#  - PENGUIN_COLORS for species, and drop the style= and size= encodings\n#  - no legend (label the species directly with ax.text if you like)\n#  - axis labels in plain English with units, and a title that states a finding\n#  - remove the top and right spines with sns.despine()\nsns.set_theme(style=\"darkgrid\")\nax = sns.scatterplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\",\n                     hue=\"species\", style=\"island\", size=\"body_mass_g\", palette=\"hsv\")", "solution": "sns.set_theme(style=\"ticks\")\nax = sns.scatterplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\",\n                     hue=\"species\", palette=PENGUIN_COLORS, legend=False)\nfor species, (x, y) in {\"Adelie\": (33, 21.6), \"Chinstrap\": (52, 21.2),\n                        \"Gentoo\": (54, 14.0)}.items():\n    ax.text(x, y, species, color=PENGUIN_COLORS[species], fontweight=\"bold\")\nax.set(xlabel=\"Bill length (mm)\", ylabel=\"Bill depth (mm)\",\n       title=\"Each species has a bill shape of its own\")\nsns.despine()", "check": "ax = chart_axes()[0]\npts = points(ax)\nassert abs(pts[:, 0].mean() - penguins[\"bill_length_mm\"].mean()) < 0.5, \"Keep bill_length_mm on x and bill_depth_mm on y.\"\nassert near_color(PENGUIN_COLORS[\"Gentoo\"], colors_used(ax)), \"Swap the rainbow for palette=PENGUIN_COLORS.\"\nsizes = set().union(*[set(c.get_sizes()) for c in ax.collections])\nassert len(sizes) == 1, \"Drop size= - point size shouldn't encode anything here.\"\nassert ax.get_legend() is None, \"Remove the legend with legend=False (direct labels are optional).\"\nassert \"mm\" in ax.get_xlabel() and \"mm\" in ax.get_ylabel(), \"Use plain-English axis labels with units.\"\nassert len(ax.get_title()) >= 15, \"Add a title that states a finding.\"\nassert not ax.spines[\"top\"].get_visible() and not ax.spines[\"right\"].get_visible(), \"Call sns.despine() to remove the top and right spines.\"\nprint(\"From noise to message. Compare it with the starter - same data, very different chart.\")"}</script>
+</div>
+
+
+
+<div class="exercise" id="ex-6.2" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 6.2</span>
+    <span class="exercise-title">Spotlight the Chinstraps</span></div>
+  <textarea class="cell-editor" rows="10" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 6.2"># Chinstraps hide among Adelies on a flipper-vs-mass scatter.
+# Make every species gray except Chinstrap (in its PENGUIN_COLORS purple),
+# turn the legend off, label &quot;Chinstrap&quot; directly with ax.text,
+# and write a title that mentions Chinstraps.
+colors = ___
+
+ax = sns.scatterplot(data=penguins, x=&quot;flipper_length_mm&quot;, y=&quot;body_mass_g&quot;,
+                     hue=&quot;species&quot;, palette=colors)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="n">sp</span><span class="p">:</span> <span class="p">(</span><span class="n">PENGUIN_COLORS</span><span class="p">[</span><span class="n">sp</span><span class="p">]</span> <span class="k">if</span> <span class="n">sp</span> <span class="o">==</span> <span class="s2">&quot;Chinstrap&quot;</span> <span class="k">else</span> <span class="s2">&quot;#cccccc&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">PENGUIN_COLORS</span><span class="p">}</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+                     <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">205</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">[</span><span class="s2">&quot;Chinstrap&quot;</span><span class="p">],</span> <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Chinstraps overlap with Adelies on size alone&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-6.2.png" alt="Solution chart for exercise 6.2" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# Chinstraps hide among Adelies on a flipper-vs-mass scatter.\n# Make every species gray except Chinstrap (in its PENGUIN_COLORS purple),\n# turn the legend off, label \"Chinstrap\" directly with ax.text,\n# and write a title that mentions Chinstraps.\ncolors = ___\n\nax = sns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\",\n                     hue=\"species\", palette=colors)", "solution": "colors = {sp: (PENGUIN_COLORS[sp] if sp == \"Chinstrap\" else \"#cccccc\") for sp in PENGUIN_COLORS}\n\nax = sns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\",\n                     hue=\"species\", palette=colors, legend=False)\nax.text(205, 3000, \"Chinstrap\", color=PENGUIN_COLORS[\"Chinstrap\"], fontweight=\"bold\")\nax.set(xlabel=\"Flipper length (mm)\", ylabel=\"Body mass (g)\",\n       title=\"Chinstraps overlap with Adelies on size alone\")\nsns.despine()", "check": "ax = chart_axes()[0]\nused = colors_used(ax)\nassert near_color(PENGUIN_COLORS[\"Chinstrap\"], used), \"Chinstraps should keep their purple.\"\nassert not near_color(PENGUIN_COLORS[\"Adelie\"], used) and not near_color(PENGUIN_COLORS[\"Gentoo\"], used), \"Make Adelie and Gentoo gray so only Chinstraps stand out.\"\nassert ax.get_legend() is None, \"Turn the legend off with legend=False and label directly.\"\nassert any(\"Chinstrap\" in t.get_text() for t in ax.texts), \"Add a direct label with ax.text(x, y, 'Chinstrap', ...).\"\nassert \"chinstrap\" in ax.get_title().lower(), \"Mention Chinstraps in the title.\"\nprint(\"Spotlight on. Gray is doing the heavy lifting here.\")"}</script>
+</div>
+
+
+<h2 id="quick-quiz">Quick quiz</h2>
+<section class="quiz" aria-label="Quiz">
+<div class="quiz-q" data-answer="C" id="06-polish-q1">
+  <p class="quiz-stem"><span class="quiz-num">Q1.</span> Stephen Few&rsquo;s &ldquo;data-ink&rdquo; idea (from Edward Tufte) says you should&hellip;</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="06-polish-q1" value="A"> <span class="opt-letter">A.</span> use as much ink as possible so charts look substantial</label></li><li><label><input type="radio" name="06-polish-q1" value="B"> <span class="opt-letter">B.</span> always print charts in black ink only</label></li><li><label><input type="radio" name="06-polish-q1" value="C"> <span class="opt-letter">C.</span> maximize the share of ink showing data; cut the rest</label></li><li><label><input type="radio" name="06-polish-q1" value="D"> <span class="opt-letter">D.</span> add gridlines to every chart so values can be read precisely</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Every non-data mark - heavy borders, backgrounds, redundant legends - competes with the data for attention. Remove or mute it.</div>
+</div>
+<div class="quiz-q" data-answer="A" id="06-polish-q2">
+  <p class="quiz-stem"><span class="quiz-num">Q2.</span> What is the main advantage of labeling lines or groups directly instead of using a legend?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="06-polish-q2" value="A"> <span class="opt-letter">A.</span> Readers needn&rsquo;t look back and forth to a legend</label></li><li><label><input type="radio" name="06-polish-q2" value="B"> <span class="opt-letter">B.</span> Direct labels make the saved figure file noticeably smaller</label></li><li><label><input type="radio" name="06-polish-q2" value="C"> <span class="opt-letter">C.</span> Matplotlib draws text faster than legends</label></li><li><label><input type="radio" name="06-polish-q2" value="D"> <span class="opt-letter">D.</span> Legends cannot show more than three categories</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>A legend is a lookup table. Direct labels put the answer where the eye already is.</div>
+</div>
+<div class="quiz-q" data-answer="D" id="06-polish-q3">
+  <p class="quiz-stem"><span class="quiz-num">Q3.</span> How do you draw a seaborn chart into the second panel of <code>fig, axes = plt.subplots(1, 2)</code>?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="06-polish-q3" value="A"> <span class="opt-letter">A.</span> Call <code>plt.subplot(2)</code> after the seaborn function</label></li><li><label><input type="radio" name="06-polish-q3" value="B"> <span class="opt-letter">B.</span> Pass <code>hue=axes[1]</code></label></li><li><label><input type="radio" name="06-polish-q3" value="C"> <span class="opt-letter">C.</span> Use <code>sns.set_theme(ax=axes[1])</code> first</label></li><li><label><input type="radio" name="06-polish-q3" value="D"> <span class="opt-letter">D.</span> Pass <code>ax=axes[1]</code> to an axes-level seaborn function</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Axes-level functions accept <code>ax=</code>. Figure-level functions don&rsquo;t - they make their own figure.</div>
+</div>
+<div class="quiz-q" data-answer="B" id="06-polish-q4">
+  <p class="quiz-stem"><span class="quiz-num">Q4.</span> Your chart is about one species. What does Few recommend for color?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="06-polish-q4" value="A"> <span class="opt-letter">A.</span> Use a rainbow palette so every species is equally vivid</label></li><li><label><input type="radio" name="06-polish-q4" value="B"> <span class="opt-letter">B.</span> Gray out the others and give only the focus group a strong color</label></li><li><label><input type="radio" name="06-polish-q4" value="C"> <span class="opt-letter">C.</span> Use the brightest available color for every group</label></li><li><label><input type="radio" name="06-polish-q4" value="D"> <span class="opt-letter">D.</span> Remove all color and rely on marker shapes</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Muted context plus one saturated highlight tells the reader exactly where to look.</div>
+</div><p class="quiz-score" aria-live="polite"></p></section>
+<div class="admonition note">
+<p class="admonition-title">Key takeaways</p>
+<ul>
+<li><code>set_theme(style, context)</code> sets defaults. Pick palettes by job: categorical, sequential or diverging.</li>
+<li>Combine chart types with <code>plt.subplots(..., layout="constrained")</code> and <code>ax=</code>.</li>
+<li>Polish with matplotlib on the returned <code>ax</code>: <code>set</code>, <code>text</code>, <code>annotate</code>, <code>axhline</code>/<code>axvline</code>, tick formatters, <code>sns.despine()</code>.</li>
+<li>Save with <code>fig.savefig(..., dpi=200, bbox_inches="tight")</code>.</li>
+</ul>
+</div>
+    </article>
+    <nav class="pager" aria-label="Previous and next lesson"><a class="pager-prev" href="05-small-multiples.html"><small>Previous</small>Lesson 5 - Small multiples with figure-level functions</a><a class="pager-next" href="07-capstone.html"><small>Next</small>Lesson 7 - Capstone: the Penguin Field Report</a></nav>
+    <footer class="site-foot">
+      <p>Data: Palmer Station penguins (Gorman, Williams &amp; Fraser, 2014), via
+      <a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a>, CC0.
+      Lessons: CC BY 4.0. Code: MIT.</p>
+    </footer>
+  </main>
+</div>
+<script type="application/json" class="page-setup">{"setup": "import pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}"}</script>
+<script src="assets/app.js"></script>
+<script src="assets/live.js"></script>
+</body>
+</html>

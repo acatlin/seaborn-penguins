@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instructor guide · Seaborn with Penguins</title>
+<meta name="description" content="How to teach this course - timing, talking points, misconceptions, and assessment.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/pygments.css">
+</head>
+<body data-page="instructor-guide">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="nav-toggle" type="button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+  <a class="brand" href="index.html"><span aria-hidden="true">🐧</span> Seaborn with Penguins</a>
+  <span class="py-status" data-py-status title="In-browser Python status">Python: not loaded</span>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="Lessons">
+    <ol class="nav-list"><li><a href="index.html" data-page="index"><span class="nav-num">0</span><span class="nav-title">Start here</span></a></li><li><a href="01-first-plot.html" data-page="01-first-plot"><span class="nav-num">1</span><span class="nav-title">Your first plot</span></a></li><li><a href="02-distributions.html" data-page="02-distributions"><span class="nav-num">2</span><span class="nav-title">Distributions</span></a></li><li><a href="03-categories.html" data-page="03-categories"><span class="nav-num">3</span><span class="nav-title">Comparing categories</span></a></li><li><a href="04-relationships.html" data-page="04-relationships"><span class="nav-num">4</span><span class="nav-title">Relationships</span></a></li><li><a href="05-small-multiples.html" data-page="05-small-multiples"><span class="nav-num">5</span><span class="nav-title">Small multiples</span></a></li><li><a href="06-polish.html" data-page="06-polish"><span class="nav-num">6</span><span class="nav-title">Polish with matplotlib</span></a></li><li><a href="07-capstone.html" data-page="07-capstone"><span class="nav-num">7</span><span class="nav-title">Capstone: field report</span></a></li><li><a href="instructor-guide.html" data-page="instructor-guide" aria-current=page><span class="nav-num">★</span><span class="nav-title">Instructor guide</span></a></li></ol>
+    <div class="sidebar-foot">
+      <a href="https://github.com/maddogdatascience/seaborn-penguins">Source on GitHub</a>
+    </div>
+  </nav>
+  <main id="main" class="content">
+    
+    <article>
+<h1 id="instructor-guide">Instructor guide</h1>
+<p class="lede">Everything you need to teach <em>Seaborn with Penguins</em>: who it's for, how to schedule it, what to emphasize in each lesson, where students stumble, and how to assess them.</p>
+
+<h2 id="course-at-a-glance">Course at a glance</h2>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Audience</strong></td>
+<td>Learners comfortable with Python basics and pandas (selecting columns, filtering, <code>groupby</code>). No prior plotting experience needed.</td>
+</tr>
+<tr>
+<td><strong>Outcome</strong></td>
+<td>Learners can choose an appropriate chart for a question, build it in seaborn, finish it with matplotlib, and defend their design choices with established principles (Few, Tufte).</td>
+</tr>
+<tr>
+<td><strong>Format</strong></td>
+<td>7 lessons of 45-75 minutes. Each has worked examples, design-principle callouts, auto-checked exercises with solutions, and a 4-question quiz.</td>
+</tr>
+<tr>
+<td><strong>Dataset</strong></td>
+<td>Palmer penguins (344 rows, 7 columns), used throughout so cognitive load stays on visualization, not on new data.</td>
+</tr>
+<tr>
+<td><strong>Software</strong></td>
+<td>seaborn 0.13.x, matplotlib ≥ 3.8, pandas ≥ 2.0. Runs in the browser (Pyodide), in Google Colab, or locally.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="learning-outcomes">Learning outcomes</h3>
+<p>By the end of the course learners can:</p>
+<ol>
+<li>Map DataFrame columns to visual channels (<code>x</code>, <code>y</code>, <code>hue</code>, <code>style</code>, <code>size</code>, <code>col</code>, <code>row</code>).</li>
+<li>Choose a chart form from the question: distribution, comparison, relationship, composition.</li>
+<li>Build histograms, KDEs, ECDFs, count/bar/box/violin/strip/point plots, scatter/regression/line plots, heatmaps and pair plots.</li>
+<li>Use figure-level functions for small multiples and <code>plt.subplots</code> + <code>ax=</code> for custom layouts.</li>
+<li>Finish charts with matplotlib: labels, titles, annotations, reference lines, tick formatting, and saving.</li>
+<li>Critique and improve charts using data-ink, consistent color, highlighting, direct labeling, and honest scales.</li>
+</ol>
+<h2 id="suggested-schedules">Suggested schedules</h2>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Plan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Seven 75-minute sessions</strong></td>
+<td>One lesson per session: 10 min recap and quiz review, 30 min live-coding the examples, 30 min exercises, 5 min quiz.</td>
+</tr>
+<tr>
+<td><strong>Two half-day workshops</strong></td>
+<td>Day 1: Lessons 1-4 (break after Lesson 2). Day 2: Lessons 5-7, with the capstone as a 60-minute studio.</td>
+</tr>
+<tr>
+<td><strong>Self-paced with check-ins</strong></td>
+<td>Learners complete one or two lessons a week. Weekly 30-minute office hour on the design principle callouts.</td>
+</tr>
+<tr>
+<td><strong>Flipped</strong></td>
+<td>Learners read and run the lesson before class. Class time goes to the exercises, chart critiques, and the assignments.</td>
+</tr>
+</tbody>
+</table>
+<p>Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 after Lesson 7.</p>
+<h2 id="materials-in-the-repository">Materials in the repository</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Where</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lesson website</td>
+<td><code>docs/</code> (published with GitHub Pages)</td>
+<td>Generated by <code>python tools/build_site.py</code>. Don&rsquo;t edit by hand.</td>
+</tr>
+<tr>
+<td>Lesson sources</td>
+<td><code>content/*.md</code></td>
+<td>Markdown plus special code fences (see the README). Edit these.</td>
+</tr>
+<tr>
+<td>Notebooks</td>
+<td><code>docs/notebooks/</code></td>
+<td>A student notebook and a solutions notebook per lesson, also linked from each lesson page and openable in Colab.</td>
+</tr>
+<tr>
+<td>Assessment pack</td>
+<td><code>instructor/Seaborn_Assessment_Pack_INSTRUCTOR.docx</code></td>
+<td>25 MCQs with answers marked and explained, an answer key, and 3 assignments with rubrics and model solutions.</td>
+</tr>
+<tr>
+<td>Student assessment pack</td>
+<td><code>instructor/Seaborn_Assessment_Pack_STUDENT.docx</code></td>
+<td>Same questions and assignments, no answers or solutions.</td>
+</tr>
+<tr>
+<td>This guide</td>
+<td><code>instructor/Seaborn_Instructor_Guide.docx</code> and this page</td>
+<td>Generated from <code>content/instructor-guide.md</code>.</td>
+</tr>
+<tr>
+<td>Question and assignment sources</td>
+<td><code>instructor/exam_questions.yaml</code>, <code>instructor/assignments.yaml</code></td>
+<td>Edit these, then run <code>python tools/build_materials.py</code>.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Answers in a public repository</p>
+<p>The repository is public so GitHub Pages can serve the site for free. That means the instructor edition and the YAML sources are visible to anyone who looks. For graded use, either keep a private copy of <code>instructor/</code> (for example in a private fork), or edit the questions and assignments before you use them. Every in-page exercise shows its solution on purpose. Those exercises are for practice, not grading.</p>
+</div>
+<h2 id="before-you-teach">Before you teach</h2>
+<ul>
+<li><strong>Test the in-browser Python</strong> on the classroom network and devices. The first run downloads about 30 MB from <code>cdn.jsdelivr.net</code>. Locked-down networks or old browsers may block it. Colab and local notebooks are the fallback.</li>
+<li><strong>Pin versions</strong> for a local install: <code>pip install -r requirements.txt</code> (seaborn 0.13.2). Older seaborn versions differ (<code>ci=</code> instead of <code>errorbar=</code>, no <code>linestyle=</code> in <code>pointplot</code>), and those differences are the most common source of &ldquo;it works on the site but not on my laptop.&rdquo;</li>
+<li><strong>Run the tests</strong> after any edit: <code>python -m pytest</code>. The build executes every example and checks every exercise solution, so broken content can&rsquo;t ship.</li>
+</ul>
+<h2 id="lesson-by-lesson-notes">Lesson-by-lesson notes</h2>
+<h3 id="lesson-1-your-first-plot">Lesson 1 - Your first plot</h3>
+<ul>
+<li><strong>Core idea:</strong> seaborn = DataFrame + column names mapped to visual channels. Spend the first 10 minutes on that table. It pays off all course long.</li>
+<li><strong>Live-code:</strong> start with the bare scatter, then add <code>hue</code>, then the <code>ax.set(...)</code> labels. Ask the room what title they&rsquo;d give before you reveal &ldquo;Longer flippers, heavier penguins.&rdquo;</li>
+<li><strong>The hook:</strong> the bill paradox. Show the gray scatter and poll the class: &ldquo;Do longer bills mean shallower bills?&rdquo; Then add <code>hue="species"</code>. This is the moment most learners remember.</li>
+<li><strong>Misconceptions:</strong> confusing <code>hue=</code> with <code>color=</code> (<code>color</code> takes one color, <code>hue</code> takes a column). In categorical plots (<code>barplot</code>, <code>boxplot</code>, &hellip;), passing <code>palette=</code> without <code>hue=</code> raises a FutureWarning in seaborn 0.13. Learners also expect <code>sns.scatterplot</code> to return a figure. It returns an <code>Axes</code>.</li>
+<li><strong>Exercise tips:</strong> 1.1 is fill-in-the-blank. Remind learners the <code>___</code> must be replaced with <em>quoted</em> column names. 1.2 is open-ended, so ask two learners to read their titles aloud.</li>
+</ul>
+<h3 id="lesson-2-distributions">Lesson 2 - Distributions</h3>
+<ul>
+<li><strong>Core idea:</strong> look at the shape before you summarize it.</li>
+<li><strong>Live-code:</strong> the three bin widths, then ask &ldquo;which one is right?&rdquo; The point is that there&rsquo;s no single right answer, only an honest one.</li>
+<li><strong>Discussion:</strong> why does <code>common_norm=True</code> make Chinstraps look rare in a KDE? (Because they <em>are</em> rarer. The question is whether you want to compare shapes or counts.)</li>
+<li><strong>Misconceptions:</strong> reading a KDE&rsquo;s y-axis as a count. Thinking ECDFs are &ldquo;advanced.&rdquo; Learners usually find them the easiest to <em>read</em> once shown, so do the &ldquo;follow the dashed line up&rdquo; exercise together.</li>
+<li><strong>Few connection:</strong> common baselines. The stacked histogram is a good &ldquo;spot the problem&rdquo; moment.</li>
+</ul>
+<h3 id="lesson-3-comparing-categories">Lesson 3 - Comparing categories</h3>
+<ul>
+<li><strong>Core idea:</strong> bars for amounts from zero, points when zero is meaningless, and box/strip to show the distribution.</li>
+<li><strong>Live-code:</strong> the default <code>barplot</code>, then ask &ldquo;what are the black lines?&rdquo; Most learners guess min/max or standard deviation. Explain the 95% bootstrap CI and the <code>errorbar=</code> options table.</li>
+<li><strong>The truncated-axis chart</strong> makes a good 2-minute critique. Ask learners to estimate &ldquo;how many times heavier are Gentoos?&rdquo; from it, then reveal the real ratio (about 1.4).</li>
+<li><strong>Misconceptions:</strong> sorting the DataFrame rows to sort the bars (use <code>order=</code>). Using <code>palette=</code> without <code>hue=</code>. Assuming the box plot&rsquo;s whiskers are the min/max (they reach 1.5 × IQR).</li>
+<li><strong>Few connection:</strong> sort by value, use horizontal bars for long labels, and no pies.</li>
+</ul>
+<h3 id="lesson-4-relationships">Lesson 4 - Relationships</h3>
+<ul>
+<li><strong>Core idea:</strong> a fitted line is a model. A line chart asserts that x is ordered.</li>
+<li><strong>Live-code:</strong> the paradox overlay (<code>regplot</code> + <code>groupby</code> loop). It reinforces Lesson 1 and introduces drawing several layers on one <code>ax</code>.</li>
+<li><strong>Heatmap checklist:</strong> diverging cmap, <code>center=0</code>, <code>vmin=-1, vmax=1</code>, annotate, and mask the mirror half. Have learners say why each argument matters.</li>
+<li><strong>Misconceptions:</strong> reading the regression band as a prediction interval for individual penguins. Using <code>lineplot</code> across islands or species.</li>
+<li><strong>Pacing:</strong> <code>pairplot</code> is slow in the browser (a few seconds). Show it once rather than asking everyone to re-run it.</li>
+</ul>
+<h3 id="lesson-5-small-multiples">Lesson 5 - Small multiples</h3>
+<ul>
+<li><strong>Core idea:</strong> axes-level vs figure-level. Put the four-row table on the board and refer back to it.</li>
+<li><strong>Live-code:</strong> turn one crowded chart into a <code>relplot(col="island")</code>. Then ask what changed and what stayed the same (the shared axes).</li>
+<li><strong>Misconceptions:</strong> passing <code>ax=</code> or <code>figsize=</code> to figure-level functions (use <code>height</code>/<code>aspect</code>). Calling <code>plt.title()</code> on a grid (use <code>g.figure.suptitle</code>). Using <code>g.fig</code>, the older spelling of <code>g.figure</code>.</li>
+<li><strong>Few connection:</strong> small multiples and shared scales. Discuss when unsharing y is defensible.</li>
+</ul>
+<h3 id="lesson-6-polish-with-matplotlib">Lesson 6 - Polish with matplotlib</h3>
+<ul>
+<li><strong>Core idea:</strong> seaborn makes the chart, and matplotlib makes the point.</li>
+<li><strong>The makeover</strong> is the centerpiece. Show the &ldquo;before&rdquo; chart and ask learners to list problems for 3 minutes before you show the code for &ldquo;after.&rdquo; Then map each fix to the Few checklist table.</li>
+<li><strong>Palettes:</strong> connect the categorical/sequential/diverging jobs back to the heatmap (Lesson 4) and species colors (Lesson 1).</li>
+<li><strong>Misconceptions:</strong> expecting <code>sns.set_theme()</code> to change an already-drawn chart. Forgetting <code>ax=</code> and drawing everything on the last subplot. Mixing up <code>ax.set_title</code> and <code>fig.suptitle</code>.</li>
+</ul>
+<h3 id="lesson-7-capstone">Lesson 7 - Capstone</h3>
+<ul>
+<li><strong>Core idea:</strong> questions → forms → layout → polish → review.</li>
+<li><strong>Run it as a studio:</strong> learners plan the four panels on paper first (5 min), build them (35 min), then do peer review against the pre-flight checklist (15 min).</li>
+<li><strong>Common struggles:</strong> legends in every panel (show <code>fig.legend</code> with <code>loc="outside lower center"</code>), crowded titles (<code>layout="constrained"</code>), inconsistent species order (<code>hue_order</code>).</li>
+</ul>
+<h2 id="assessment">Assessment</h2>
+<h3 id="formative-in-page-quizzes-and-exercises">Formative: in-page quizzes and exercises</h3>
+<p>Each lesson ends with a 4-question quiz. The score counts first attempts, and a lesson is marked complete in the sidebar once every question has been answered correctly. Exercises are auto-checked in the browser and give specific hints. Solutions are available on purpose, so encourage learners to try before they peek. The correct answers are spread evenly across A-D (7 of each across the 28 quiz questions).</p>
+<h3 id="summative-the-25-question-exam">Summative: the 25-question exam</h3>
+<table>
+<thead>
+<tr>
+<th>Lesson</th>
+<th>Questions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 - First plot</td>
+<td>Q1-Q4</td>
+</tr>
+<tr>
+<td>2 - Distributions</td>
+<td>Q5-Q8</td>
+</tr>
+<tr>
+<td>3 - Categories</td>
+<td>Q9-Q13</td>
+</tr>
+<tr>
+<td>4 - Relationships</td>
+<td>Q14-Q17</td>
+</tr>
+<tr>
+<td>5 - Small multiples</td>
+<td>Q18-Q21</td>
+</tr>
+<tr>
+<td>6 - Polish</td>
+<td>Q22-Q24</td>
+</tr>
+<tr>
+<td>7 - Capstone</td>
+<td>Q25</td>
+</tr>
+</tbody>
+</table>
+<p>Answers are balanced (A = 6, B = 6, C = 7, D = 6). The correct option is the longest option in only 7 of 25 questions, close to the chance rate, so test-wise guessing doesn&rsquo;t help. Allow about 35 minutes. A suggested pass mark is 18/25 (72%).</p>
+<h3 id="assignments">Assignments</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Title</th>
+<th>After</th>
+<th>Time</th>
+<th>Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Island Census</td>
+<td>Lesson 3</td>
+<td>~1 h</td>
+<td>Correct chart types, sorting, consistent color, labels</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Are males really bigger?</td>
+<td>Lesson 5</td>
+<td>~2 h</td>
+<td>Small multiples, point plots, heatmap layout, evidence-based writing</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Field Report 2.0</td>
+<td>Lesson 7</td>
+<td>3-4 h</td>
+<td>Derived variable, multi-panel design, makeover, design rationale</td>
+</tr>
+</tbody>
+</table>
+<p>Each has a 100-point rubric. Weight design and communication as heavily as code. The model solutions in the instructor edition were executed to produce the figures shown. <strong>Grading tips:</strong></p>
+<ul>
+<li>Accept any reasonable bin width, threshold or title that the learner <em>justifies</em>. The rubric rewards deliberate choices, not matching the model answer.</li>
+<li>Deduct for chart crimes even when the code is correct: truncated bars, rainbow palettes, unlabeled units, legends covering data.</li>
+<li>For Assignment 3, the design rationale is where you&rsquo;ll see whether the principles stuck. Look for principles applied to <em>specific</em> changes, not a list of buzzwords.</li>
+</ul>
+<h2 id="teaching-the-design-thread">Teaching the design thread</h2>
+<p>The design principle callouts (marked &ldquo;Design principle&rdquo;) carry the course&rsquo;s second curriculum. Reinforce them:</p>
+<ul>
+<li><strong>Start every critique with &ldquo;what question does this answer?&rdquo;</strong> If nobody can say, the form doesn&rsquo;t matter yet.</li>
+<li><strong>Name the principle when you fix something.</strong> For example: &ldquo;I&rsquo;m removing this legend: direct labeling.&rdquo;</li>
+<li><strong>Keep one color dictionary on screen.</strong> <code>PENGUIN_COLORS</code> is a small but powerful habit. Learners who adopt it produce noticeably more coherent multi-chart work.</li>
+<li><strong>Use the before/after pair</strong> from Lesson 6 as a reference throughout. It shows six principles in one chart.</li>
+</ul>
+<h2 id="accessibility-and-inclusion">Accessibility and inclusion</h2>
+<ul>
+<li>The species palette was checked for distinguishability under protanopia, deuteranopia and tritanopia (minimum pairwise ΔE of about 16 in OKLab). Still, never rely on color alone: shape, position and direct labels carry identity too.</li>
+<li>Every figure on the site has descriptive alt text, and the in-browser editors are keyboard-accessible (Ctrl/Cmd + Enter runs, Esc then Tab leaves the editor).</li>
+<li>Ask learners to write alt text for their assignment charts. It&rsquo;s an excellent test of whether they know what the chart says.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&ldquo;Python: failed to load&rdquo; on the site</td>
+<td>Network blocks <code>cdn.jsdelivr.net</code>, or the browser is very old. Use the Colab link or a local notebook.</td>
+</tr>
+<tr>
+<td><code>FutureWarning: Passing palette without assigning hue</code></td>
+<td>seaborn 0.13 wants <code>hue=</code> whenever <code>palette=</code> is used. Add <code>hue="species"</code> (and <code>legend=False</code> if it&rsquo;s redundant).</td>
+</tr>
+<tr>
+<td><code>TypeError: ... got an unexpected keyword argument 'errorbar'</code></td>
+<td>seaborn older than 0.12. Upgrade: <code>pip install -U "seaborn&gt;=0.13"</code>.</td>
+</tr>
+<tr>
+<td>Chart doesn&rsquo;t appear when running a <code>.py</code> script</td>
+<td>Add <code>plt.show()</code> at the end (notebooks display automatically).</td>
+</tr>
+<tr>
+<td>Everything drawn on one subplot</td>
+<td><code>ax=</code> was forgotten on later calls.</td>
+</tr>
+<tr>
+<td>Labels cut off in saved PNG</td>
+<td>Use <code>bbox_inches="tight"</code> or <code>layout="constrained"</code>.</td>
+</tr>
+<tr>
+<td>Facet titles read &ldquo;species = Gentoo&rdquo;</td>
+<td><code>g.set_titles("{col_name}")</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="customizing-the-course">Customizing the course</h2>
+<ul>
+<li><strong>Edit a lesson:</strong> change <code>content/NN-*.md</code>, run <code>python tools/build_site.py</code>, and review the page locally (<code>python -m http.server -d docs</code>).</li>
+<li><strong>Add an exercise:</strong> add an <code>exercise</code>, <code>solution</code> and <code>check</code> fence with matching ids. The build fails if the solution doesn&rsquo;t pass its check, or if the untouched starter already does.</li>
+<li><strong>Edit the exam or assignments:</strong> change the YAML in <code>instructor/</code> and run <code>python tools/build_materials.py</code>. <code>pytest</code> checks the answer balance.</li>
+<li><strong>Swap the dataset:</strong> possible, but every example, check and quiz explanation is written for penguins. Plan on a full rewrite of the content files rather than a find-and-replace.</li>
+</ul>
+<p>Source code and issues: <a href="https://github.com/maddogdatascience/seaborn-penguins">https://github.com/maddogdatascience/seaborn-penguins</a>.</p>
+    </article>
+    <nav class="pager" aria-label="Previous and next lesson"><a class="pager-prev" href="07-capstone.html"><small>Previous</small>Lesson 7 - Capstone: the Penguin Field Report</a><span></span></nav>
+    <footer class="site-foot">
+      <p>Data: Palmer Station penguins (Gorman, Williams &amp; Fraser, 2014), via
+      <a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a>, CC0.
+      Lessons: CC BY 4.0. Code: MIT.</p>
+    </footer>
+  </main>
+</div>
+<script type="application/json" class="page-setup">{"setup": ""}</script>
+<script src="assets/app.js"></script>
+<script src="assets/live.js"></script>
+</body>
+</html>

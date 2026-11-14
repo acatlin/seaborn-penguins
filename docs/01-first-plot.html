@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 1 - Your first plot: the grammar of seaborn · Seaborn with Penguins</title>
+<meta name="description" content="A hands-on, browser-runnable course in seaborn and matplotlib for people who already know Python and pandas.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/pygments.css">
+</head>
+<body data-page="01-first-plot">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="nav-toggle" type="button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+  <a class="brand" href="index.html"><span aria-hidden="true">🐧</span> Seaborn with Penguins</a>
+  <span class="py-status" data-py-status title="In-browser Python status">Python: not loaded</span>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="Lessons">
+    <ol class="nav-list"><li><a href="index.html" data-page="index"><span class="nav-num">0</span><span class="nav-title">Start here</span></a></li><li><a href="01-first-plot.html" data-page="01-first-plot" aria-current=page><span class="nav-num">1</span><span class="nav-title">Your first plot</span></a></li><li><a href="02-distributions.html" data-page="02-distributions"><span class="nav-num">2</span><span class="nav-title">Distributions</span></a></li><li><a href="03-categories.html" data-page="03-categories"><span class="nav-num">3</span><span class="nav-title">Comparing categories</span></a></li><li><a href="04-relationships.html" data-page="04-relationships"><span class="nav-num">4</span><span class="nav-title">Relationships</span></a></li><li><a href="05-small-multiples.html" data-page="05-small-multiples"><span class="nav-num">5</span><span class="nav-title">Small multiples</span></a></li><li><a href="06-polish.html" data-page="06-polish"><span class="nav-num">6</span><span class="nav-title">Polish with matplotlib</span></a></li><li><a href="07-capstone.html" data-page="07-capstone"><span class="nav-num">7</span><span class="nav-title">Capstone: field report</span></a></li><li><a href="instructor-guide.html" data-page="instructor-guide"><span class="nav-num">★</span><span class="nav-title">Instructor guide</span></a></li></ol>
+    <div class="sidebar-foot">
+      <a href="https://github.com/maddogdatascience/seaborn-penguins">Source on GitHub</a>
+    </div>
+  </nav>
+  <main id="main" class="content">
+    <div class="lesson-tools"><a href="https://colab.research.google.com/github/maddogdatascience/seaborn-penguins/blob/main/docs/notebooks/01-first-plot.ipynb" target="_blank" rel="noopener">Open in Colab</a><a href="notebooks/01-first-plot.ipynb" download>Download notebook</a><a href="notebooks/01-first-plot-solutions.ipynb" download>Solutions notebook</a></div>
+    <article>
+<h1 id="lesson-1-your-first-plot-the-grammar-of-seaborn">Lesson 1 - Your first plot: the grammar of seaborn</h1>
+<p class="lede">Seaborn has one big idea: you hand it a DataFrame, then tell it which column goes on which visual channel. Learn that idea and the rest of the library follows.</p>
+
+<p><strong>By the end of this lesson you can:</strong></p>
+<ul>
+<li>describe seaborn&rsquo;s &ldquo;columns → visual channels&rdquo; grammar</li>
+<li>draw a scatter plot and color it by a category with <code>hue</code></li>
+<li>label a chart properly through the matplotlib <code>Axes</code> that seaborn returns</li>
+<li>spot a hidden grouping variable that flips a trend (Simpson&rsquo;s paradox)</li>
+</ul>
+<p>Every page starts with the same setup cell. The in-browser editors run it for you before each cell. In your own notebook, run it once at the top.</p>
+<div class="cell cell-setup"><div class="code-label">Setup - run this first</div><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;ticks&quot;</span><span class="p">)</span>
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;penguins&quot;</span><span class="p">)</span>
+
+<span class="c1"># One color per species, used on every chart in this course</span>
+<span class="n">PENGUIN_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Adelie&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF8C00&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">:</span> <span class="s2">&quot;#A034F0&quot;</span><span class="p">,</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">:</span> <span class="s2">&quot;#159090&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<h2 id="meet-the-penguins">Meet the penguins</h2>
+<p>Each row is one penguin measured near Palmer Station, Antarctica.</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">penguins</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "penguins.head()"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><pre class="cell-stdout">  species     island  bill_length_mm  ...  flipper_length_mm  body_mass_g     sex
+0  Adelie  Torgersen            39.1  ...              181.0       3750.0    Male
+1  Adelie  Torgersen            39.5  ...              186.0       3800.0  Female
+2  Adelie  Torgersen            40.3  ...              195.0       3250.0  Female
+3  Adelie  Torgersen             NaN  ...                NaN          NaN     NaN
+4  Adelie  Torgersen            36.7  ...              193.0       3450.0  Female
+
+[5 rows x 7 columns]</pre><div class="cell-live"></div></div>
+<p>A few numbers are missing (<code>NaN</code>). Seaborn quietly drops missing values for each plot, so we can leave them in.</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">penguins</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "penguins.isna().sum()"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><pre class="cell-stdout">species               0
+island                0
+bill_length_mm        2
+bill_depth_mm         2
+flipper_length_mm     2
+body_mass_g           2
+sex                  11
+dtype: int64</pre><div class="cell-live"></div></div>
+<h2 id="the-one-idea-behind-seaborn">The one idea behind seaborn</h2>
+<p>Seaborn wants <strong>tidy</strong> data: one row per observation, one column per variable. You don&rsquo;t loop over rows or build lists of coordinates. You <em>name columns</em>, and seaborn maps each one to a visual channel:</p>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Visual channel</th>
+<th>Typical column</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code>, <code>y</code></td>
+<td>position</td>
+<td>numbers, or categories for bar/box charts</td>
+</tr>
+<tr>
+<td><code>hue</code></td>
+<td>color</td>
+<td>a category (species), or a number</td>
+</tr>
+<tr>
+<td><code>style</code></td>
+<td>marker shape / line dash</td>
+<td>a category with few levels</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td>marker size / line width</td>
+<td>a number</td>
+</tr>
+</tbody>
+</table>
+<h2 id="a-first-scatter-plot">A first scatter plot</h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "sns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/01-scatter-basic.png" alt="Scatter plot of flipper length versus body mass for 342 penguins, showing a strong upward trend." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>That&rsquo;s a real chart in one line. Seaborn picked the axis labels from the column names, chose sensible limits, and dropped the two penguins with missing measurements.</p>
+<blockquote>
+<p><strong>Tip:</strong> Click <strong>Edit &amp; run</strong> under any example to open it in a live editor. Change a column name and run it again. The first run downloads Python into your browser and takes a little while.</p>
+</blockquote>
+<h2 id="add-a-third-variable-with-hue">Add a third variable with <code>hue</code></h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+    <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "sns.scatterplot(\n    data=penguins,\n    x=\"flipper_length_mm\",\n    y=\"body_mass_g\",\n    hue=\"species\",\n    palette=PENGUIN_COLORS,\n)"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/01-scatter-hue.png" alt="The same scatter plot with points colored by species: Gentoo penguins form a separate cluster of long-flippered, heavy birds." loading="lazy"></figure><div class="cell-live"></div></div>
+<p><code>hue</code> mapped species to color and added a legend. Passing <code>palette=</code> a <strong>dictionary</strong> pins each species to its own color. That matters more than it sounds.</p>
+<div class="admonition few">
+<p class="admonition-title">Color follows the thing, not its position</p>
+<p>If Gentoo is teal on one chart, it should be teal on every chart. Readers learn your color code once, then reuse it. A dict palette guarantees this even when a filter drops a species. A list of colors would be handed out by position and could repaint the survivors.</p>
+</div>
+<h2 id="labels-are-part-of-the-chart">Labels are part of the chart</h2>
+<p>Every &ldquo;axes-level&rdquo; seaborn function (<code>scatterplot</code>, <code>histplot</code>, <code>boxplot</code>, &hellip;) draws onto a matplotlib <strong>Axes</strong> and returns it. Keep that object and you can finish the chart with matplotlib:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+    <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Longer flippers, heavier penguins&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.scatterplot(\n    data=penguins,\n    x=\"flipper_length_mm\",\n    y=\"body_mass_g\",\n    hue=\"species\",\n    palette=PENGUIN_COLORS,\n)\nax.set(\n    xlabel=\"Flipper length (mm)\",\n    ylabel=\"Body mass (g)\",\n    title=\"Longer flippers, heavier penguins\",\n)"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/01-scatter-labeled.png" alt="Labeled scatter plot titled &#x27;Longer flippers, heavier penguins&#x27; with axis labels including units." loading="lazy"></figure><div class="cell-live"></div></div>
+<div class="admonition few">
+<p class="admonition-title">A title should state the finding</p>
+<p>&ldquo;Flipper length vs body mass&rdquo; just names the axes, which the reader can already see. &ldquo;Longer flippers, heavier penguins&rdquo; tells them what to notice. Always include <strong>units</strong> in axis labels: raw names like <code>body_mass_g</code> read as code, not English.</p>
+</div>
+<h2 id="plot-twist-the-paradox-in-the-bills">Plot twist: the paradox in the bills</h2>
+<p>Do penguins with longer bills have shallower bills? Look at all of them together:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;All penguins: longer bills look shallower?&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.scatterplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\", color=\"gray\")\nax.set(xlabel=\"Bill length (mm)\", ylabel=\"Bill depth (mm)\",\n       title=\"All penguins: longer bills look shallower?\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/01-bills-overall.png" alt="Scatter of bill length versus bill depth for all penguins in one color; the cloud slopes slightly downward." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>The cloud slopes <em>down</em>. Now ask seaborn to split it by species:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+    <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Within every species, longer bills are deeper&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.scatterplot(\n    data=penguins,\n    x=\"bill_length_mm\",\n    y=\"bill_depth_mm\",\n    hue=\"species\",\n    palette=PENGUIN_COLORS,\n)\nax.set(xlabel=\"Bill length (mm)\", ylabel=\"Bill depth (mm)\",\n       title=\"Within every species, longer bills are deeper\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/01-bills-species.png" alt="The same bill scatter colored by species: within each of the three species, longer bills are deeper - the trend reverses." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Within <strong>each</strong> species the trend goes <em>up</em>. The downward slope came from mixing groups: Gentoos have long but shallow bills, Adelies short but deep ones. This is <strong>Simpson&rsquo;s paradox</strong>, and one <code>hue=</code> argument exposed it. Whenever you see a trend, ask: <em>what grouping might be hiding in here?</em></p>
+<h2 id="more-channels-style-and-size">More channels: <code>style</code> and <code>size</code></h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+    <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+    <span class="n">style</span><span class="o">=</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">move_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># park the legend outside the data</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.scatterplot(\n    data=penguins,\n    x=\"bill_length_mm\",\n    y=\"bill_depth_mm\",\n    hue=\"species\",\n    palette=PENGUIN_COLORS,\n    style=\"sex\",\n)\nax.set(xlabel=\"Bill length (mm)\", ylabel=\"Bill depth (mm)\")\nsns.move_legend(ax, \"upper left\", bbox_to_anchor=(1, 1))  # park the legend outside the data"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/01-scatter-style.png" alt="Bill scatter colored by species with circle markers for female and cross markers for male penguins." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Within each species, the males (circles) sit up and to the right. They have bigger bills. <code>sns.move_legend</code> moved the now-crowded legend off the data. Use these extra channels sparingly. Each one adds a legend entry the reader must decode, and shape is much weaker than position or color.</p>
+<h2 id="your-turn">Your turn</h2>
+<p>Replace each <code>___</code> with real code, then press <strong>Run &amp; check</strong>. The checker inspects your chart and gives hints. Your edits are saved in this browser.</p>
+
+<div class="exercise" id="ex-1.1" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 1.1</span>
+    <span class="exercise-title">Do long bills come with long flippers?</span></div>
+  <textarea class="cell-editor" rows="12" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 1.1"># Plot bill length (x) against flipper length (y),
+# colored by species with PENGUIN_COLORS, with labeled axes (include units!).
+ax = sns.scatterplot(
+    data=penguins,
+    x=___,
+    y=___,
+    hue=___,
+    palette=PENGUIN_COLORS,
+)
+ax.set(xlabel=___, ylabel=___)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+    <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">)</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-1.1.png" alt="Solution chart for exercise 1.1" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# Plot bill length (x) against flipper length (y),\n# colored by species with PENGUIN_COLORS, with labeled axes (include units!).\nax = sns.scatterplot(\n    data=penguins,\n    x=___,\n    y=___,\n    hue=___,\n    palette=PENGUIN_COLORS,\n)\nax.set(xlabel=___, ylabel=___)", "solution": "ax = sns.scatterplot(\n    data=penguins,\n    x=\"bill_length_mm\",\n    y=\"flipper_length_mm\",\n    hue=\"species\",\n    palette=PENGUIN_COLORS,\n)\nax.set(xlabel=\"Bill length (mm)\", ylabel=\"Flipper length (mm)\")", "check": "ax = chart_axes()[0]\npts = points(ax)\nassert abs(pts[:, 0].mean() - penguins[\"bill_length_mm\"].mean()) < 0.5, \"x should be the bill_length_mm column.\"\nassert abs(pts[:, 1].mean() - penguins[\"flipper_length_mm\"].mean()) < 0.5, \"y should be the flipper_length_mm column.\"\nassert {\"Adelie\", \"Chinstrap\", \"Gentoo\"} <= set(legend_labels(ax)), \"Color the points by species with hue='species'.\"\nassert near_color(PENGUIN_COLORS[\"Gentoo\"], colors_used(ax)), \"Use palette=PENGUIN_COLORS so species keep their colors.\"\nassert \"_\" not in ax.get_xlabel() and \"_\" not in ax.get_ylabel(), \"Write the axis labels in plain English, e.g. 'Bill length (mm)'.\"\nassert \"mm\" in ax.get_xlabel() and \"mm\" in ax.get_ylabel(), \"Include the units (mm) in both axis labels.\"\nprint(\"Bills and flippers grow together, and each species has its own cluster.\")"}</script>
+</div>
+
+
+
+<div class="exercise" id="ex-1.2" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 1.2</span>
+    <span class="exercise-title">Find another paradox</span></div>
+  <textarea class="cell-editor" rows="6" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 1.2"># Is a deeper bill a sign of a heavier penguin?
+# 1. Plot bill_depth_mm (x) against body_mass_g (y), colored by species.
+# 2. Give it a title that states what you see WITHIN species.
+ax = sns.scatterplot(data=penguins, x=&quot;bill_depth_mm&quot;, y=&quot;body_mass_g&quot;)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+    <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+    <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+    <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">,</span>
+    <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Within each species, deeper bills mean heavier penguins&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-1.2.png" alt="Solution chart for exercise 1.2" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# Is a deeper bill a sign of a heavier penguin?\n# 1. Plot bill_depth_mm (x) against body_mass_g (y), colored by species.\n# 2. Give it a title that states what you see WITHIN species.\nax = sns.scatterplot(data=penguins, x=\"bill_depth_mm\", y=\"body_mass_g\")", "solution": "ax = sns.scatterplot(\n    data=penguins,\n    x=\"bill_depth_mm\",\n    y=\"body_mass_g\",\n    hue=\"species\",\n    palette=PENGUIN_COLORS,\n)\nax.set(\n    xlabel=\"Bill depth (mm)\",\n    ylabel=\"Body mass (g)\",\n    title=\"Within each species, deeper bills mean heavier penguins\",\n)", "check": "ax = chart_axes()[0]\npts = points(ax)\nassert abs(pts[:, 0].mean() - penguins[\"bill_depth_mm\"].mean()) < 0.3, \"x should be bill_depth_mm.\"\nassert abs(pts[:, 1].mean() - penguins[\"body_mass_g\"].mean()) < 30, \"y should be body_mass_g.\"\nassert {\"Adelie\", \"Chinstrap\", \"Gentoo\"} <= set(legend_labels(ax)), \"Split the cloud by species with hue - that's where the paradox hides.\"\nassert len(ax.get_title()) >= 15, \"Add a title that states the finding, not just the variable names.\"\nprint(\"Overall, deeper bills look LIGHTER (Gentoos are heavy with shallow bills),\\n\"\n      \"but within each species the trend is positive. Simpson strikes again.\")"}</script>
+</div>
+
+
+<h2 id="quick-quiz">Quick quiz</h2>
+<section class="quiz" aria-label="Quiz">
+<div class="quiz-q" data-answer="B" id="01-first-plot-q1">
+  <p class="quiz-stem"><span class="quiz-num">Q1.</span> In <code>sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g")</code>, what does <code>data=</code> expect?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="01-first-plot-q1" value="A"> <span class="opt-letter">A.</span> A Python list containing the column names you want to plot</label></li><li><label><input type="radio" name="01-first-plot-q1" value="B"> <span class="opt-letter">B.</span> A DataFrame whose columns you then name in <code>x</code> and <code>y</code></label></li><li><label><input type="radio" name="01-first-plot-q1" value="C"> <span class="opt-letter">C.</span> A NumPy array with exactly two rows, one for x and one for y</label></li><li><label><input type="radio" name="01-first-plot-q1" value="D"> <span class="opt-letter">D.</span> The file path of a CSV, which seaborn reads for you</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Seaborn&rsquo;s grammar is built on tidy DataFrames: pass the frame once with <code>data=</code>, then refer to its columns by name.</div>
+</div>
+<div class="quiz-q" data-answer="D" id="01-first-plot-q2">
+  <p class="quiz-stem"><span class="quiz-num">Q2.</span> What does adding <code>hue="species"</code> to a scatter plot do?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="01-first-plot-q2" value="A"> <span class="opt-letter">A.</span> It sorts the rows of the DataFrame by species before plotting</label></li><li><label><input type="radio" name="01-first-plot-q2" value="B"> <span class="opt-letter">B.</span> It draws a separate subplot for every species</label></li><li><label><input type="radio" name="01-first-plot-q2" value="C"> <span class="opt-letter">C.</span> It changes the marker shape for each species</label></li><li><label><input type="radio" name="01-first-plot-q2" value="D"> <span class="opt-letter">D.</span> It maps each species to a color and adds a legend</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden><code>hue</code> maps a column to color. Separate subplots come from <code>col=</code>/<code>row=</code> in figure-level functions (Lesson 5); marker shape is <code>style=</code>.</div>
+</div>
+<div class="quiz-q" data-answer="A" id="01-first-plot-q3">
+  <p class="quiz-stem"><span class="quiz-num">Q3.</span> What do axes-level functions such as <code>sns.scatterplot</code> return?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="01-first-plot-q3" value="A"> <span class="opt-letter">A.</span> A matplotlib <code>Axes</code> you can finish with <code>ax.set(...)</code></label></li><li><label><input type="radio" name="01-first-plot-q3" value="B"> <span class="opt-letter">B.</span> A pandas DataFrame containing the plotted x and y values</label></li><li><label><input type="radio" name="01-first-plot-q3" value="C"> <span class="opt-letter">C.</span> A PNG image of the finished chart, as raw bytes</label></li><li><label><input type="radio" name="01-first-plot-q3" value="D"> <span class="opt-letter">D.</span> Nothing - they return <code>None</code> once the chart is drawn</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Keeping the returned <code>Axes</code> is how you add labels, titles, reference lines and annotations with matplotlib.</div>
+</div>
+<div class="quiz-q" data-answer="C" id="01-first-plot-q4">
+  <p class="quiz-stem"><span class="quiz-num">Q4.</span> Across all penguins, longer bills look shallower, but within each species longer bills are deeper. What&rsquo;s the lesson?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="01-first-plot-q4" value="A"> <span class="opt-letter">A.</span> The overall trend is the true one; per-group trends are just noise</label></li><li><label><input type="radio" name="01-first-plot-q4" value="B"> <span class="opt-letter">B.</span> Negative correlations in scatter plots are usually artifacts</label></li><li><label><input type="radio" name="01-first-plot-q4" value="C"> <span class="opt-letter">C.</span> A hidden grouping variable can reverse a trend, so check for groups</label></li><li><label><input type="radio" name="01-first-plot-q4" value="D"> <span class="opt-letter">D.</span> Scatter plots cannot show relationships between two measurements</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>This is Simpson&rsquo;s paradox. Coloring by a plausible grouping variable (<code>hue=</code>) is the cheapest way to check for it.</div>
+</div><p class="quiz-score" aria-live="polite"></p></section>
+<div class="admonition note">
+<p class="admonition-title">Key takeaways</p>
+<ul>
+<li>Pass a tidy DataFrame with <code>data=</code>, then map columns to channels: <code>x</code>, <code>y</code>, <code>hue</code>, <code>style</code>, <code>size</code>.</li>
+<li>Use a <strong>dict</strong> palette so each category keeps its color on every chart.</li>
+<li>Keep the returned <code>ax</code> and finish the chart: plain-English labels with units, and a title that states the finding.</li>
+</ul>
+</div>
+    </article>
+    <nav class="pager" aria-label="Previous and next lesson"><a class="pager-prev" href="index.html"><small>Previous</small>Start here</a><a class="pager-next" href="02-distributions.html"><small>Next</small>Lesson 2 - Distributions: how heavy is a penguin?</a></nav>
+    <footer class="site-foot">
+      <p>Data: Palmer Station penguins (Gorman, Williams &amp; Fraser, 2014), via
+      <a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a>, CC0.
+      Lessons: CC BY 4.0. Code: MIT.</p>
+    </footer>
+  </main>
+</div>
+<script type="application/json" class="page-setup">{"setup": "import pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\n\n# One color per species, used on every chart in this course\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}"}</script>
+<script src="assets/app.js"></script>
+<script src="assets/live.js"></script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+# Three graded assignments of increasing complexity.
+# Every solution part is executed by tests/test_materials.py and
+# tools/build_materials.py (its figure is embedded in the Word file).
+setup: |
+  import numpy as np
+  import pandas as pd
+  import matplotlib.pyplot as plt
+  import seaborn as sns
+
+  sns.set_theme(style="ticks")
+  penguins = sns.load_dataset("penguins")
+  PENGUIN_COLORS = {"Adelie": "#FF8C00", "Chinstrap": "#A034F0", "Gentoo": "#159090"}
+
+assignments:
+  - title: "Assignment 1 - Island Census"
+    level: "Foundational (after Lessons 1-3)"
+    time: "About 1 hour"
+    scenario: >-
+      The Palmer Station newsletter wants three simple, correct charts for its
+      "Meet the neighbours" column. Readers are not scientists, so every chart
+      must be readable without explanation.
+    tasks:
+      - "Chart 1 - Who lives where: a HORIZONTAL count chart of penguins per island, split by species with the course's PENGUIN_COLORS. Order islands from most to fewest penguins."
+      - "Chart 2 - How long are their flippers: overlaid step histograms (outline only) of flipper length by species, with a deliberate bin width."
+      - "Chart 3 - Bills: a scatter plot of bill length vs. bill depth colored by species, with plain-English axis labels including units and a title that states a finding."
+      - "Under each chart, write one or two sentences interpreting it for a general reader."
+    deliverables:
+      - "One Jupyter notebook (.ipynb) that runs top to bottom without errors."
+      - "The three charts exported as PNG files at 200 dpi."
+    rubric:
+      - ["Correct chart types and data mappings", 30, "Each chart uses the requested function and columns; counts and groups are right."]
+      - ["Ordering and orientation", 15, "Chart 1 is horizontal and sorted by total count."]
+      - ["Color", 15, "Species colors are consistent across all three charts (dict palette); no rainbow palettes."]
+      - ["Labels and titles", 20, "Plain-English labels with units; titles state findings rather than repeating axis names."]
+      - ["Interpretation", 15, "Short, accurate, non-technical sentences under each chart."]
+      - ["Reproducibility", 5, "Notebook runs top to bottom; PNGs exported with savefig."]
+    solution:
+      - title: "Chart 1 - Who lives where"
+        code: |
+          island_order = penguins["island"].value_counts().index   # most to fewest
+          ax = sns.countplot(data=penguins, y="island", hue="species",
+                             order=island_order, palette=PENGUIN_COLORS)
+          ax.set(xlabel="Number of penguins", ylabel="",
+                 title="Biscoe is the busiest island, home to all the Gentoos")
+          sns.move_legend(ax, "lower right", title="", frameon=False)
+          sns.despine()
+        notes: "value_counts() is already sorted, so its index is a ready-made order. Putting islands on y keeps the labels horizontal."
+      - title: "Chart 2 - Flipper length"
+        code: |
+          ax = sns.histplot(data=penguins, x="flipper_length_mm", hue="species",
+                            palette=PENGUIN_COLORS, element="step", fill=False,
+                            linewidth=2, binwidth=3)
+          ax.set(xlabel="Flipper length (mm)", ylabel="Number of penguins",
+                 title="Gentoos have the longest flippers by a wide margin")
+          sns.despine()
+        notes: "Outline-only steps keep every species on the same baseline without muddy color blending. A 3 mm bin width shows structure without noise; students should justify their choice."
+      - title: "Chart 3 - Bills"
+        code: |
+          ax = sns.scatterplot(data=penguins, x="bill_length_mm", y="bill_depth_mm",
+                               hue="species", palette=PENGUIN_COLORS)
+          ax.set(xlabel="Bill length (mm)", ylabel="Bill depth (mm)",
+                 title="Each species has its own bill shape")
+          sns.move_legend(ax, "upper left", bbox_to_anchor=(1, 1), title="", frameon=False)
+          sns.despine()
+        notes: "Sample interpretation: 'Adelies have short, deep bills; Gentoos long, shallow ones; Chinstraps long and deep.' Award credit for spotting that the trend within each species is positive."
+
+  - title: "Assignment 2 - Are males really bigger?"
+    level: "Intermediate (after Lessons 1-5)"
+    time: "About 2 hours"
+    scenario: >-
+      A visiting biologist claims that "male penguins are bigger, but only among
+      Gentoos." Use small multiples and summary charts to test the claim across
+      body mass, flipper length and bill measurements, then write a short verdict.
+    tasks:
+      - "Chart 1 - A figure-level grid of body-mass histograms: one row per sex, one column per species, shared axes, species colors, clean panel titles (e.g. 'Gentoo · Male')."
+      - "Chart 2 - A point plot comparing female vs. male means (with 95% CIs) for each species, with no lines connecting species."
+      - "Chart 3 - A 1 x 3 matplotlib layout of correlation heatmaps (one per species) on a common -1 to 1 diverging color scale with one shared color bar, annotated to two decimals."
+      - "Write a 150-word verdict on the biologist's claim that cites specific panels."
+    deliverables:
+      - "One notebook that runs top to bottom; the three charts; the written verdict in a Markdown cell."
+    rubric:
+      - ["Small multiples built correctly", 20, "displot with row/col, shared axes, readable titles via set_titles."]
+      - ["Appropriate summary chart", 15, "pointplot with linestyle='none' (no connecting lines across categories) and a stated error-bar meaning."]
+      - ["Heatmap design", 20, "Diverging cmap, center=0, vmin/vmax fixed at -1/1, annotations, one shared color bar."]
+      - ["Consistency and honesty", 15, "Species colors consistent; shared scales; no truncated bars."]
+      - ["Verdict quality", 20, "Correctly rejects the claim (males are larger in all three species), cites evidence, notes uncertainty."]
+      - ["Code quality", 10, "Readable code, sensible variable names, no copy-paste of near-identical blocks where a loop would do."]
+    solution:
+      - title: "Chart 1 - Mass by sex and species"
+        code: |
+          g = sns.displot(data=penguins, x="body_mass_g", row="sex", col="species",
+                          hue="species", palette=PENGUIN_COLORS, legend=False,
+                          binwidth=200, height=2.3, aspect=1.4)
+          g.set_axis_labels("Body mass (g)", "Penguins")
+          g.set_titles("{col_name} · {row_name}")
+          g.figure.suptitle("In every species, the male row sits to the right", y=1.03)
+        notes: "Reading down each column compares sexes on identical scales - the core of the argument."
+      - title: "Chart 2 - Female vs. male means"
+        code: |
+          ax = sns.pointplot(data=penguins, x="species", y="body_mass_g", hue="sex",
+                             palette={"Female": "#9a9a9a", "Male": "#333333"},
+                             dodge=0.35, linestyle="none", markers=["o", "s"])
+          ax.set(xlabel="", ylabel="Body mass (g), mean with 95% CI",
+                 title="Males are heavier in all three species")
+          ax.legend(title="", frameon=False)
+          sns.despine()
+        notes: "Body mass never has a meaningful zero for these comparisons, so points (not bars) are appropriate."
+      - title: "Chart 3 - Correlations within each species"
+        code: |
+          fig, axes = plt.subplots(1, 3, figsize=(13, 4), layout="constrained")
+          short = {"bill_length_mm": "Bill L", "bill_depth_mm": "Bill D",
+                   "flipper_length_mm": "Flipper", "body_mass_g": "Mass"}
+          for ax, (species, group) in zip(axes, penguins.groupby("species")):
+              corr = group.select_dtypes("number").rename(columns=short).corr()
+              mesh = sns.heatmap(corr, ax=ax, cmap="vlag", center=0, vmin=-1, vmax=1,
+                                 annot=True, fmt=".2f", square=True, cbar=False)
+              ax.set_title(species, color=PENGUIN_COLORS[species], fontweight="bold")
+          fig.colorbar(axes[0].collections[0], ax=axes, shrink=0.8, label="Pearson r")
+          fig.suptitle("Within every species, all measurements correlate positively")
+        notes: "One shared color bar (fig.colorbar with ax=axes) avoids three redundant ones. A loop over groupby avoids copy-paste."
+      - title: "Sample verdict"
+        text: >-
+          The claim is wrong in an interesting way. Panel 1 shows the male
+          histogram shifted right of the female one in every species, and panel 2
+          confirms it: male means exceed female means by roughly 400-800 g, with
+          95% confidence intervals that do not overlap. The gap is largest in
+          Gentoos (about 800 g), which may be why the biologist noticed it there,
+          but Adelies (about 670 g) and Chinstraps (about 410 g) show the same
+          direction. Within each species, every size measurement correlates
+          positively (panel 3), so "bigger" holds for bills and flippers too.
+          Caveat: 11 penguins with unrecorded sex are excluded.
+
+  - title: "Assignment 3 - Field Report 2.0"
+    level: "Advanced (after Lesson 7)"
+    time: "3-4 hours"
+    scenario: >-
+      The station chief liked the Lesson 7 field report and now wants a second
+      edition with a NEW insight: can a single derived measurement - the bill
+      ratio (length / depth) - identify a penguin's species? You must also make
+      over a chart a previous intern produced, and justify your design decisions.
+    tasks:
+      - "Derive bill_ratio = bill_length_mm / bill_depth_mm with pandas."
+      - "Build a 2 x 2 report figure (plt.subplots + axes-level functions) with: (A) ECDFs of bill_ratio by species with reference lines at the two thresholds you would use to classify species; (B) box + strip of bill_ratio by species; (C) a scatter of bill ratio vs. body mass with only the misclassified penguins highlighted (everyone else gray); (D) a sorted horizontal bar chart of classification accuracy by species."
+      - "Use one figure-level legend (or direct labels), lettered panel titles that state findings, and a suptitle."
+      - "Make over the intern's chart (provided below) and write a 200-word design rationale that names at least four of Few's principles you applied."
+    intern_chart: |
+      sns.set_theme(style="darkgrid")
+      sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
+                      hue="island", style="species", size="bill_depth_mm", palette="hsv")
+    deliverables:
+      - "Notebook, final report PNG (200 dpi), makeover PNG, and design rationale."
+    rubric:
+      - ["Derived variable and classification logic", 20, "bill_ratio computed correctly; thresholds chosen from the ECDF and applied with pandas; accuracy computed per species."]
+      - ["Report figure - form", 20, "Each panel uses the right chart for its question; ECDF reference lines; highlight strategy in panel C; sorted bars from zero in D."]
+      - ["Report figure - design", 20, "Consistent dict palette, one legend or direct labels, lettered titles stating findings, constrained layout, despined."]
+      - ["Makeover", 20, "Removes redundant encodings and the rainbow palette, adds units, direct labels or a single clean legend, and a finding-stating title."]
+      - ["Design rationale", 15, "Names and correctly applies four or more principles (data-ink, highlight, direct labels, common baseline, honest scales, color meaning)."]
+      - ["Reproducibility", 5, "Runs top to bottom; files exported with savefig at 200 dpi."]
+    solution:
+      - title: "Derive the ratio and classify"
+        code: |
+          df = penguins.dropna(subset=["bill_length_mm", "bill_depth_mm"]).copy()
+          df["bill_ratio"] = df["bill_length_mm"] / df["bill_depth_mm"]
+
+          # Thresholds read off the ECDF in panel A
+          LOW, HIGH = 2.4, 2.9
+          df["predicted"] = np.select([df["bill_ratio"] < LOW, df["bill_ratio"] < HIGH],
+                                      ["Adelie", "Chinstrap"], default="Gentoo")
+          df["correct"] = df["predicted"] == df["species"]
+          accuracy = df.groupby("species")["correct"].mean().sort_values(ascending=False)
+          print(accuracy.round(3))
+          print(f"Overall accuracy: {df['correct'].mean():.1%}")
+        notes: "np.select applies the two thresholds in order. Students may choose slightly different thresholds; accept any justified from the ECDF."
+      - title: "The Field Report 2.0 figure"
+        code: |
+          df = penguins.dropna(subset=["bill_length_mm", "bill_depth_mm"]).copy()
+          df["bill_ratio"] = df["bill_length_mm"] / df["bill_depth_mm"]
+          LOW, HIGH = 2.4, 2.9
+          df["predicted"] = np.select([df["bill_ratio"] < LOW, df["bill_ratio"] < HIGH],
+                                      ["Adelie", "Chinstrap"], default="Gentoo")
+          df["correct"] = df["predicted"] == df["species"]
+          order = ["Adelie", "Chinstrap", "Gentoo"]
+
+          fig, axes = plt.subplots(2, 2, figsize=(12, 8.5), layout="constrained")
+
+          ax = axes[0, 0]
+          sns.ecdfplot(data=df, x="bill_ratio", hue="species", hue_order=order,
+                       palette=PENGUIN_COLORS, legend=False, ax=ax)
+          for t in (LOW, HIGH):
+              ax.axvline(t, color="0.4", linestyle="--", linewidth=1)
+              ax.text(t, 1.02, f"{t}", ha="center", color="0.3", fontsize=9)
+          ax.set(xlabel="Bill ratio (length / depth)", ylabel="Proportion at or below",
+                 title="A. Two cut-offs split the species")
+
+          ax = axes[0, 1]
+          sns.boxplot(data=df, x="species", y="bill_ratio", order=order, hue="species",
+                      palette=PENGUIN_COLORS, legend=False, fliersize=0,
+                      boxprops={"alpha": 0.35}, ax=ax)
+          sns.stripplot(data=df, x="species", y="bill_ratio", order=order,
+                        color="black", size=2.5, alpha=0.5, ax=ax)
+          ax.set(xlabel="", ylabel="Bill ratio", title="B. Overlap is small, but not zero")
+
+          ax = axes[1, 0]
+          sns.scatterplot(data=df[df["correct"]], x="bill_ratio", y="body_mass_g",
+                          color="#d0d0d0", s=18, ax=ax)
+          sns.scatterplot(data=df[~df["correct"]], x="bill_ratio", y="body_mass_g",
+                          hue="species", hue_order=order, palette=PENGUIN_COLORS,
+                          s=45, edgecolor="black", legend=False, ax=ax)
+          ax.set(xlabel="Bill ratio (length / depth)", ylabel="Body mass (g)",
+                 title=f"C. Only {(~df['correct']).sum()} of {len(df)} penguins are misclassified")
+
+          ax = axes[1, 1]
+          acc = (df.groupby("species")["correct"].mean().mul(100)
+                   .sort_values(ascending=False).reset_index())
+          sns.barplot(data=acc, y="species", x="correct", hue="species",
+                      palette=PENGUIN_COLORS, legend=False, ax=ax)
+          for i, value in enumerate(acc["correct"]):
+              ax.text(value - 2, i, f"{value:.0f}%", va="center", ha="right",
+                      color="white", fontweight="bold")
+          ax.set(xlim=(0, 100), xlabel="Correctly classified (%)", ylabel="",
+                 title="D. Accuracy is high for every species")
+
+          handles = [plt.Line2D([], [], marker="o", linestyle="", color=PENGUIN_COLORS[s], label=s)
+                     for s in order]
+          fig.legend(handles=handles, loc="outside lower center", ncols=3, frameon=False)
+          fig.suptitle("Field Report 2.0: one bill ratio identifies most penguins",
+                       fontsize=15, fontweight="bold")
+          sns.despine(fig=fig)
+        notes: "Panel C uses the gray-context highlight from Lesson 6; panel D labels values directly inside zero-based, sorted bars, so no value axis lookup is needed."
+      - title: "The makeover"
+        code: |
+          fig, ax = plt.subplots(figsize=(7.5, 4.6))
+          sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
+                          hue="species", palette=PENGUIN_COLORS, s=22, alpha=0.8,
+                          legend=False, ax=ax)
+          for species, (x, y) in {"Adelie": (171, 4500), "Chinstrap": (204, 3050),
+                                  "Gentoo": (224, 4300)}.items():
+              ax.text(x, y, species, color=PENGUIN_COLORS[species], fontweight="bold")
+          ax.yaxis.set_major_formatter(lambda v, pos: f"{v / 1000:.1f} kg")
+          ax.set(xlabel="Flipper length (mm)", ylabel="Body mass",
+                 title="Bigger flippers, heavier penguins - and Gentoos are biggest")
+          sns.despine()
+        notes: "Island, species and bill depth were encoded at once with a rainbow palette and three legends. The makeover keeps one question (size by species), uses the standard palette, labels directly and formats units."
+      - title: "Sample design rationale (excerpt)"
+        text: >-
+          I removed two of the intern's four encodings (island as color, bill depth
+          as size) because they did not serve the question and tripled the legend
+          (Few: every encoding must earn its place; maximize data-ink). I replaced
+          the rainbow palette with the course's fixed species colors so color means
+          the same thing in every chart and stays distinguishable for colorblind
+          readers. I labelled the clusters directly instead of using a legend, so
+          readers never look away from the data. The title now states the finding,
+          the y-axis reads in kilograms, and the despined axes remove ink that
+          carries no data. In the report, panel C grays out the correct
+          classifications so the eye goes straight to the few mistakes (highlight
+          the exception), and panel D sorts zero-based bars by value (common
+          baseline, ranked for easy comparison).

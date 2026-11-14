@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start here · Seaborn with Penguins</title>
+<meta name="description" content="Course overview, setup, and the Palmer penguins dataset.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/pygments.css">
+</head>
+<body data-page="index">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="nav-toggle" type="button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+  <a class="brand" href="index.html"><span aria-hidden="true">🐧</span> Seaborn with Penguins</a>
+  <span class="py-status" data-py-status title="In-browser Python status">Python: not loaded</span>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="Lessons">
+    <ol class="nav-list"><li><a href="index.html" data-page="index" aria-current=page><span class="nav-num">0</span><span class="nav-title">Start here</span></a></li><li><a href="01-first-plot.html" data-page="01-first-plot"><span class="nav-num">1</span><span class="nav-title">Your first plot</span></a></li><li><a href="02-distributions.html" data-page="02-distributions"><span class="nav-num">2</span><span class="nav-title">Distributions</span></a></li><li><a href="03-categories.html" data-page="03-categories"><span class="nav-num">3</span><span class="nav-title">Comparing categories</span></a></li><li><a href="04-relationships.html" data-page="04-relationships"><span class="nav-num">4</span><span class="nav-title">Relationships</span></a></li><li><a href="05-small-multiples.html" data-page="05-small-multiples"><span class="nav-num">5</span><span class="nav-title">Small multiples</span></a></li><li><a href="06-polish.html" data-page="06-polish"><span class="nav-num">6</span><span class="nav-title">Polish with matplotlib</span></a></li><li><a href="07-capstone.html" data-page="07-capstone"><span class="nav-num">7</span><span class="nav-title">Capstone: field report</span></a></li><li><a href="instructor-guide.html" data-page="instructor-guide"><span class="nav-num">★</span><span class="nav-title">Instructor guide</span></a></li></ol>
+    <div class="sidebar-foot">
+      <a href="https://github.com/maddogdatascience/seaborn-penguins">Source on GitHub</a>
+    </div>
+  </nav>
+  <main id="main" class="content">
+    
+    <article>
+<h1 id="seaborn-with-penguins">Seaborn with Penguins</h1>
+<p class="lede">A hands-on course in making clear, honest, good-looking charts with <strong>seaborn</strong> and <strong>matplotlib</strong>. Seven short lessons use one friendly dataset. Every example runs live in your browser.</p>
+
+<p><img alt="The Penguin Field Report you'll build in Lesson 7: four panels on island counts, body-mass distributions, male versus female mass, and bill shape." src="img/07-report.png" /></p>
+<p><em>The figure you&rsquo;ll build in Lesson 7. Every technique in it is taught along the way.</em></p>
+<h2 id="who-this-is-for">Who this is for</h2>
+<p>You&rsquo;re comfortable with Python basics and <strong>pandas</strong> (<code>read_csv</code>, selecting columns, <code>groupby</code>, filtering rows), and you want to make charts that are both quick to produce and good enough to show other people. You don&rsquo;t need any prior matplotlib or seaborn.</p>
+<h2 id="the-lessons">The lessons</h2>
+<div class="cards" markdown="0">
+  <a class="card" href="01-first-plot.html"><strong>1 · Your first plot</strong><span>The grammar of seaborn, hue, labels, and a paradox hiding in the bills.</span></a>
+  <a class="card" href="02-distributions.html"><strong>2 · Distributions</strong><span>Histograms, KDEs and ECDFs. How heavy is a penguin?</span></a>
+  <a class="card" href="03-categories.html"><strong>3 · Comparing categories</strong><span>Counts, bars, boxes, violins, strips and points, done honestly.</span></a>
+  <a class="card" href="04-relationships.html"><strong>4 · Relationships</strong><span>Trend lines, line charts, correlation heatmaps and pair plots.</span></a>
+  <a class="card" href="05-small-multiples.html"><strong>5 · Small multiples</strong><span>Figure-level functions and facet grids.</span></a>
+  <a class="card" href="06-polish.html"><strong>6 · Polish with matplotlib</strong><span>Themes, palettes, highlights, annotations and a full makeover.</span></a>
+  <a class="card" href="07-capstone.html"><strong>7 · Capstone</strong><span>Plan and build a multi-panel Penguin Field Report.</span></a>
+</div>
+
+<p>Each lesson takes about <strong>45-75 minutes</strong> and has the same rhythm. Worked examples come first, then a <strong>design principle</strong> callout, then graded <strong>exercises</strong> with solutions, then a short <strong>quiz</strong>.</p>
+<h2 id="meet-the-data-palmer-penguins">Meet the data: Palmer penguins</h2>
+<p>Between 2007 and 2009, Dr. Kristen Gorman and the Palmer Station Long Term Ecological Research program measured 344 penguins on three islands in the Palmer Archipelago, Antarctica. Allison Horst, Alison Hill and Kristen Gorman released the data as the friendly alternative to the overused iris dataset. It ships with seaborn:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;penguins&quot;</span><span class="p">)</span>
+</pre></div>
+
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>species</code></td>
+<td>Adelie, Chinstrap or Gentoo</td>
+<td>category</td>
+</tr>
+<tr>
+<td><code>island</code></td>
+<td>Biscoe, Dream or Torgersen</td>
+<td>category</td>
+</tr>
+<tr>
+<td><code>bill_length_mm</code></td>
+<td>length of the bill (culmen)</td>
+<td>number</td>
+</tr>
+<tr>
+<td><code>bill_depth_mm</code></td>
+<td>depth (height) of the bill</td>
+<td>number</td>
+</tr>
+<tr>
+<td><code>flipper_length_mm</code></td>
+<td>flipper length</td>
+<td>number</td>
+</tr>
+<tr>
+<td><code>body_mass_g</code></td>
+<td>body mass in grams</td>
+<td>number</td>
+</tr>
+<tr>
+<td><code>sex</code></td>
+<td>Female or Male (11 missing)</td>
+<td>category</td>
+</tr>
+</tbody>
+</table>
+<p>It&rsquo;s small enough to see every point, but it&rsquo;s real data. It has missing values, three groups with different body plans, and a genuine statistical paradox waiting in Lesson 1.</p>
+<h2 id="three-ways-to-follow-along">Three ways to follow along</h2>
+<ol>
+<li><strong>Right here in the browser (no install).</strong> Click <strong>Run</strong> or <strong>Edit &amp; run</strong> on any code cell. The first run downloads a Python runtime (Pyodide, about 30 MB) into your browser, which takes 10-30 seconds. After that, cells run in a second or two. Your exercise code is saved in this browser.</li>
+<li><strong>Google Colab.</strong> Each lesson has an <strong>Open in Colab</strong> link at the top, plus a solutions notebook.</li>
+<li><strong>Your own machine.</strong> Download the notebooks and install the libraries:</li>
+</ol>
+<pre><code>pip install &quot;seaborn==0.13.2&quot; &quot;matplotlib&gt;=3.8&quot; &quot;pandas&gt;=2.0&quot; jupyterlab</code></pre>
+<p>The code targets <strong>seaborn 0.13</strong>. Older versions use different names for some arguments (for example <code>ci=</code> instead of <code>errorbar=</code>).</p>
+<blockquote>
+<p><strong>Tip:</strong> In a script (not a notebook), finish with <code>plt.show()</code> to open the chart window. Notebooks and this site display charts automatically.</p>
+</blockquote>
+<h2 id="the-design-thread">The design thread</h2>
+<p>Seaborn makes charts <em>quickly</em>. This course is just as concerned with making them <em>well</em>. Each lesson includes a <strong>design principle</strong> callout, drawn mostly from Stephen Few&rsquo;s <em>Show Me the Numbers</em> and from Edward Tufte. The core ideas:</p>
+<ul>
+<li>Start from the <strong>question</strong>, and choose the chart form that answers it.</li>
+<li>Encode the important comparison with <strong>position or length</strong> on a common scale.</li>
+<li>Use <strong>color only when it means something</strong>, the same way every time, and safe for colorblind readers.</li>
+<li>Remove ink that isn&rsquo;t data. <strong>Label directly.</strong> Write titles that <strong>state the finding</strong>.</li>
+</ul>
+<p>Ready? Start with <strong><a href="01-first-plot.html">Lesson 1 - Your first plot</a></strong>.</p>
+<p><small>Teaching this material? See the <a href="instructor-guide.html">instructor guide</a>.</small></p>
+    </article>
+    <nav class="pager" aria-label="Previous and next lesson"><span></span><a class="pager-next" href="01-first-plot.html"><small>Next</small>Lesson 1 - Your first plot: the grammar of seaborn</a></nav>
+    <footer class="site-foot">
+      <p>Data: Palmer Station penguins (Gorman, Williams &amp; Fraser, 2014), via
+      <a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a>, CC0.
+      Lessons: CC BY 4.0. Code: MIT.</p>
+    </footer>
+  </main>
+</div>
+<script type="application/json" class="page-setup">{"setup": ""}</script>
+<script src="assets/app.js"></script>
+<script src="assets/live.js"></script>
+</body>
+</html>

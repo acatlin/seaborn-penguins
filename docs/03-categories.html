@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 3 - Comparing categories: bars, boxes and dots · Seaborn with Penguins</title>
+<meta name="description" content="A hands-on, browser-runnable course in seaborn and matplotlib for people who already know Python and pandas.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/pygments.css">
+</head>
+<body data-page="03-categories">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="nav-toggle" type="button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+  <a class="brand" href="index.html"><span aria-hidden="true">🐧</span> Seaborn with Penguins</a>
+  <span class="py-status" data-py-status title="In-browser Python status">Python: not loaded</span>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="Lessons">
+    <ol class="nav-list"><li><a href="index.html" data-page="index"><span class="nav-num">0</span><span class="nav-title">Start here</span></a></li><li><a href="01-first-plot.html" data-page="01-first-plot"><span class="nav-num">1</span><span class="nav-title">Your first plot</span></a></li><li><a href="02-distributions.html" data-page="02-distributions"><span class="nav-num">2</span><span class="nav-title">Distributions</span></a></li><li><a href="03-categories.html" data-page="03-categories" aria-current=page><span class="nav-num">3</span><span class="nav-title">Comparing categories</span></a></li><li><a href="04-relationships.html" data-page="04-relationships"><span class="nav-num">4</span><span class="nav-title">Relationships</span></a></li><li><a href="05-small-multiples.html" data-page="05-small-multiples"><span class="nav-num">5</span><span class="nav-title">Small multiples</span></a></li><li><a href="06-polish.html" data-page="06-polish"><span class="nav-num">6</span><span class="nav-title">Polish with matplotlib</span></a></li><li><a href="07-capstone.html" data-page="07-capstone"><span class="nav-num">7</span><span class="nav-title">Capstone: field report</span></a></li><li><a href="instructor-guide.html" data-page="instructor-guide"><span class="nav-num">★</span><span class="nav-title">Instructor guide</span></a></li></ol>
+    <div class="sidebar-foot">
+      <a href="https://github.com/maddogdatascience/seaborn-penguins">Source on GitHub</a>
+    </div>
+  </nav>
+  <main id="main" class="content">
+    <div class="lesson-tools"><a href="https://colab.research.google.com/github/maddogdatascience/seaborn-penguins/blob/main/docs/notebooks/03-categories.ipynb" target="_blank" rel="noopener">Open in Colab</a><a href="notebooks/03-categories.ipynb" download>Download notebook</a><a href="notebooks/03-categories-solutions.ipynb" download>Solutions notebook</a></div>
+    <article>
+<h1 id="lesson-3-comparing-categories-bars-boxes-and-dots">Lesson 3 - Comparing categories: bars, boxes and dots</h1>
+<p class="lede">Which island has the most penguins? Which species is heaviest? Questions about groups are the bread and butter of everyday charts, and also where most chart crimes happen.</p>
+
+<p><strong>By the end of this lesson you can:</strong></p>
+<ul>
+<li>count categories with <code>countplot</code></li>
+<li>summarize a number per group with <code>barplot</code>, and read its error bars</li>
+<li>sort and orient bars so the ranking reads at a glance</li>
+<li>show whole distributions per group with box, violin and strip plots</li>
+<li>use <code>pointplot</code> when a zero baseline isn&rsquo;t meaningful</li>
+</ul>
+<div class="cell cell-setup"><div class="code-label">Setup - run this first</div><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;ticks&quot;</span><span class="p">)</span>
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;penguins&quot;</span><span class="p">)</span>
+<span class="n">PENGUIN_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Adelie&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF8C00&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">:</span> <span class="s2">&quot;#A034F0&quot;</span><span class="p">,</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">:</span> <span class="s2">&quot;#159090&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<h2 id="counting-who-lives-where">Counting: who lives where?</h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">countplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;island&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Number of penguins&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Adelies live everywhere; Gentoos and Chinstraps each keep to one island&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.countplot(data=penguins, x=\"island\", hue=\"species\", palette=PENGUIN_COLORS)\nax.set(xlabel=\"\", ylabel=\"Number of penguins\",\n       title=\"Adelies live everywhere; Gentoos and Chinstraps each keep to one island\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/03-count.png" alt="Count of penguins on each island by species: Biscoe has Adelie and Gentoo, Dream has Adelie and Chinstrap, Torgersen has only Adelie." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Here&rsquo;s a fun fact the chart makes obvious: <strong>Gentoos were only found on Biscoe and Chinstraps only on Dream</strong>, while Adelies live on all three islands. <code>countplot</code> is just a bar chart of <code>value_counts()</code>. Notice the x-label is blank: &ldquo;island&rdquo; adds nothing when the tick labels are island names.</p>
+<h2 id="bars-for-a-summary-statistic">Bars for a summary statistic</h2>
+<p><code>barplot</code> computes a statistic per group (the mean by default) and draws it as a bar:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Mean body mass (g)&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.barplot(data=penguins, x=\"species\", y=\"body_mass_g\")\nax.set(xlabel=\"\", ylabel=\"Mean body mass (g)\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/03-bar-default.png" alt="Bar chart of mean body mass by species with black error bars; Gentoo is tallest at about 5,000 g." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>The black lines are <strong>error bars</strong>. By default they show a 95% confidence interval for the mean, found by bootstrapping. Control them with <code>errorbar=</code>:</p>
+<table>
+<thead>
+<tr>
+<th><code>errorbar=</code></th>
+<th>Shows</th>
+<th>Use it to say&hellip;</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>("ci", 95)</code> (default)</td>
+<td>uncertainty of the <em>mean</em></td>
+<td>&ldquo;how precisely do we know the average?&rdquo;</td>
+</tr>
+<tr>
+<td><code>"sd"</code></td>
+<td>standard deviation of the <em>data</em></td>
+<td>&ldquo;how spread out are individual penguins?&rdquo;</td>
+</tr>
+<tr>
+<td><code>("pi", 50)</code></td>
+<td>the middle 50% of the data</td>
+<td>&ldquo;where do typical penguins fall?&rdquo;</td>
+</tr>
+<tr>
+<td><code>None</code></td>
+<td>nothing</td>
+<td>when the bars alone tell the story</td>
+</tr>
+</tbody>
+</table>
+<p>Always say which one you used in a caption or title. &ldquo;Error bar&rdquo; on its own means nothing to a reader.</p>
+<h2 id="make-the-ranking-obvious-sort-and-turn-sideways">Make the ranking obvious: sort and turn sideways</h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">order</span> <span class="o">=</span> <span class="p">(</span><span class="n">penguins</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;species&quot;</span><span class="p">)[</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">]</span>
+         <span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                 <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">errorbar</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Mean body mass (g)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Gentoos outweigh the other species by about 1.3 kg&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "order = (penguins.groupby(\"species\")[\"body_mass_g\"]\n         .mean().sort_values(ascending=False).index)\n\nax = sns.barplot(data=penguins, y=\"species\", x=\"body_mass_g\", order=order,\n                 hue=\"species\", palette=PENGUIN_COLORS, errorbar=None)\nax.set(xlabel=\"Mean body mass (g)\", ylabel=\"\",\n       title=\"Gentoos outweigh the other species by about 1.3 kg\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/03-bar-sorted.png" alt="Horizontal bar chart of mean body mass sorted from Gentoo (heaviest, about 5,076 g) to Chinstrap and Adelie (about 3,700 g)." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Three deliberate choices here:</p>
+<ol>
+<li><strong>Sorted</strong> with <code>order=</code>, so the ranking reads top to bottom.</li>
+<li><strong>Horizontal</strong> (categorical column on <code>y</code>), so long labels never need tilting.</li>
+<li><strong>Colored by species with a dict</strong>, the same colors as in every other lesson. Passing <code>hue=</code> along with <code>palette=</code> is how seaborn 0.13 wants it.</li>
+</ol>
+<div class="admonition few">
+<p class="admonition-title">Bars must start at zero</p>
+<p>A bar encodes its value by its <strong>length</strong>. Cut the axis and the lengths lie. The chart below starts at 3,500 g and makes the Gentoo bar nearly eight times longer than the Adelie bar, when Gentoos are really only about 1.4 times heavier.</p>
+</div>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">errorbar</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">3500</span><span class="p">,</span> <span class="mi">5200</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Mean body mass (g)&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;DON&#39;T: truncated bars exaggerate&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.barplot(data=penguins, x=\"species\", y=\"body_mass_g\", errorbar=None, color=\"gray\")\nax.set_ylim(3500, 5200)\nax.set(xlabel=\"\", ylabel=\"Mean body mass (g)\", title=\"DON'T: truncated bars exaggerate\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/03-bar-truncated.png" alt="Deliberately bad bar chart with the axis starting at 3,500 g, exaggerating the difference between species." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>If zero isn&rsquo;t meaningful for your data, don&rsquo;t use bars. Use <strong>points</strong> (see <code>pointplot</code> below).</p>
+<h2 id="beyond-the-mean-boxes-violins-and-strips">Beyond the mean: boxes, violins and strips</h2>
+<p>A bar of means hides the spread. These three charts show the whole distribution for each group:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span>
+          <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;boxplot&quot;</span><span class="p">,</span> <span class="s2">&quot;violinplot&quot;</span><span class="p">,</span> <span class="s2">&quot;stripplot&quot;</span><span class="p">]):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "fig, axes = plt.subplots(1, 3, figsize=(12, 3.6), sharey=True)\nkw = dict(data=penguins, x=\"species\", y=\"flipper_length_mm\",\n          hue=\"species\", palette=PENGUIN_COLORS, legend=False)\nsns.boxplot(ax=axes[0], **kw)\nsns.violinplot(ax=axes[1], **kw)\nsns.stripplot(ax=axes[2], alpha=0.6, **kw)\nfor ax, name in zip(axes, [\"boxplot\", \"violinplot\", \"stripplot\"]):\n    ax.set(title=name, xlabel=\"\", ylabel=\"Flipper length (mm)\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/03-three-ways.png" alt="Box plot, violin plot and strip plot of flipper length by species, side by side." loading="lazy"></figure><div class="cell-live"></div></div>
+<ul>
+<li><strong>Box plot:</strong> the median, the middle 50% (the box), whiskers, and outliers. It&rsquo;s compact and great for many groups.</li>
+<li><strong>Violin plot:</strong> a mirrored KDE. It shows the shape, but carries the KDE&rsquo;s smoothing caveats.</li>
+<li><strong>Strip plot:</strong> every penguin as a dot, with no hiding. It gets crowded with big data.</li>
+</ul>
+<p>A strong default for modest data is a <strong>box plot with the raw points on top</strong>:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+                 <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">fliersize</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">boxprops</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">})</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+              <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Every penguin, plus the summary&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.boxplot(data=penguins, x=\"species\", y=\"body_mass_g\",\n                 hue=\"species\", palette=PENGUIN_COLORS, legend=False,\n                 fliersize=0, boxprops={\"alpha\": 0.4})\nsns.stripplot(data=penguins, x=\"species\", y=\"body_mass_g\",\n              color=\"black\", size=3, alpha=0.5, ax=ax)\nax.set(xlabel=\"\", ylabel=\"Body mass (g)\", title=\"Every penguin, plus the summary\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/03-box-strip.png" alt="Box plots of body mass by species with every individual penguin overlaid as a semi-transparent black dot." loading="lazy"></figure><div class="cell-live"></div></div>
+<p><code>fliersize=0</code> hides the box plot&rsquo;s own outlier dots, because the strip already shows every point.</p>
+<h2 id="point-plots-compare-when-zero-isnt-meaningful">Point plots: compare when zero isn&rsquo;t meaningful</h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">pointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span>
+                   <span class="n">palette</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Female&quot;</span><span class="p">:</span> <span class="s2">&quot;#7a7a7a&quot;</span><span class="p">,</span> <span class="s2">&quot;Male&quot;</span><span class="p">:</span> <span class="s2">&quot;#222222&quot;</span><span class="p">},</span>
+                   <span class="n">dodge</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">])</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g), mean and 95% CI&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Males are heavier in every species&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.pointplot(data=penguins, x=\"species\", y=\"body_mass_g\", hue=\"sex\",\n                   palette={\"Female\": \"#7a7a7a\", \"Male\": \"#222222\"},\n                   dodge=0.3, linestyle=\"none\", markers=[\"o\", \"s\"])\nax.set(xlabel=\"\", ylabel=\"Body mass (g), mean and 95% CI\",\n       title=\"Males are heavier in every species\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/03-point.png" alt="Point plot of mean body mass by species for female and male penguins; males are heavier in every species." loading="lazy"></figure><div class="cell-live"></div></div>
+<p><code>linestyle="none"</code> removes the lines <code>pointplot</code> would otherwise draw <em>between species</em>. Lines imply a continuous path, and there&rsquo;s nothing &ldquo;between&rdquo; an Adelie and a Chinstrap.</p>
+<div class="admonition few">
+<p class="admonition-title">Save the pie for dessert</p>
+<p>People compare angles and areas poorly but lengths and positions well. A sorted bar or dot chart beats a pie chart for almost any comparison. Seaborn has no pie function, and that&rsquo;s no accident.</p>
+</div>
+<h2 id="your-turn">Your turn</h2>
+
+<div class="exercise" id="ex-3.1" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 3.1</span>
+    <span class="exercise-title">Rank the species by flipper length</span></div>
+  <textarea class="cell-editor" rows="8" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 3.1"># Make a HORIZONTAL bar chart of mean flipper_length_mm by species,
+# sorted longest at the top, colored with PENGUIN_COLORS, no error bars,
+# and a title stating the finding.
+order = ___
+
+ax = sns.barplot(data=penguins, x=&quot;species&quot;, y=&quot;flipper_length_mm&quot;)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">order</span> <span class="o">=</span> <span class="p">(</span><span class="n">penguins</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;species&quot;</span><span class="p">)[</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">]</span>
+         <span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                 <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">errorbar</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Mean flipper length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Gentoos have the longest flippers&quot;</span><span class="p">)</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-3.1.png" alt="Solution chart for exercise 3.1" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# Make a HORIZONTAL bar chart of mean flipper_length_mm by species,\n# sorted longest at the top, colored with PENGUIN_COLORS, no error bars,\n# and a title stating the finding.\norder = ___\n\nax = sns.barplot(data=penguins, x=\"species\", y=\"flipper_length_mm\")", "solution": "order = (penguins.groupby(\"species\")[\"flipper_length_mm\"]\n         .mean().sort_values(ascending=False).index)\n\nax = sns.barplot(data=penguins, y=\"species\", x=\"flipper_length_mm\", order=order,\n                 hue=\"species\", palette=PENGUIN_COLORS, errorbar=None)\nax.set(xlabel=\"Mean flipper length (mm)\", ylabel=\"\",\n       title=\"Gentoos have the longest flippers\")", "check": "ax = chart_axes()[0]\nbars = [p for p in ax.patches if p.get_width() > 0 and p.get_height() > 0]\nassert len(bars) == 3, \"I expected exactly three bars - one per species.\"\nwidths = [b.get_width() for b in bars]\nheights = [b.get_height() for b in bars]\nassert max(widths) > 100 and max(heights) < 2, \"Make the bars horizontal: put species on y and flipper length on x.\"\nbars.sort(key=lambda b: b.get_y())\nw = [b.get_width() for b in bars]\nassert w == sorted(w, reverse=True), \"Sort the bars longest-first with order=... (top of the chart = first in order).\"\nassert len(ax.lines) == 0, \"Turn off the error bars with errorbar=None.\"\nassert near_color(PENGUIN_COLORS[\"Gentoo\"], colors_used(ax)), \"Color by species: hue='species', palette=PENGUIN_COLORS.\"\nassert len(ax.get_title()) >= 10, \"Add a title that states the finding.\"\nprint(\"Sorted, horizontal, zero-based, consistently colored - a textbook bar chart.\")"}</script>
+</div>
+
+
+
+<div class="exercise" id="ex-3.2" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 3.2</span>
+    <span class="exercise-title">Show every penguin&rsquo;s bill depth</span></div>
+  <textarea class="cell-editor" rows="6" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 3.2"># Box plot of bill_depth_mm by species (PENGUIN_COLORS, no legend),
+# with every penguin overlaid as small black dots using stripplot(ax=ax).
+ax = sns.boxplot(data=penguins, x=&quot;species&quot;, y=&quot;bill_depth_mm&quot;)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span>
+                 <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fliersize</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">stripplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span>
+              <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Gentoos have the shallowest bills&quot;</span><span class="p">)</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-3.2.png" alt="Solution chart for exercise 3.2" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# Box plot of bill_depth_mm by species (PENGUIN_COLORS, no legend),\n# with every penguin overlaid as small black dots using stripplot(ax=ax).\nax = sns.boxplot(data=penguins, x=\"species\", y=\"bill_depth_mm\")", "solution": "ax = sns.boxplot(data=penguins, x=\"species\", y=\"bill_depth_mm\",\n                 hue=\"species\", palette=PENGUIN_COLORS, legend=False, fliersize=0)\nsns.stripplot(data=penguins, x=\"species\", y=\"bill_depth_mm\",\n              color=\"black\", size=3, alpha=0.5, ax=ax)\nax.set(xlabel=\"\", ylabel=\"Bill depth (mm)\", title=\"Gentoos have the shallowest bills\")", "check": "ax = chart_axes()[0]\nassert len(ax.patches) >= 3, \"Draw a box plot first.\"\npts = points(ax)\nassert len(pts) > 300, \"Overlay every penguin with sns.stripplot(..., ax=ax).\"\nassert near_color(PENGUIN_COLORS[\"Adelie\"], colors_used(ax), tol=0.15), \"Color the boxes by species: hue='species', palette=PENGUIN_COLORS.\"\nassert ax.get_legend() is None, \"The species names are already on the axis - pass legend=False.\"\nassert \"mm\" in ax.get_ylabel(), \"Label the y-axis with units.\"\nprint(\"Box for the summary, dots for the truth. Gentoo bills are clearly shallower.\")"}</script>
+</div>
+
+
+<h2 id="quick-quiz">Quick quiz</h2>
+<section class="quiz" aria-label="Quiz">
+<div class="quiz-q" data-answer="D" id="03-categories-q1">
+  <p class="quiz-stem"><span class="quiz-num">Q1.</span> Why must the value axis of a bar chart start at zero?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="03-categories-q1" value="A"> <span class="opt-letter">A.</span> Matplotlib cannot draw bars that start anywhere else</label></li><li><label><input type="radio" name="03-categories-q1" value="B"> <span class="opt-letter">B.</span> Starting at zero makes the error bars symmetric around the mean</label></li><li><label><input type="radio" name="03-categories-q1" value="C"> <span class="opt-letter">C.</span> Zero-based axes leave more room for the legend</label></li><li><label><input type="radio" name="03-categories-q1" value="D"> <span class="opt-letter">D.</span> Bars encode values by length, so a cut axis distorts the comparison</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Readers compare bar lengths. A truncated axis makes small differences look huge. If zero isn&rsquo;t meaningful, use points instead of bars.</div>
+</div>
+<div class="quiz-q" data-answer="B" id="03-categories-q2">
+  <p class="quiz-stem"><span class="quiz-num">Q2.</span> By default, what do the black lines on top of <code>sns.barplot</code> bars show?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="03-categories-q2" value="A"> <span class="opt-letter">A.</span> The minimum and maximum value in each group</label></li><li><label><input type="radio" name="03-categories-q2" value="B"> <span class="opt-letter">B.</span> A bootstrapped 95% confidence interval for the mean</label></li><li><label><input type="radio" name="03-categories-q2" value="C"> <span class="opt-letter">C.</span> One standard deviation of the individual data points</label></li><li><label><input type="radio" name="03-categories-q2" value="D"> <span class="opt-letter">D.</span> The interquartile range of each group</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>The default <code>errorbar=("ci", 95)</code> shows uncertainty in the estimated mean. Use <code>"sd"</code> or <code>("pi", 50)</code> to show spread of the data instead - and say which you used.</div>
+</div>
+<div class="quiz-q" data-answer="C" id="03-categories-q3">
+  <p class="quiz-stem"><span class="quiz-num">Q3.</span> You want to compare the full distribution of flipper length across three species and still see every bird. Which is best?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="03-categories-q3" value="A"> <span class="opt-letter">A.</span> A pie chart of mean flipper length per species</label></li><li><label><input type="radio" name="03-categories-q3" value="B"> <span class="opt-letter">B.</span> A bar chart of mean flipper length per species</label></li><li><label><input type="radio" name="03-categories-q3" value="C"> <span class="opt-letter">C.</span> A box plot with a strip plot of the raw points on top</label></li><li><label><input type="radio" name="03-categories-q3" value="D"> <span class="opt-letter">D.</span> A 3D bar chart with species on one axis and island on another</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>The box summarizes, the strip shows every observation. Bars of means and pies both hide the distribution.</div>
+</div>
+<div class="quiz-q" data-answer="A" id="03-categories-q4">
+  <p class="quiz-stem"><span class="quiz-num">Q4.</span> What is the main benefit of sorting bars by value (e.g. with <code>order=</code>)?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="03-categories-q4" value="A"> <span class="opt-letter">A.</span> The ranking can be read at a glance</label></li><li><label><input type="radio" name="03-categories-q4" value="B"> <span class="opt-letter">B.</span> Seaborn computes the group means faster when the bars are sorted</label></li><li><label><input type="radio" name="03-categories-q4" value="C"> <span class="opt-letter">C.</span> Sorted bars automatically start at zero</label></li><li><label><input type="radio" name="03-categories-q4" value="D"> <span class="opt-letter">D.</span> It removes the need for axis labels</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Unless the categories have a natural order (like months), sort by value so the comparison the reader wants is already done.</div>
+</div><p class="quiz-score" aria-live="polite"></p></section>
+<div class="admonition note">
+<p class="admonition-title">Key takeaways</p>
+<ul>
+<li><code>countplot</code> counts. <code>barplot</code> summarizes. Say what the error bars mean.</li>
+<li>Sort bars, lay long labels horizontally, and always start bars at zero.</li>
+<li>Show distributions with box + strip (or violin). Use <code>pointplot</code> when zero isn&rsquo;t meaningful.</li>
+<li>Skip pie charts. Lengths and positions beat angles.</li>
+</ul>
+</div>
+    </article>
+    <nav class="pager" aria-label="Previous and next lesson"><a class="pager-prev" href="02-distributions.html"><small>Previous</small>Lesson 2 - Distributions: how heavy is a penguin?</a><a class="pager-next" href="04-relationships.html"><small>Next</small>Lesson 4 - Relationships: trends, lines and correlations</a></nav>
+    <footer class="site-foot">
+      <p>Data: Palmer Station penguins (Gorman, Williams &amp; Fraser, 2014), via
+      <a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a>, CC0.
+      Lessons: CC BY 4.0. Code: MIT.</p>
+    </footer>
+  </main>
+</div>
+<script type="application/json" class="page-setup">{"setup": "import pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}"}</script>
+<script src="assets/app.js"></script>
+<script src="assets/live.js"></script>
+</body>
+</html>

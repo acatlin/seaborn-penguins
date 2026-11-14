@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 5 - Small multiples with figure-level functions · Seaborn with Penguins</title>
+<meta name="description" content="A hands-on, browser-runnable course in seaborn and matplotlib for people who already know Python and pandas.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐧</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/pygments.css">
+</head>
+<body data-page="05-small-multiples">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="nav-toggle" type="button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+  <a class="brand" href="index.html"><span aria-hidden="true">🐧</span> Seaborn with Penguins</a>
+  <span class="py-status" data-py-status title="In-browser Python status">Python: not loaded</span>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="Lessons">
+    <ol class="nav-list"><li><a href="index.html" data-page="index"><span class="nav-num">0</span><span class="nav-title">Start here</span></a></li><li><a href="01-first-plot.html" data-page="01-first-plot"><span class="nav-num">1</span><span class="nav-title">Your first plot</span></a></li><li><a href="02-distributions.html" data-page="02-distributions"><span class="nav-num">2</span><span class="nav-title">Distributions</span></a></li><li><a href="03-categories.html" data-page="03-categories"><span class="nav-num">3</span><span class="nav-title">Comparing categories</span></a></li><li><a href="04-relationships.html" data-page="04-relationships"><span class="nav-num">4</span><span class="nav-title">Relationships</span></a></li><li><a href="05-small-multiples.html" data-page="05-small-multiples" aria-current=page><span class="nav-num">5</span><span class="nav-title">Small multiples</span></a></li><li><a href="06-polish.html" data-page="06-polish"><span class="nav-num">6</span><span class="nav-title">Polish with matplotlib</span></a></li><li><a href="07-capstone.html" data-page="07-capstone"><span class="nav-num">7</span><span class="nav-title">Capstone: field report</span></a></li><li><a href="instructor-guide.html" data-page="instructor-guide"><span class="nav-num">★</span><span class="nav-title">Instructor guide</span></a></li></ol>
+    <div class="sidebar-foot">
+      <a href="https://github.com/maddogdatascience/seaborn-penguins">Source on GitHub</a>
+    </div>
+  </nav>
+  <main id="main" class="content">
+    <div class="lesson-tools"><a href="https://colab.research.google.com/github/maddogdatascience/seaborn-penguins/blob/main/docs/notebooks/05-small-multiples.ipynb" target="_blank" rel="noopener">Open in Colab</a><a href="notebooks/05-small-multiples.ipynb" download>Download notebook</a><a href="notebooks/05-small-multiples-solutions.ipynb" download>Solutions notebook</a></div>
+    <article>
+<h1 id="lesson-5-small-multiples-with-figure-level-functions">Lesson 5 - Small multiples with figure-level functions</h1>
+<p class="lede">When one chart gets crowded, don't cram in more colors. Split it into a grid of small charts that share the same axes. Seaborn's figure-level functions do this in one argument.</p>
+
+<p><strong>By the end of this lesson you can:</strong></p>
+<ul>
+<li>tell axes-level functions from figure-level ones, and pick the right one</li>
+<li>split any chart into panels with <code>col=</code>, <code>row=</code> and <code>col_wrap=</code></li>
+<li>size and label a grid (<code>height</code>, <code>aspect</code>, <code>set_axis_labels</code>, <code>set_titles</code>)</li>
+<li>explain why shared axes are the default and when to keep them</li>
+</ul>
+<div class="cell cell-setup"><div class="code-label">Setup - run this first</div><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;ticks&quot;</span><span class="p">)</span>
+<span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;penguins&quot;</span><span class="p">)</span>
+<span class="n">PENGUIN_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Adelie&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF8C00&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">:</span> <span class="s2">&quot;#A034F0&quot;</span><span class="p">,</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">:</span> <span class="s2">&quot;#159090&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<h2 id="two-kinds-of-seaborn-function">Two kinds of seaborn function</h2>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>Axes-level (draws on one <code>ax</code>)</th>
+<th>Figure-level (makes a whole grid)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Relationships</td>
+<td><code>scatterplot</code>, <code>lineplot</code></td>
+<td><code>relplot(kind="scatter" / "line")</code></td>
+</tr>
+<tr>
+<td>Distributions</td>
+<td><code>histplot</code>, <code>kdeplot</code>, <code>ecdfplot</code></td>
+<td><code>displot(kind="hist" / "kde" / "ecdf")</code></td>
+</tr>
+<tr>
+<td>Categories</td>
+<td><code>boxplot</code>, <code>barplot</code>, <code>stripplot</code>, &hellip;</td>
+<td><code>catplot(kind="box" / "bar" / "strip" / ...)</code></td>
+</tr>
+<tr>
+<td>Regression</td>
+<td><code>regplot</code></td>
+<td><code>lmplot</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Axes-level</strong> functions take <code>ax=</code> and return an <code>Axes</code>. Use them when <em>you</em> build the layout with matplotlib (Lessons 6 and 7). <strong>Figure-level</strong> functions create their own figure, accept <code>col=</code> and <code>row=</code>, and return a <strong><code>FacetGrid</code></strong>. You size them with <code>height=</code> (inches per panel) and <code>aspect=</code> (width ÷ height), not <code>figsize</code>.</p>
+<h2 id="one-panel-per-island">One panel per island</h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">relplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+                <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+                <span class="n">col</span><span class="o">=</span><span class="s2">&quot;island&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">3.4</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">,</span> <span class="s2">&quot;Body mass (g)&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_titles</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{col_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "g = sns.relplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\",\n                hue=\"species\", palette=PENGUIN_COLORS,\n                col=\"island\", height=3.4, aspect=0.9)\ng.set_axis_labels(\"Flipper length (mm)\", \"Body mass (g)\")\ng.set_titles(\"{col_name}\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/05-relplot-col.png" alt="Three scatter panels of flipper length versus body mass, one per island, colored by species, sharing the same axes." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>One argument, <code>col="island"</code>, gave three aligned panels. <code>set_titles("{col_name}")</code> swaps the default &ldquo;island = Biscoe&rdquo; titles for just the name. Because the axes are <strong>shared</strong>, you can compare positions across panels directly. The Biscoe giants are Gentoos, and Torgersen is all Adelie.</p>
+<h2 id="rows-and-columns">Rows <em>and</em> columns</h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">displot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span>
+                <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">binwidth</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">2.4</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">1.3</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="s2">&quot;Penguins&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_titles</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{col_name}</span><span class="s2"> · </span><span class="si">{row_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "g = sns.displot(data=penguins, x=\"body_mass_g\", col=\"species\", row=\"sex\",\n                hue=\"species\", palette=PENGUIN_COLORS, legend=False,\n                binwidth=200, height=2.4, aspect=1.3)\ng.set_axis_labels(\"Body mass (g)\", \"Penguins\")\ng.set_titles(\"{col_name} \u00b7 {row_name}\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/05-displot-grid.png" alt="Grid of six histograms of body mass: rows for female and male, columns for each species; males are heavier in every species." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Each row is a sex and each column a species, giving six histograms on identical scales. Reading down a column compares females with males. Reading across compares species. Penguins with missing <code>sex</code> simply don&rsquo;t appear.</p>
+<h2 id="categorical-grids-with-catplot">Categorical grids with <code>catplot</code></h2>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">catplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;box&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Female&quot;</span><span class="p">:</span> <span class="s2">&quot;#9a9a9a&quot;</span><span class="p">,</span> <span class="s2">&quot;Male&quot;</span><span class="p">:</span> <span class="s2">&quot;#4a4a4a&quot;</span><span class="p">},</span>
+                <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">3.4</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;Body mass (g)&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_titles</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{col_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Males are heavier in every species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.04</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "g = sns.catplot(data=penguins, x=\"sex\", y=\"body_mass_g\", col=\"species\",\n                kind=\"box\", hue=\"sex\", palette={\"Female\": \"#9a9a9a\", \"Male\": \"#4a4a4a\"},\n                legend=False, height=3.4, aspect=0.8)\ng.set_axis_labels(\"\", \"Body mass (g)\")\ng.set_titles(\"{col_name}\")\ng.figure.suptitle(\"Males are heavier in every species\", y=1.04)"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/05-catplot.png" alt="Three box-plot panels, one per species, comparing body mass of female and male penguins; males are heavier in each." loading="lazy"></figure><div class="cell-live"></div></div>
+<p><code>g.figure</code> is the underlying matplotlib <code>Figure</code>, so <code>suptitle</code> adds a title over the whole grid. <code>y=1.04</code> nudges it up, clear of the panel titles. The x-axis already names each sex, so <code>legend=False</code> drops a legend that would only repeat it.</p>
+<div class="admonition few">
+<p class="admonition-title">Small multiples beat a crowded chart</p>
+<p>Edward Tufte and Stephen Few both champion <strong>small multiples</strong>: the same chart repeated for each subset, on the same scales. The eye learns the design once, then spends its effort on the differences. If a single chart needs more than about four colors, or its lines tangle, facet it.</p>
+</div>
+<h2 id="shared-axes-keep-them-usually">Shared axes: keep them (usually)</h2>
+<p>Figure-level functions share x and y across panels by default. That&rsquo;s what makes panel-to-panel comparison honest. Unsharing (<code>facet_kws={"sharey": False}</code>) lets each panel zoom in on its own range, but then equal heights no longer mean equal values. Only do it when the panels are <em>not</em> meant to be compared, and say so.</p>
+<h2 id="wrapping-a-long-row">Wrapping a long row</h2>
+<p>With many panels, <code>col_wrap=</code> wraps them into rows:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">subset</span> <span class="o">=</span> <span class="n">penguins</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sex&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span>
+    <span class="n">group</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;island&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; · &quot;</span> <span class="o">+</span> <span class="n">d</span><span class="p">[</span><span class="s2">&quot;sex&quot;</span><span class="p">])</span>
+<span class="n">subset</span> <span class="o">=</span> <span class="n">subset</span><span class="p">[</span><span class="n">subset</span><span class="p">[</span><span class="s2">&quot;island&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">&quot;Biscoe&quot;</span><span class="p">,</span> <span class="s2">&quot;Dream&quot;</span><span class="p">])]</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">displot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s2">&quot;group&quot;</span><span class="p">,</span> <span class="n">col_wrap</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">,</span>
+                <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">2.4</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">1.4</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">,</span> <span class="s2">&quot;Penguins&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_titles</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{col_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "subset = penguins.dropna(subset=[\"sex\"]).assign(\n    group=lambda d: d[\"island\"] + \" \u00b7 \" + d[\"sex\"])\nsubset = subset[subset[\"island\"].isin([\"Biscoe\", \"Dream\"])]\ng = sns.displot(data=subset, x=\"flipper_length_mm\", col=\"group\", col_wrap=2,\n                hue=\"species\", palette=PENGUIN_COLORS, element=\"step\",\n                fill=False, binwidth=4, height=2.4, aspect=1.4)\ng.set_axis_labels(\"Flipper length (mm)\", \"Penguins\")\ng.set_titles(\"{col_name}\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/05-colwrap.png" alt="Four histogram panels of flipper length by island-and-sex combinations wrapped into two rows." loading="lazy"></figure><div class="cell-live"></div></div>
+<h2 id="custom-panels-with-facetgrid">Custom panels with <code>FacetGrid</code></h2>
+<p>Under the hood, every figure-level function builds a <code>FacetGrid</code>. You can build one directly and map any plotting function onto it:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">FacetGrid</span><span class="p">(</span><span class="n">penguins</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span>
+                  <span class="n">palette</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Female&quot;</span><span class="p">:</span> <span class="s2">&quot;#a0a0a0&quot;</span><span class="p">,</span> <span class="s2">&quot;Male&quot;</span><span class="p">:</span> <span class="s2">&quot;#303030&quot;</span><span class="p">},</span> <span class="n">height</span><span class="o">=</span><span class="mf">3.2</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">map_dataframe</span><span class="p">(</span><span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">add_legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_titles</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{col_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "g = sns.FacetGrid(penguins, col=\"species\", hue=\"sex\",\n                  palette={\"Female\": \"#a0a0a0\", \"Male\": \"#303030\"}, height=3.2)\ng.map_dataframe(sns.scatterplot, x=\"bill_length_mm\", y=\"bill_depth_mm\", s=18)\ng.add_legend(title=\"\")\ng.set_axis_labels(\"Bill length (mm)\", \"Bill depth (mm)\")\ng.set_titles(\"{col_name}\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/05-facetgrid.png" alt="Three panels by species, each a scatter of bill length versus bill depth with female and male penguins in different grays." loading="lazy"></figure><div class="cell-live"></div></div>
+<h2 id="your-turn">Your turn</h2>
+
+<div class="exercise" id="ex-5.1" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 5.1</span>
+    <span class="exercise-title">A six-panel flipper report</span></div>
+  <textarea class="cell-editor" rows="7" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 5.1"># Use displot to draw flipper_length_mm histograms with one COLUMN per
+# species and one ROW per sex. Color by species with PENGUIN_COLORS,
+# hide the legend (the column titles already name species), and set
+# plain-English axis labels.
+g = sns.displot(data=penguins, x=&quot;flipper_length_mm&quot;)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">displot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">row</span><span class="o">=</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span>
+                <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">binwidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">2.4</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="mf">1.3</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">,</span> <span class="s2">&quot;Penguins&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_titles</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{col_name}</span><span class="s2"> · </span><span class="si">{row_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-5.1.png" alt="Solution chart for exercise 5.1" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# Use displot to draw flipper_length_mm histograms with one COLUMN per\n# species and one ROW per sex. Color by species with PENGUIN_COLORS,\n# hide the legend (the column titles already name species), and set\n# plain-English axis labels.\ng = sns.displot(data=penguins, x=\"flipper_length_mm\")", "solution": "g = sns.displot(data=penguins, x=\"flipper_length_mm\", col=\"species\", row=\"sex\",\n                hue=\"species\", palette=PENGUIN_COLORS, legend=False,\n                binwidth=3, height=2.4, aspect=1.3)\ng.set_axis_labels(\"Flipper length (mm)\", \"Penguins\")\ng.set_titles(\"{col_name} \u00b7 {row_name}\")", "check": "axes = chart_axes()\nassert len(axes) == 6, f\"I expected 6 panels (3 species x 2 sexes) but found {len(axes)}. Use col= and row=.\"\nxlims = {tuple(round(v) for v in ax.get_xlim()) for ax in axes}\nassert len(xlims) == 1, \"Keep the x-axes shared so the panels are comparable.\"\nassert not legend_labels(), \"Drop the legend with legend=False - the panel titles already name the species.\"\nassert near_color(PENGUIN_COLORS[\"Chinstrap\"], set().union(*[colors_used(a) for a in axes]), tol=0.1), \"Color by species: hue='species', palette=PENGUIN_COLORS.\"\nassert any(\"mm\" in ax.get_xlabel() for ax in axes), \"Label the x-axis with units, e.g. g.set_axis_labels('Flipper length (mm)', 'Penguins').\"\nprint(\"Six aligned panels on shared scales: species differences dominate, and males run longer in each.\")"}</script>
+</div>
+
+
+
+<div class="exercise" id="ex-5.2" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 5.2</span>
+    <span class="exercise-title">Clean panel titles</span></div>
+  <textarea class="cell-editor" rows="6" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 5.2"># Draw a relplot of bill_length_mm (x) vs bill_depth_mm (y), one column
+# per species, colored by sex. Make each panel title JUST the species
+# name (e.g. &quot;Gentoo&quot;), and add a figure title with g.figure.suptitle.
+g = sns.relplot(data=penguins, x=&quot;bill_length_mm&quot;, y=&quot;bill_depth_mm&quot;, col=&quot;species&quot;)</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">relplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;bill_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span>
+                <span class="n">col</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span>
+                <span class="n">palette</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Female&quot;</span><span class="p">:</span> <span class="s2">&quot;#a0a0a0&quot;</span><span class="p">,</span> <span class="s2">&quot;Male&quot;</span><span class="p">:</span> <span class="s2">&quot;#303030&quot;</span><span class="p">},</span> <span class="n">height</span><span class="o">=</span><span class="mf">3.2</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_titles</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{col_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Males have bigger bills in every species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.04</span><span class="p">)</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-5.2.png" alt="Solution chart for exercise 5.2" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# Draw a relplot of bill_length_mm (x) vs bill_depth_mm (y), one column\n# per species, colored by sex. Make each panel title JUST the species\n# name (e.g. \"Gentoo\"), and add a figure title with g.figure.suptitle.\ng = sns.relplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\", col=\"species\")", "solution": "g = sns.relplot(data=penguins, x=\"bill_length_mm\", y=\"bill_depth_mm\",\n                col=\"species\", hue=\"sex\",\n                palette={\"Female\": \"#a0a0a0\", \"Male\": \"#303030\"}, height=3.2)\ng.set_axis_labels(\"Bill length (mm)\", \"Bill depth (mm)\")\ng.set_titles(\"{col_name}\")\ng.figure.suptitle(\"Males have bigger bills in every species\", y=1.04)", "check": "axes = chart_axes()\nassert len(axes) == 3, \"Make one column per species with col='species'.\"\ntitles = sorted(ax.get_title() for ax in axes)\nassert titles == [\"Adelie\", \"Chinstrap\", \"Gentoo\"], f\"Panel titles are {titles}; use g.set_titles('{{col_name}}').\"\nassert {\"Female\", \"Male\"} <= set(legend_labels()), \"Color the points by sex with hue='sex'.\"\nsup = plt.gcf()._suptitle\nassert sup is not None and len(sup.get_text()) >= 10, \"Add a figure title with g.figure.suptitle(...).\"\nprint(\"Clean titles, shared axes, one message on top.\")"}</script>
+</div>
+
+
+<h2 id="quick-quiz">Quick quiz</h2>
+<section class="quiz" aria-label="Quiz">
+<div class="quiz-q" data-answer="B" id="05-small-multiples-q1">
+  <p class="quiz-stem"><span class="quiz-num">Q1.</span> Which figure-level function is the counterpart of <code>sns.histplot</code>?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="05-small-multiples-q1" value="A"> <span class="opt-letter">A.</span> <code>sns.catplot</code></label></li><li><label><input type="radio" name="05-small-multiples-q1" value="B"> <span class="opt-letter">B.</span> <code>sns.displot</code></label></li><li><label><input type="radio" name="05-small-multiples-q1" value="C"> <span class="opt-letter">C.</span> <code>sns.relplot</code></label></li><li><label><input type="radio" name="05-small-multiples-q1" value="D"> <span class="opt-letter">D.</span> <code>sns.histgrid</code></label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden><code>displot</code> covers the distribution family: <code>kind="hist"</code> (default), <code>"kde"</code> and <code>"ecdf"</code>.</div>
+</div>
+<div class="quiz-q" data-answer="D" id="05-small-multiples-q2">
+  <p class="quiz-stem"><span class="quiz-num">Q2.</span> What do figure-level functions such as <code>relplot</code> return?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="05-small-multiples-q2" value="A"> <span class="opt-letter">A.</span> A single matplotlib <code>Axes</code>, just like <code>scatterplot</code> returns</label></li><li><label><input type="radio" name="05-small-multiples-q2" value="B"> <span class="opt-letter">B.</span> A pandas DataFrame of the aggregated values for each panel</label></li><li><label><input type="radio" name="05-small-multiples-q2" value="C"> <span class="opt-letter">C.</span> A list of PNG images, one for each panel in the grid</label></li><li><label><input type="radio" name="05-small-multiples-q2" value="D"> <span class="opt-letter">D.</span> A grid object (e.g. <code>FacetGrid</code>) managing the figure</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>The grid object exposes <code>.figure</code>, <code>.axes</code>, and helpers like <code>set_axis_labels</code> and <code>set_titles</code>.</div>
+</div>
+<div class="quiz-q" data-answer="A" id="05-small-multiples-q3">
+  <p class="quiz-stem"><span class="quiz-num">Q3.</span> Why do facets share their axes by default?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="05-small-multiples-q3" value="A"> <span class="opt-letter">A.</span> So equal positions mean equal values across panels</label></li><li><label><input type="radio" name="05-small-multiples-q3" value="B"> <span class="opt-letter">B.</span> Because matplotlib cannot draw different scales in one figure</label></li><li><label><input type="radio" name="05-small-multiples-q3" value="C"> <span class="opt-letter">C.</span> To save memory when there are many panels</label></li><li><label><input type="radio" name="05-small-multiples-q3" value="D"> <span class="opt-letter">D.</span> So the legend can be drawn only once</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Shared scales are what make small multiples work. Unshare only when panels aren&rsquo;t meant to be compared - and tell the reader.</div>
+</div>
+<div class="quiz-q" data-answer="C" id="05-small-multiples-q4">
+  <p class="quiz-stem"><span class="quiz-num">Q4.</span> How do you set the size of a <code>relplot</code> figure?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="05-small-multiples-q4" value="A"> <span class="opt-letter">A.</span> Pass <code>figsize=(10, 4)</code> to <code>relplot</code></label></li><li><label><input type="radio" name="05-small-multiples-q4" value="B"> <span class="opt-letter">B.</span> Call <code>plt.figure(figsize=(10, 4))</code> before <code>relplot</code></label></li><li><label><input type="radio" name="05-small-multiples-q4" value="C"> <span class="opt-letter">C.</span> Use <code>height=</code> (inches per panel) and <code>aspect=</code> (width/height)</label></li><li><label><input type="radio" name="05-small-multiples-q4" value="D"> <span class="opt-letter">D.</span> Increase the <code>dpi=</code> argument until it looks right</label></li></ol>
+  <button type="button" class="btn-primary" data-action="grade">Check answer</button>
+  <div class="quiz-feedback" aria-live="polite"></div>
+  <div class="quiz-explain" hidden>Figure-level functions create their own figure, so <code>plt.figure</code> beforehand has no effect; size is set per panel.</div>
+</div><p class="quiz-score" aria-live="polite"></p></section>
+<div class="admonition note">
+<p class="admonition-title">Key takeaways</p>
+<ul>
+<li>Axes-level functions take <code>ax=</code>. Figure-level functions (<code>relplot</code>, <code>displot</code>, <code>catplot</code>, <code>lmplot</code>) build a grid and return it.</li>
+<li>Facet with <code>col=</code>, <code>row=</code>, <code>col_wrap=</code>. Size with <code>height=</code> and <code>aspect=</code>.</li>
+<li>Tidy the grid with <code>set_axis_labels</code>, <code>set_titles("{col_name}")</code>, and <code>g.figure.suptitle</code>.</li>
+<li>Small multiples on shared axes beat one overloaded chart.</li>
+</ul>
+</div>
+    </article>
+    <nav class="pager" aria-label="Previous and next lesson"><a class="pager-prev" href="04-relationships.html"><small>Previous</small>Lesson 4 - Relationships: trends, lines and correlations</a><a class="pager-next" href="06-polish.html"><small>Next</small>Lesson 6 - From default to deliberate: polish with matplotlib</a></nav>
+    <footer class="site-foot">
+      <p>Data: Palmer Station penguins (Gorman, Williams &amp; Fraser, 2014), via
+      <a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a>, CC0.
+      Lessons: CC BY 4.0. Code: MIT.</p>
+    </footer>
+  </main>
+</div>
+<script type="application/json" class="page-setup">{"setup": "import pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}"}</script>
+<script src="assets/app.js"></script>
+<script src="assets/live.js"></script>
+</body>
+</html>

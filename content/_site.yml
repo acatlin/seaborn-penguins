@@ -1,0 +1,50 @@
+title: Seaborn with Penguins
+description: A hands-on, browser-runnable course in seaborn and matplotlib for people who already know Python and pandas.
+github_user: maddogdatascience
+repo: seaborn-penguins
+pages:
+  - slug: index
+    num: "0"
+    nav: Start here
+    title: Start here
+    description: Course overview, setup, and the Palmer penguins dataset.
+  - slug: 01-first-plot
+    num: "1"
+    nav: Your first plot
+    title: "Lesson 1 - Your first plot: the grammar of seaborn"
+    notebook: true
+  - slug: 02-distributions
+    num: "2"
+    nav: Distributions
+    title: "Lesson 2 - Distributions: how heavy is a penguin?"
+    notebook: true
+  - slug: 03-categories
+    num: "3"
+    nav: Comparing categories
+    title: "Lesson 3 - Comparing categories: bars, boxes and dots"
+    notebook: true
+  - slug: 04-relationships
+    num: "4"
+    nav: Relationships
+    title: "Lesson 4 - Relationships: trends, lines and correlations"
+    notebook: true
+  - slug: 05-small-multiples
+    num: "5"
+    nav: Small multiples
+    title: "Lesson 5 - Small multiples with figure-level functions"
+    notebook: true
+  - slug: 06-polish
+    num: "6"
+    nav: Polish with matplotlib
+    title: "Lesson 6 - From default to deliberate: polish with matplotlib"
+    notebook: true
+  - slug: 07-capstone
+    num: "7"
+    nav: "Capstone: field report"
+    title: "Lesson 7 - Capstone: the Penguin Field Report"
+    notebook: true
+  - slug: instructor-guide
+    num: "★"
+    nav: Instructor guide
+    title: Instructor guide
+    description: How to teach this course - timing, talking points, misconceptions, and assessment.

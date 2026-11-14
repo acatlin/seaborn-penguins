@@ -11,7 +11,8 @@ The test suite was green before any change (50 passed). Findings are ranked by s
 "Fixed" means the fix is in the repository; "left alone" means it is documented here only.
 The High and Medium fixes were made with the review itself. Five of the Low items were fixed
 in a follow-up pass. That pass turned up three more Low findings (L13-L15) and fixed two of
-them.
+them. A second follow-up fixed L6-L9 and the palette half of L15, and wrote down six more Low
+findings (L16-L21) without acting on them.
 
 Severity scale:
 
@@ -38,9 +39,11 @@ Severity scale:
 | M9 | Medium | Figures are not reproducible: unseeded jitter and bootstrap CIs | Fixed |
 | M10 | Medium | Lesson 4 line-chart alt text claims a steady rise; ragged small-n ends unexplained | Fixed |
 | L1-L3, L10, L11 | Low | Legend titles, "1.3 kg", panel order, HTML-only stale-docs test, lax exercise 2.1 checker | Fixed in a follow-up |
-| L4-L9, L12 | Low | Raw pair-plot labels, box frames, an exam distractor, hover contrast and more | Left alone, see below |
+| L4, L5, L12 | Low | Raw pair-plot labels, box frames in Lessons 1-5, a correct exam option that is the longest | Left alone, see below |
+| L6-L9 | Low | Bin-width panels without a y label, an invented exam distractor, muted text under 4.5:1, raw names in exercise 4.1's solution | Fixed in a second follow-up |
 | L13, L14 | Low | Found in the follow-up: `binwidth=` is approximate; unit checks pass on raw column names | Fixed in the follow-up |
-| L15 | Low | Found in the follow-up: exercise 2.2 checks neither its palette nor its printed answer | Left alone, see below |
+| L15 | Low | Found in the follow-up: exercise 2.2 checks neither its palette nor its printed answer | Palette check fixed in the second follow-up; the printed answer left alone |
+| L16-L21 | Low | Found in the second follow-up: a give-away exam item, a 4.46:1 tick mark, heatmap label rotation, layout advice the course does not follow, an unnamed y-axis, an unshared x-axis | Left alone, see below |
 
 ## High
 
@@ -259,32 +262,98 @@ Fixed in a follow-up pass:
   the label its checker expects. A new test puts the raw names back on each solution's axes
   and requires a hint.
 
+Fixed in a second follow-up pass:
+
+- **L6. Only the first `02-binwidths` panel named its y-axis.** The three panels do not share
+  a y-axis, and should not: wider bins hold more penguins, so the tallest bar stands for 14
+  birds at 50 g and for 153 at 1,000 g. One label on the first panel is the convention for a
+  *shared* axis. Fix: every panel sets `ylabel="Number of penguins"`. Three y labels do
+  not fit matplotlib's default spacing (the second and third ran into the frame of the panel
+  to their left), so the figure is built with `layout="constrained"`, which the sentence
+  above the code introduces with its pointer to Lesson 6. Constrained layout makes the Axes a
+  little shorter, and at the old height that put the ticks of the 50 g panel at every 2.5
+  penguins, so the figure is now 3.5 in tall instead of 3.2. A new paragraph under the figure
+  tells learners to read the y-axes before they compare heights, and says what the
+  `sharey=False` in the code is for. The bin-width test also requires a y label on every
+  panel.
+- **L7. Exam Q5's distractor `sns.histplot(cumulative="ecdf")`** used an invented value for
+  a real keyword. Fix: option C is now `sns.histplot(element="step")`, a call taught in the
+  same lesson. It tempts for a real reason, since an ECDF is drawn as steps too (exercise
+  2.1's checker already treats an ECDF as a near miss of a step histogram), and it is plainly
+  wrong. The real value, `cumulative=True`, would not have been: a cumulative histogram is a
+  binned ECDF, and a learner who chose it could argue the point. The explanation gained a
+  sentence on the step histogram. The option keeps its place and is still the longest of the
+  four, so the answer balance and the option-length figures given under M4 and in the
+  instructor guide stand. Both editions of the assessment pack were rebuilt.
+- **L8. `--ink-3` text fell below 4.5:1 on tinted backgrounds.** The finding named the hover
+  surface (4.24:1). The same gray on the same surface is also the "Design principle" tag at
+  the head of every design callout, which is not a hover state, and it measured 4.41:1 on the
+  number of the current lesson in the sidebar and 4.23:1 on the letter of a graded quiz
+  option. Fix: the light theme's `--ink-3` is `#646b78` instead of `#6b7280`. That gives
+  4.69:1 or better wherever the token is used: 4.71 on the hover and callout surface, 4.89 on
+  the current sidebar item, 4.69 and 4.70 on a right and a wrong quiz option, 5.14 on the
+  page and 5.36 on white. The ratios are computed from the stylesheet; those on the hover
+  surface, the callout, the sidebar item and the quiz tints were also measured on the
+  rendered page in Chrome. The token stays well apart from `--ink-2` (7.0:1 or more). The
+  dark theme already passed (4.56:1 at worst) and is unchanged. A new test computes the ratio
+  from `site_src/style.css` for both themes, the two quiz tints included.
+- **L9. Exercise 4.1's solution heatmap** showed raw column names and an unlabelled
+  colorbar. Fix: the solution renames the columns with the lesson's own `nice` dictionary and
+  passes `cbar_kws={"label": "Pearson r"}`, under a comment that marks both as optional
+  polish. The brief and the checker are as they were, so the exercise is no longer than
+  before and an answer with raw names still passes. The solution still shows the whole
+  matrix: the slice-and-mask idiom is the hardest code in the course, and the brief does not
+  ask for it.
+- **L15, first half. Exercise 2.2 did not check its palette.** Fix: once the checker has
+  found the three species, it requires the Chinstrap purple among the lines, with the hint
+  "Use palette=PENGUIN_COLORS so the Chinstrap line is purple." A new test takes
+  `palette=PENGUIN_COLORS` out of the solution of each of the eight exercises whose brief
+  names that palette and requires a hint. The other seven already gave one. The second half
+  of L15 is still open, see below.
+
 Left alone, with reasons:
 
 - **L4. `pairplot` keeps raw axis labels.** The text frames it as an exploration tool, and
   since the L1 fix it says in so many words that this is why the names are raw.
 - **L5. Lessons 1-5 keep the full box frame** (`despine` is taught in Lesson 6). A
   deliberate progression; Few would despine from the first chart.
-- **L6. `02-binwidths`** has unshared y axes (correct, since bin width changes the counts)
-  but only the first panel carries the y label.
-- **L7. Exam Q5's distractor `sns.histplot(cumulative="ecdf")`** uses an invented value
-  for a real keyword; harmless but a learner who knows `cumulative=True` may hesitate.
-- **L8. `--ink-3` text on the hover surface** (`#6b7280` on `#f2f0ea`) is 4.2:1, just under
-  AA for small text; on the page background it is 4.6:1.
-- **L9. Exercise 4.1's solution heatmap** shows the full matrix with raw column names and
-  an unlabeled colorbar. The exercise doesn't ask for the renaming and masking taught in
-  the lesson, which keeps it short; the check accepts either.
 - **L12. The exam's Q10 (sorting bars)** has the correct option as the longest because it
   is real code; a learner who knows `order=` is not helped by that.
 
-Found during the follow-up pass, and left alone:
+Found during the follow-up passes, and left alone:
 
-- **L15. Exercise 2.2 checks neither its palette nor its printed answer.** The brief asks
-  for `PENGUIN_COLORS`, and the success message talks about "the purple line", but an ECDF
-  in seaborn's default colors passes. One more assertion
-  (`near_color(PENGUIN_COLORS["Chinstrap"], colors_used(ax))`) would close that. The second
-  task, printing the share of Chinstraps, cannot be checked at all: a checker sees the
-  chart, not what the cell printed.
+- **L15, second half. Exercise 2.2 cannot check its printed answer.** The second task asks
+  learners to print the share of Chinstraps, and a checker sees the chart and the variables a
+  cell leaves behind, not what the cell printed. Closing this takes a change to
+  `tools/runner.py`, which the browser shares: the captured output would have to be handed to
+  the check block.
+- **L16. Exam Q5 still gives itself away.** `sns.ecdfplot` is the only option that contains
+  the initials of the term the stem spells out, so it can be picked without knowing what an
+  ECDF is, and no distractor changes that. It is a recall item of the kind M4 replaced
+  (`stripplot`). A sturdier Q5 would ask when an ECDF is the better choice, rather than what
+  the function is called.
+- **L17. The tick on a completed lesson is 4.46:1 while its sidebar item is hovered.** That
+  is `--good` (`#1a7f37`) on `--surface-2`, in the light theme only, and it is the one place
+  where that pair meets. `#197d36` would be 4.57:1.
+- **L18. Both heatmaps leave the rotation of their tick labels to seaborn**, which turns the
+  labels of whichever axis would otherwise overlap. In the built figures (Arial, on the
+  machine that builds `docs/`) the row labels of `04-heatmap` and `sol-4.1` run vertically.
+  In the browser (DejaVu Sans) `sol-4.1` comes out the other way round, with level row labels
+  and vertical column labels. Both are legible, but level row labels read more easily, and
+  `ax.tick_params(axis="y", rotation=0)` would keep them level in both places.
+- **L19. Lesson 6's layout advice is not what the course does.** Of `layout="constrained"`
+  the lesson says "Use it for every multi-panel figure", but its own two earlier figures
+  (`06-styles`, `06-palettes`) call `fig.tight_layout()`, and `02-kde-bw` and `03-three-ways`
+  use neither. All four render well; it is the advice and the examples that disagree.
+- **L20. `06-styles` does not name its y-axis.** All four panels set `ylabel=""`, so the
+  counts are numbers without a name. The panels show the same data on the same scale, so a
+  label on the first one would do.
+- **L21. `02-kde-bw` shares its y-axis but not its x-axis.** The over-smoothed panel runs
+  from 0 to 9,000 g and the under-smoothed one from 2,300 to 6,700 g, so the same 1,000 g is
+  drawn at two widths, and the right-hand curve looks no wider than the left-hand one when it
+  is twice as wide. With `sharex=True` the figure would also show what the callout under it
+  says, a density curve reaching far beyond any real penguin (the heaviest weighs 6,300 g,
+  and the curve ends near 8,500 g).
 
 ## What checked out
 
@@ -303,6 +372,7 @@ Numbers quoted in the text, recomputed from the bundled CSV:
 | 342 penguins with flipper and mass; 11 missing sex; 68 Chinstraps | 342; 11; 68 |
 | 95% / 97% of Adelies / Chinstraps at or below 4,500 g; 14% of Gentoos; "1 in 7" | 95.4% / 97.1%; 13.8%; 1 in 7.2 |
 | 91% of Chinstraps have bills over 45 mm | 91.2% |
+| Tallest bar: 14 penguins in 50 g bins, 153 in 1,000 g bins | 14; 153 |
 | Each extra mm of flipper adds about 50 g | 49.7 g |
 | r(flipper, mass) = 0.87; r(bill depth, mass) = -0.47 | 0.871; -0.472 |
 | Truncated bar chart makes Gentoo "nearly eight times" Adelie | 7.9x |

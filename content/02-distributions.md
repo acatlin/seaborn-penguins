@@ -31,18 +31,21 @@ A histogram sorts values into **bins** and draws a bar for each bin's count. Thi
 
 ## Bin width changes the story
 
-Seaborn picks a bin width for you. It's a reasonable guess, but still a guess. Here are three choices side by side. `plt.subplots` makes a row of empty Axes, and each seaborn call draws into one of them with `ax=` (Lesson 6 covers this properly):
+Seaborn picks a bin width for you. It's a reasonable guess, but still a guess. Here are three choices side by side. `plt.subplots` makes a row of empty Axes, spaced by `layout="constrained"` so that every label fits, and each seaborn call draws into one of them with `ax=` (Lesson 6 covers this properly):
 
 ```python run fig=02-binwidths alt="Three histograms of body mass: 50 g bins look noisy, 250 g bins show two humps, 1,000 g bins hide the shape entirely."
-fig, axes = plt.subplots(1, 3, figsize=(11, 3.2), sharey=False)
+fig, axes = plt.subplots(1, 3, figsize=(11, 3.5), sharey=False,
+                         layout="constrained")
 for ax, width in zip(axes, [50, 250, 1000]):
     sns.histplot(data=penguins, x="body_mass_g", binwidth=width,
                  binrange=(2500, 6500), ax=ax)
-    ax.set(title=f"binwidth = {width} g", xlabel="Body mass (g)", ylabel="")
-axes[0].set_ylabel("Number of penguins")
+    ax.set(title=f"binwidth = {width} g", xlabel="Body mass (g)",
+           ylabel="Number of penguins")
 ```
 
 Narrow bins show noise. Very wide bins wash out the two humps. Try a few widths, and pick one that shows real structure without inventing any. You can set `binwidth=` or `bins=` (a count). `binrange=` pins where the first bin starts and the last one ends. Without it, seaborn fits a whole number of bins between the smallest and largest value, so the width you get is only close to the one you asked for: `binwidth=1000` on its own would draw four 900 g bins here.
+
+Read the y-axes before you compare heights across panels. Each panel has its own scale (`sharey=False`) and its own label, because wider bins hold more penguins: the tallest bar stands for 14 penguins on the left and 153 on the right.
 
 ## Compare groups: layer, don't stack
 
@@ -188,6 +191,7 @@ print((chinstraps["bill_length_mm"] > 45).mean().round(2))
 ```python check for=2.2
 ax = chart_axes()[0]
 assert {"Adelie", "Chinstrap", "Gentoo"} <= set(legend_labels(ax)), "Draw one ECDF per species with hue='species'."
+assert near_color(PENGUIN_COLORS["Chinstrap"], colors_used(ax)), "Use palette=PENGUIN_COLORS so the Chinstrap line is purple."
 xs = [line.get_xdata() for line in ax.lines]
 assert any(len(set(x)) == 1 and abs(x[0] - 45) < 0.01 for x in xs), "Add a vertical line at 45 with ax.axvline(45)."
 lo, hi = ax.get_xlim()

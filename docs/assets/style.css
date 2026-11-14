@@ -5,7 +5,7 @@
   --surface-2: #f2f0ea;
   --ink: #1f2328;
   --ink-2: #4a515a;
-  --ink-3: #6b7280;
+  --ink-3: #646b78;         /* muted labels: 4.5:1 or better on every background, hover included */
   --rule: #e2ded4;
   --accent: #0f7173;        /* Gentoo teal, darkened for text contrast */
   --accent-ink: #ffffff;

@@ -63,6 +63,7 @@ assignments:
                             linewidth=2, binwidth=3)
           ax.set(xlabel="Flipper length (mm)", ylabel="Number of penguins",
                  title="Gentoos have the longest flippers by a wide margin")
+          ax.get_legend().set_title("Species")
           sns.despine()
         notes: "Outline-only steps keep every species on the same baseline without muddy color blending. A 3 mm bin width shows structure without noise; students should justify their choice."
       - title: "Chart 3 - Bills"

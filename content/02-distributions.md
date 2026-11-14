@@ -49,6 +49,7 @@ Narrow bins show noise. Very wide bins wash out the two humps. Try a few widths,
 ax = sns.histplot(data=penguins, x="body_mass_g", hue="species",
                   palette=PENGUIN_COLORS, multiple="stack")
 ax.set(xlabel="Body mass (g)", ylabel="Number of penguins", title="Stacked: hard to read")
+ax.get_legend().set_title("Species")
 ```
 
 Stacking answers "how many penguins in total per bin?" To compare species, though, you have to judge the Chinstrap and Gentoo bars from a floating baseline. Overlaid **step** outlines put every group on the same zero line:
@@ -59,6 +60,7 @@ ax = sns.histplot(data=penguins, x="body_mass_g", hue="species",
                   linewidth=2, binwidth=200)
 ax.set(xlabel="Body mass (g)", ylabel="Number of penguins",
        title="Gentoos are a heavyweight class of their own")
+ax.get_legend().set_title("Species")
 ```
 
 `fill=False` draws outlines only. Filled layers would blend where they overlap: purple over orange turns muddy pink, a color that belongs to no species.
@@ -74,6 +76,7 @@ A KDE replaces bars with a smooth curve. It's easier to overlay, but it involves
 ax = sns.kdeplot(data=penguins, x="body_mass_g", hue="species",
                  palette=PENGUIN_COLORS, common_norm=False, linewidth=2)
 ax.set(xlabel="Body mass (g)", ylabel="Density")
+ax.get_legend().set_title("Species")
 ```
 
 Outlines again, for the same reason as the histogram. `fill=True` looks lovely for a single curve, but where filled curves overlap they blend into a color that belongs to no species.
@@ -102,6 +105,7 @@ ax = sns.ecdfplot(data=penguins, x="body_mass_g", hue="species", palette=PENGUIN
 ax.axvline(4500, color="gray", linestyle="--", linewidth=1)
 ax.set(xlabel="Body mass (g)", ylabel="Proportion at or below",
        title="Only 1 in 7 Gentoos weighs 4,500 g or less")
+ax.get_legend().set_title("Species")
 ```
 
 Follow the dashed line up. About 95% of Adelies and 97% of Chinstraps are at or below 4,500 g, but only about 14% of Gentoos. You can check that with pandas:
@@ -119,8 +123,9 @@ Follow the dashed line up. About 95% of Adelies and 97% of Chinstraps are at or 
 ## Your turn
 
 ```python exercise id=2.1 title="Flipper lengths, species by species"
-# Draw overlaid STEP histograms of flipper_length_mm, one per species,
-# using PENGUIN_COLORS and a 3 mm bin width. Label the x-axis with units.
+# Draw overlaid STEP histograms of flipper_length_mm, one per species:
+# outlines only (no fill), in PENGUIN_COLORS, with a 3 mm bin width.
+# Label the x-axis with units.
 ax = sns.histplot(data=penguins, x="flipper_length_mm")
 ```
 
@@ -135,16 +140,27 @@ ax = sns.histplot(
     binwidth=3,
 )
 ax.set(xlabel="Flipper length (mm)", ylabel="Number of penguins")
+ax.get_legend().set_title("Species")
 ```
 
 ```python check for=2.1
 ax = chart_axes()[0]
 assert {"Adelie", "Chinstrap", "Gentoo"} <= set(legend_labels(ax)), "Split the histogram by species with hue='species'."
-assert near_color(PENGUIN_COLORS["Chinstrap"], colors_used(ax)), "Use palette=PENGUIN_COLORS."
 assert len(ax.patches) == 0, "Use element='step' so the groups are outlines on a shared baseline, not bars."
+from matplotlib.collections import PolyCollection
+filled = [c for c in ax.collections if isinstance(c, PolyCollection)]
+assert not filled, "Add fill=False. Filled steps blend where they overlap, so draw outlines only."
+import numpy as np
+def is_histogram_outline(line):
+    edges = np.asarray(line.get_xdata(), dtype=float)
+    even = len(edges) > 2 and np.isfinite(edges).all() and np.allclose(np.diff(edges), edges[1] - edges[0])
+    return line.get_drawstyle().startswith("steps") and even
+outlines = [line for line in ax.lines if is_histogram_outline(line)]
+assert len(outlines) >= 3, "I expected three step outlines: sns.histplot(..., element='step', fill=False)."
+assert near_color(PENGUIN_COLORS["Chinstrap"], colors_used(ax)), "Use palette=PENGUIN_COLORS."
 lo, hi = ax.get_xlim()
 assert lo > 150 and hi < 250, "x should be flipper_length_mm."
-assert "mm" in ax.get_xlabel(), "Label the x-axis in plain English with units, e.g. 'Flipper length (mm)'."
+assert "_" not in ax.get_xlabel() and "mm" in ax.get_xlabel(), "Label the x-axis in plain English with units, e.g. 'Flipper length (mm)'."
 print("Three clear peaks - flipper length alone nearly separates Gentoos from the rest.")
 ```
 
@@ -162,6 +178,7 @@ print(___)
 ax = sns.ecdfplot(data=penguins, x="bill_length_mm", hue="species", palette=PENGUIN_COLORS)
 ax.axvline(45, color="gray", linestyle="--", linewidth=1)
 ax.set(xlabel="Bill length (mm)", ylabel="Proportion at or below")
+ax.get_legend().set_title("Species")
 
 chinstraps = penguins[penguins["species"] == "Chinstrap"]
 print((chinstraps["bill_length_mm"] > 45).mean().round(2))

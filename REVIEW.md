@@ -8,7 +8,9 @@ PDF through Word), the notebooks opened, and the quizzes, exam, rubrics and inst
 guide read as assessment instruments.
 
 The test suite was green before any change (50 passed). Findings are ranked by severity.
-"Fixed" means the fix is in this branch; "left alone" means it is documented here only.
+"Fixed" means the fix is in the repository; "left alone" means it is documented here only.
+The High and Medium fixes were made with the review itself. Five of the Low items were fixed
+in a follow-up pass, which also turned up the new Low findings at the end of that section.
 
 Severity scale:
 
@@ -34,7 +36,9 @@ Severity scale:
 | M8 | Medium | Word pack: task numbering runs on across assignments; part titles orphaned | Fixed |
 | M9 | Medium | Figures are not reproducible: unseeded jitter and bootstrap CIs | Fixed |
 | M10 | Medium | Lesson 4 line-chart alt text claims a steady rise; ragged small-n ends unexplained | Fixed |
-| L1-L12 | Low | Legend titles, "1.3 kg", panel order, private attribute, wording, contrast and more | See below |
+| L1-L3, L10, L11 | Low | Legend titles, "1.3 kg", panel order, HTML-only stale-docs test, lax exercise 2.1 checker | Fixed in a follow-up |
+| L4-L9, L12 | Low | Raw pair-plot labels, box frames, an exam distractor, hover contrast and more | Left alone, see below |
+| L13, L14 | Low | Found in the follow-up: `binwidth=` is approximate; three unit checks pass on raw column names | Left alone, see below |
 
 ## High
 
@@ -195,21 +199,51 @@ Fixed in passing (one-liners):
   within 1.5 x IQR of the box. Reworded.
 - The Colab link opens a new tab without saying so; added a `title`.
 
+Fixed in a follow-up pass:
+
+- **L1. Legend titles were raw column names** ("species", "sex") in Lessons 1-6, while the
+  text says raw names "read as code". Fix: Lesson 1 now treats the legend title as one more
+  label, in the section that introduces axis labels, and rewrites it with
+  `ax.get_legend().set_title("Species")`. Every later finished chart does the same
+  (`g.legend.set_title(...)` on figure-level grids, explained with `lmplot` in Lesson 4),
+  including six exercise solutions and the model solution for Assignment 1, chart 2.
+  Nineteen site figures changed. Four legends keep seaborn's names on purpose: the bare
+  first `hue` example (the next section relabels it), the pair plot (an exploration tool,
+  and the text now says that is why its names are raw), the makeover's "before" chart, and
+  the `hue` + `style` legend in Lesson 1. In that last one the column names are headings
+  inside the legend rather than a title, there is no one-line fix, and the text now points
+  at them as part of the price of extra channels. A new test fails if any other legend
+  shows a column name, or if a listed exception no longer needs listing.
+- **L2. "Gentoos outweigh the other species by about 1.3 kg"** (Lesson 3 title, capstone
+  panel B). The mean gaps are 1,343 g (vs Chinstrap) and 1,375 g (vs Adelie), so "about
+  1.3" described only the nearer competitor. Fix: the titles now say "by more than 1.3 kg"
+  and "more than 1.3 kg heavier on average", which is true against either species and
+  against the two pooled (1,365 g).
+- **L3. Lesson 5's `relplot(col="island")`** showed panels in order of first appearance
+  (Torgersen, Biscoe, Dream). Fix: `col_order=["Biscoe", "Dream", "Torgersen"]`, busiest
+  first, the order Lesson 3 and the capstone already use. The paragraph underneath says
+  what the argument does and what happens without it, so the example still reads as "one
+  argument makes the panels", plus one that orders them.
+- **L10. `test_committed_docs_match_sources` compared HTML only.** Fix: it now compares
+  every file the build writes (pages, notebooks, scripts, styles, the runner copy, the data
+  file) with line endings folded, and lists every problem at once. Figures are checked for
+  presence only, because PNG bytes differ between the Windows machine that builds `docs/`
+  and the Linux CI runner. `docs/img` and `docs/notebooks` may not hold files the build no
+  longer produces. A figure or notebook that was never added to git, or was left behind by
+  a rename, now fails CI.
+- **L11. Exercise 2.1's checker** only rejected bars. Filled steps passed, and so did an
+  unstepped outline, a KDE and an ECDF. So did a chart with no axis label at all, because
+  seaborn's own label, `flipper_length_mm`, contains the "mm" the checker looked for. Hollow
+  bars were sent after the wrong problem ("Use palette=PENGUIN_COLORS"). Fix: the brief now
+  says "outlines only (no fill)", and the checker requires three step outlines over evenly
+  spaced bins, no filled areas and a plain-English label, testing shape before color so
+  that each hint is true. The bin width is deliberately not checked (see L13). A new test
+  runs seven near misses through the checker.
+
 Left alone, with reasons:
 
-- **L1. Legend titles are raw column names** ("species", "sex") in Lessons 1-6 while the
-  text says raw names "read as code". Fixing it means an extra `sns.move_legend(...,
-  title=...)` line in about fifteen early examples; the cost in cognitive load outweighs the
-  gain, and the capstone's figure-level legend has no title. Worth a sentence in Lesson 1 if
-  the examples are ever revised.
-- **L2. "Gentoos outweigh the other species by about 1.3 kg"** (Lesson 3 title, capstone
-  panel B). The gaps are 1.34 kg (vs Chinstrap) and 1.38 kg (vs Adelie). "About 1.3" is
-  defensible for the nearest competitor; "about 1.4" would be equally defensible.
-- **L3. Lesson 5's `relplot(col="island")`** shows panels in order of appearance
-  (Torgersen, Biscoe, Dream). `col_order=` would sort them; left so the example stays a
-  one-argument change from the single chart, which is the point of the section.
-- **L4. `pairplot` keeps raw axis labels.** The text frames it as an exploration tool, so
-  this is acceptable; it is the only figure on the site with raw labels after Lesson 1.
+- **L4. `pairplot` keeps raw axis labels.** The text frames it as an exploration tool, and
+  since the L1 fix it says in so many words that this is why the names are raw.
 - **L5. Lessons 1-5 keep the full box frame** (`despine` is taught in Lesson 6). A
   deliberate progression; Few would despine from the first chart.
 - **L6. `02-binwidths`** has unshared y axes (correct, since bin width changes the counts)
@@ -221,14 +255,24 @@ Left alone, with reasons:
 - **L9. Exercise 4.1's solution heatmap** shows the full matrix with raw column names and
   an unlabeled colorbar. The exercise doesn't ask for the renaming and masking taught in
   the lesson, which keeps it short; the check accepts either.
-- **L10. `test_committed_docs_match_sources` compares HTML only.** Images and notebooks
-  could go stale unnoticed. Now that figures are deterministic the test could include PNGs,
-  but font rendering differs between the Windows machine that builds `docs/` and the Linux
-  CI runner, so byte comparison would fail there. Notebooks could be compared safely.
-- **L11. Exercise 2.1's checker** accepts filled step histograms (it only forbids bars); the
-  brief says "outline only". Easy to tighten, but the figure is still a valid overlay.
 - **L12. The exam's Q10 (sorting bars)** has the correct option as the longest because it
   is real code; a learner who knows `order=` is not helped by that.
+
+Found during the follow-up pass, and left alone:
+
+- **L13. `binwidth=` is approximate in seaborn 0.13.** `histplot` turns it into a whole
+  number of bins across the data's range, so `binwidth=3` on flipper length draws 2.95 mm
+  bins. In Lesson 2's `02-binwidths` figure the panel titled "binwidth = 250 g" has 257 g
+  bins and the one titled "binwidth = 1000 g" has 900 g bins, and the alt text repeats the
+  nominal widths. The lesson's point (too narrow, sensible, too wide) survives. Passing
+  `binrange=(2500, 6500)` would make all three widths exact, at the cost of one more
+  argument in an early example; a sentence saying that seaborn rounds would also do.
+- **L14. Three more unit checks pass on raw column names.** Exercises 3.2, 5.1 and 6.1
+  look for "mm" in an axis label, which `bill_depth_mm`, `flipper_length_mm` and
+  `bill_length_mm` satisfy untouched, so their "label the axes" hints never fire. The
+  briefs of 5.1 and 6.1 ask for plain-English labels; 3.2's does not, so there the
+  assertion is dead rather than lax. The condition used in 1.1, 2.1 and 4.2
+  (`"_" not in label`) would fix each.
 
 ## What checked out
 
@@ -236,7 +280,8 @@ Technical accuracy of every example against seaborn 0.13.2 and matplotlib 3.10.6
 arguments exist and mean what the text says (`errorbar=`, `linestyle="none"` and `legend=`
 in categorical plots, `fliersize`, `common_norm`, `bw_adjust`, `cut`, `corner=True`,
 `facet_kws`, `g.figure`, `move_legend`, `loc="outside lower center"` with constrained
-layout, callable tick formatters). The browser runs matplotlib 3.8.4 under Pyodide 0.27.2;
+layout, callable tick formatters). The follow-up pass found one nuance: `binwidth=` is
+honoured only approximately (L13). The browser runs matplotlib 3.8.4 under Pyodide 0.27.2;
 every API the course uses exists there too.
 
 Numbers quoted in the text, recomputed from the bundled CSV:
@@ -250,6 +295,7 @@ Numbers quoted in the text, recomputed from the bundled CSV:
 | r(flipper, mass) = 0.87; r(bill depth, mass) = -0.47 | 0.871; -0.472 |
 | Truncated bar chart makes Gentoo "nearly eight times" Adelie | 7.9x |
 | Gentoos "about 1.4 times" heavier | 1.37x |
+| Gentoos "more than 1.3 kg" heavier on average | 1,343 g (vs Chinstrap); 1,375 g (vs Adelie) |
 | Heaviest bird a 6.3 kg Gentoo | 6,300 g, Gentoo |
 | Male-female gaps about 800 / 670 / 410 g, CIs do not overlap | 805 / 675 / 412 g; no overlap |
 | Bill-ratio classifier: 97/96/95% per species, 96.2% overall, 13 of 342 wrong | identical |

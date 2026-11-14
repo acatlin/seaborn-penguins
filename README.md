@@ -49,10 +49,11 @@ python -m http.server -d docs 8000  # preview at http://localhost:8000
 ### What the tests check
 
 - Every example cell runs **without errors or warnings**, and every figure has alt text.
-- Every exercise's **solution passes its checker**, and the **untouched starter does not**, so checks can't be vacuous.
+- Legends are titled in **plain English**, not with seaborn's raw column names. The four deliberate exceptions are listed, with reasons, in the test.
+- Every exercise's **solution passes its checker**, and the **untouched starter does not**, so checks can't be vacuous. Exercise 2.1's near misses (bars, filled steps, a density curve, an ECDF, a missing axis label) must each earn a hint.
 - Every lesson's **solutions notebook executes** top to bottom in a real Jupyter kernel, and **no cell leaves the theme or any other global setting changed** for the cells after it, so notebooks draw what the site shows.
 - All internal links, anchors, images and scripts resolve, and no template or Markdown leaks into the HTML. Design callouts become blockquotes in the notebooks, and every quiz question is a labelled group for screen readers.
-- `docs/` matches what the sources produce, so a stale site can't be committed.
+- Every page, notebook, script, stylesheet and data file in `docs/` **matches what the sources produce**, every figure is present, and no leftover figures or notebooks remain, so a stale site can't be committed. (PNG bytes are not compared: they differ between the machine that builds `docs/` and the CI runner.)
 - Quiz and exam answers are **evenly distributed across A-D**. There are no runs of three identical answers, and the correct option is rarely the longest (36% or less).
 - The exam covers all 7 lessons. The rubrics total 100 and both editions state the scoring scale. The instructor edition marks exactly the right answers, and the student edition contains no answers or solutions.
 
@@ -70,7 +71,7 @@ Lessons are Markdown with a few special code fences:
 ```quiz                                 <- YAML list of {q, options[4], answer: A-D, explain}
 ````
 
-Callouts use Markdown admonitions: `!!! few "Title"` (design principle), `!!! warning`, and `!!! note`. In the generated notebooks they become blockquotes with a bold label. Every setup cell defines the two fixed palettes, `PENGUIN_COLORS` (species) and `SEX_COLORS` (two grays), so the same thing has the same color on every chart.
+Callouts use Markdown admonitions: `!!! few "Title"` (design principle), `!!! warning`, and `!!! note`. In the generated notebooks they become blockquotes with a bold label. Every setup cell defines the two fixed palettes, `PENGUIN_COLORS` (species) and `SEX_COLORS` (two grays), so the same thing has the same color on every chart. Seaborn titles a legend with the raw column name, so finished charts relabel it: `ax.get_legend().set_title("Species")`, or `g.legend.set_title(...)` on a figure-level grid.
 
 ## Branches and workflow
 

@@ -29,6 +29,7 @@ ax = sns.countplot(data=penguins, x="island", hue="species", palette=PENGUIN_COL
                    order=island_order)
 ax.set(xlabel="", ylabel="Number of penguins",
        title="Adelies live everywhere; Gentoos and Chinstraps each keep to one island")
+ax.get_legend().set_title("Species")
 ```
 
 Here's a fun fact the chart makes obvious: **Gentoos were only found on Biscoe and Chinstraps only on Dream**, while Adelies live on all three islands. `countplot` is just a bar chart of `value_counts()`. Two small decisions already make it easier to read. `order=` lists the islands from busiest to quietest (`value_counts()` is already sorted, so its index is a ready-made order). Without it, seaborn uses the order in which the islands first appear in the data, which means nothing to a reader. And the x-label is blank: "island" adds nothing when the tick labels are island names.
@@ -62,7 +63,7 @@ order = (penguins.groupby("species")["body_mass_g"]
 ax = sns.barplot(data=penguins, y="species", x="body_mass_g", order=order,
                  hue="species", palette=PENGUIN_COLORS, errorbar=None)
 ax.set(xlabel="Mean body mass (g)", ylabel="",
-       title="Gentoos outweigh the other species by about 1.3 kg")
+       title="Gentoos outweigh the other species by more than 1.3 kg")
 ```
 
 Three deliberate choices here:
@@ -121,6 +122,7 @@ ax = sns.pointplot(data=penguins, x="species", y="body_mass_g", hue="sex",
                    palette=SEX_COLORS, dodge=0.3, linestyle="none", markers=["o", "s"])
 ax.set(xlabel="", ylabel="Body mass (g), mean and 95% CI",
        title="Males are heavier in every species")
+ax.get_legend().set_title("Sex")
 ```
 
 `linestyle="none"` removes the lines `pointplot` would otherwise draw *between species*. Lines imply a continuous path, and there's nothing "between" an Adelie and a Chinstrap. `SEX_COLORS` is the second fixed palette from the setup cell: two grays, so a chart about sex never borrows the species colors, and the marker shapes carry the distinction even without color.

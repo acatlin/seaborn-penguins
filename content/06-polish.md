@@ -97,6 +97,7 @@ fig, axes = plt.subplots(1, 2, figsize=(10, 3.8), layout="constrained")
 sns.histplot(data=penguins, x="body_mass_g", hue="species", palette=PENGUIN_COLORS,
              element="step", fill=False, binwidth=200, ax=axes[0])
 axes[0].set(xlabel="Body mass (g)", ylabel="Penguins", title="By species")
+axes[0].get_legend().set_title("Species")
 
 sns.boxplot(data=penguins, x="sex", y="body_mass_g", color="#bbbbbb", ax=axes[1])
 axes[1].set(xlabel="", ylabel="Body mass (g)", title="By sex")

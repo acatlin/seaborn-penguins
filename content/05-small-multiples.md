@@ -33,15 +33,17 @@ SEX_COLORS = {"Female": "#8c8c8c", "Male": "#333333"}
 
 ## One panel per island
 
-```python run fig=05-relplot-col alt="Three scatter panels of flipper length versus body mass, one per island, colored by species, sharing the same axes."
+```python run fig=05-relplot-col alt="Three scatter panels of flipper length versus body mass, one per island from the busiest to the quietest (Biscoe, Dream, Torgersen), colored by species, sharing the same axes."
 g = sns.relplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
                 hue="species", palette=PENGUIN_COLORS,
-                col="island", height=3.4, aspect=0.9)
+                col="island", col_order=["Biscoe", "Dream", "Torgersen"],  # busiest first
+                height=3.4, aspect=0.9)
 g.set_axis_labels("Flipper length (mm)", "Body mass (g)")
 g.set_titles("{col_name}")
+g.legend.set_title("Species")
 ```
 
-One argument, `col="island"`, gave three aligned panels. `set_titles("{col_name}")` swaps the default "island = Biscoe" titles for just the name. Because the axes are **shared**, you can compare positions across panels directly. The Biscoe giants are Gentoos, and Torgersen is all Adelie.
+One argument, `col="island"`, gave three aligned panels. `col_order=` then puts them in a deliberate order, busiest island first, as in Lesson 3. Leave it out and the panels come in the order the islands first appear in the data (Torgersen, Biscoe, Dream), which means nothing to a reader. `set_titles("{col_name}")` swaps the default "island = Biscoe" titles for just the name, and `g.legend.set_title(...)` does for the grid's legend what `ax.get_legend().set_title(...)` does for a single chart. Because the axes are **shared**, you can compare positions across panels directly. The Biscoe giants are Gentoos, and Torgersen is all Adelie.
 
 ## Rows *and* columns
 
@@ -88,6 +90,7 @@ g = sns.displot(data=subset, x="flipper_length_mm", col="group", col_wrap=2,
                 fill=False, binwidth=4, height=2.4, aspect=1.4)
 g.set_axis_labels("Flipper length (mm)", "Penguins")
 g.set_titles("{col_name}")
+g.legend.set_title("Species")
 ```
 
 ## Custom panels with `FacetGrid`
@@ -143,6 +146,7 @@ g = sns.relplot(data=penguins, x="bill_length_mm", y="bill_depth_mm",
                 col="species", hue="sex", palette=SEX_COLORS, height=3.2)
 g.set_axis_labels("Bill length (mm)", "Bill depth (mm)")
 g.set_titles("{col_name}")
+g.legend.set_title("Sex")
 g.figure.suptitle("Males have bigger bills in every species", y=1.04)
 ```
 
@@ -196,6 +200,6 @@ print("Clean titles, shared axes, one message on top.")
 
 !!! note "Key takeaways"
     - Axes-level functions take `ax=`. Figure-level functions (`relplot`, `displot`, `catplot`, `lmplot`) build a grid and return it.
-    - Facet with `col=`, `row=`, `col_wrap=`. Size with `height=` and `aspect=`.
-    - Tidy the grid with `set_axis_labels`, `set_titles("{col_name}")`, and `g.figure.suptitle`.
+    - Facet with `col=`, `row=`, `col_wrap=`, and order the panels with `col_order=`. Size with `height=` and `aspect=`.
+    - Tidy the grid with `set_axis_labels`, `set_titles("{col_name}")`, `g.legend.set_title(...)` and `g.figure.suptitle`.
     - Small multiples on shared axes beat one overloaded chart.

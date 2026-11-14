@@ -392,3 +392,10 @@ from fill-in-the-blank to a free build, and every checker gives an actionable hi
 gap is that no exercise asks learners to critique a chart in words before the assignments;
 the quizzes carry that load. The instructor guide is unusually concrete (live-coding order,
 misconceptions, troubleshooting table) and needed only the corrections above.
+
+A later pass mapped the course onto twelve mastery objectives (instructor guide, "Mastery
+objectives", and `instructor/Seaborn_Mastery_Objectives.xlsx`). It found two more gaps of
+the same kind, both left alone. Nothing assesses the choice of chart form: every assignment
+names its chart types, and no exam question or exercise check asks for the choice. And
+saving a figure is shown in Lesson 6 as code that is not run, with no exercise to practice
+it. The guide lists both, and what to add, under "Next steps".

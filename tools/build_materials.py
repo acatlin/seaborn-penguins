@@ -1,4 +1,4 @@
-"""Build the Word (.docx) teaching materials in instructor/.
+"""Build the teaching materials in instructor/: the Word files and the objectives workbook.
 
 Usage:  python tools/build_materials.py
 
@@ -10,6 +10,9 @@ Produces:
                                                       or solutions
   instructor/Seaborn_Instructor_Guide.docx            content/instructor-guide.md
                                                       as a Word document
+  instructor/Seaborn_Mastery_Objectives.xlsx          the mastery objectives and
+                                                      their map onto the course
+                                                      (tools/build_objectives.py)
 
 Every assignment solution is executed (via tools/runner.py) and its figure is
 embedded, so a solution that stops working fails the build.
@@ -32,6 +35,7 @@ from docx.shared import Inches, Pt, RGBColor
 ROOT = Path(__file__).resolve().parent.parent
 INSTRUCTOR = ROOT / "instructor"
 sys.path.insert(0, str(ROOT / "tools"))
+import build_objectives  # noqa: E402
 import runner  # noqa: E402
 
 runner.DATA_PATH = str(ROOT / "data" / "penguins.csv")
@@ -173,7 +177,9 @@ def add_code(doc, code):
     return p
 
 
-def add_table(doc, header, rows, widths):
+def add_table(doc, header, rows, widths, across_pages=False):
+    """across_pages: the table may run over a page break, so keep every row whole and
+    repeat the header row at the top of the next page."""
     table = doc.add_table(rows=1, cols=len(header))
     table.style = "Table Grid"
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -194,6 +200,12 @@ def add_table(doc, header, rows, widths):
     for row in table.rows:
         for cell, width in zip(row.cells, widths):
             cell.width = Inches(width)
+    if across_pages:
+        for n, row in enumerate(table.rows):
+            row_pr = row._tr.get_or_add_trPr()
+            row_pr.append(OxmlElement("w:cantSplit"))
+            if n == 0:
+                row_pr.append(OxmlElement("w:tblHeader"))
     doc.add_paragraph()
     return table
 
@@ -412,7 +424,7 @@ def build_guide(md_text):
                 i += 1
             ncols = len(rows[0])
             width = 6.5 / ncols
-            add_table(doc, rows[0], rows[1:], [width] * ncols)
+            add_table(doc, rows[0], rows[1:], [width] * ncols, across_pages=True)
             continue
         m = re.match(r"^(\s*)([-*]|\d+\.)\s+(.*)", line)
         if m:
@@ -458,6 +470,12 @@ def main():
     for name, doc in outputs.items():
         doc.save(INSTRUCTOR / name)
         print(f"  wrote instructor/{name}")
+    try:
+        workbook = build_objectives.write()
+    except build_objectives.ObjectivesError as exc:
+        print(f"MATERIALS BUILD FAILED\n{exc}", file=sys.stderr)
+        sys.exit(1)
+    print(f"  wrote instructor/{workbook.name}")
 
 
 if __name__ == "__main__":

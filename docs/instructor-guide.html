@@ -159,7 +159,7 @@
 <h3 id="lesson-1-your-first-plot">Lesson 1 - Your first plot</h3>
 <ul>
 <li><strong>Core idea:</strong> seaborn = DataFrame + column names mapped to visual channels. Spend the first 10 minutes on that table. It pays off all course long.</li>
-<li><strong>Live-code:</strong> start with the bare scatter, then add <code>hue</code>, then the <code>ax.set(...)</code> labels. Ask the room what title they&rsquo;d give before you reveal &ldquo;Longer flippers, heavier penguins.&rdquo;</li>
+<li><strong>Live-code:</strong> start with the bare scatter, then add <code>hue</code>, then the <code>ax.set(...)</code> labels and the legend title (<code>ax.get_legend().set_title("Species")</code>: seaborn titles a legend with the raw column name). Ask the room what title they&rsquo;d give before you reveal &ldquo;Longer flippers, heavier penguins.&rdquo;</li>
 <li><strong>The hook:</strong> the bill paradox. Show the gray scatter and poll the class: &ldquo;Do longer bills mean shallower bills?&rdquo; Then add <code>hue="species"</code>. This is the moment most learners remember.</li>
 <li><strong>Misconceptions:</strong> confusing <code>hue=</code> with <code>color=</code> (<code>color</code> takes one color, <code>hue</code> takes a column). In categorical plots (<code>barplot</code>, <code>boxplot</code>, &hellip;), passing <code>palette=</code> without <code>hue=</code> raises a FutureWarning in seaborn 0.13. Learners also expect <code>sns.scatterplot</code> to return a figure. It returns an <code>Axes</code>. Finally, seaborn orders hue and style levels by first appearance in the data (so <code>sex</code> comes out Male, then Female); <code>hue_order=</code> and <code>style_order=</code> take control of that.</li>
 <li><strong>Exercise tips:</strong> 1.1 is fill-in-the-blank. Remind learners the <code>___</code> must be replaced with <em>quoted</em> column names. 1.2 is open-ended, so ask two learners to read their titles aloud.</li>
@@ -169,7 +169,7 @@
 <li><strong>Core idea:</strong> look at the shape before you summarize it.</li>
 <li><strong>Live-code:</strong> the three bin widths, then ask &ldquo;which one is right?&rdquo; The point is that there&rsquo;s no single right answer, only an honest one.</li>
 <li><strong>Discussion:</strong> why does <code>common_norm=True</code> make Chinstraps look rare in a KDE? (Because they <em>are</em> rarer. The question is whether you want to compare shapes or counts.)</li>
-<li><strong>Misconceptions:</strong> reading a KDE&rsquo;s y-axis as a count. Thinking ECDFs are &ldquo;advanced.&rdquo; Learners usually find them the easiest to <em>read</em> once shown, so do the &ldquo;follow the dashed line up&rdquo; exercise together.</li>
+<li><strong>Misconceptions:</strong> reading a KDE&rsquo;s y-axis as a count. Expecting <code>binwidth=</code> to be exact: seaborn fits a whole number of bins to the data&rsquo;s range unless <code>binrange=</code> is given, so <code>binwidth=3</code> on flipper length draws 2.95 mm bins. Thinking ECDFs are &ldquo;advanced.&rdquo; Learners usually find them the easiest to <em>read</em> once shown, so do the &ldquo;follow the dashed line up&rdquo; exercise together.</li>
 <li><strong>Few connection:</strong> common baselines. The stacked histogram is a good &ldquo;spot the problem&rdquo; moment.</li>
 </ul>
 <h3 id="lesson-3-comparing-categories">Lesson 3 - Comparing categories</h3>
@@ -191,7 +191,7 @@
 <h3 id="lesson-5-small-multiples">Lesson 5 - Small multiples</h3>
 <ul>
 <li><strong>Core idea:</strong> axes-level vs figure-level. Put the four-row table on the board and refer back to it.</li>
-<li><strong>Live-code:</strong> turn one crowded chart into a <code>relplot(col="island")</code>. Then ask what changed and what stayed the same (the shared axes).</li>
+<li><strong>Live-code:</strong> turn one crowded chart into a <code>relplot(col="island")</code>. Then ask what changed and what stayed the same (the shared axes). Add <code>col_order=</code> last, and ask why Torgersen came first without it (order of first appearance, the same rule as hue and style levels in Lesson 1).</li>
 <li><strong>Misconceptions:</strong> passing <code>ax=</code> or <code>figsize=</code> to figure-level functions (use <code>height</code>/<code>aspect</code>). Calling <code>plt.title()</code> on a grid (use <code>g.figure.suptitle</code>). Using <code>g.fig</code>, the older spelling of <code>g.figure</code>.</li>
 <li><strong>Few connection:</strong> small multiples and shared scales. Discuss when unsharing y is defensible.</li>
 </ul>

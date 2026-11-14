@@ -44,7 +44,10 @@ g = sns.lmplot(data=penguins, x="bill_length_mm", y="bill_depth_mm",
                hue="species", palette=PENGUIN_COLORS, height=4.5, aspect=1.3,
                scatter_kws={"alpha": 0.5, "s": 15})
 g.set_axis_labels("Bill length (mm)", "Bill depth (mm)")
+g.legend.set_title("Species")
 ```
+
+`lmplot` returns a grid object, not an `Axes`, so the labels go through the grid: `g.set_axis_labels(...)` for the axes and `g.legend` for the legend.
 
 ## The paradox, in one picture
 
@@ -73,6 +76,7 @@ ax = sns.lineplot(data=binned, x="flipper_bin", y="body_mass_g",
                   hue="species", palette=PENGUIN_COLORS, marker="o")
 ax.set(xlabel="Flipper length, 5 mm bins", ylabel="Mean body mass (g)",
        title="Within each species, mass climbs with flipper length")
+ax.get_legend().set_title("Species")
 ```
 
 `lineplot` aggregates repeated x values (here, several penguins per bin) to a mean, and shades a 95% CI band. Pass `errorbar=None` to drop the band, or `errorbar="sd"` to show spread. Notice the ragged ends: the extreme bins hold only one or two penguins, so their means jump around and the band vanishes where there is a single bird. Small groups deserve a caveat in the caption, or a minimum count before you plot them.
@@ -113,7 +117,7 @@ g = sns.pairplot(penguins, hue="species", palette=PENGUIN_COLORS,
                  corner=True, height=2, plot_kws={"s": 12, "alpha": 0.6})
 ```
 
-A pair plot is an **exploration** tool. It's great for your first ten minutes with a dataset, but too dense for a presentation. Notice how clearly the three species separate on the bill length panels.
+A pair plot is an **exploration** tool. It's great for your first ten minutes with a dataset, but too dense for a presentation. That's why this one keeps the raw column names: it's for your eyes, not an audience's. Notice how clearly the three species separate on the bill length panels.
 
 ## Your turn
 
@@ -159,6 +163,7 @@ g = sns.lmplot(data=penguins, x="bill_depth_mm", y="body_mass_g")
 g = sns.lmplot(data=penguins, x="bill_depth_mm", y="body_mass_g",
                hue="species", palette=PENGUIN_COLORS, height=4.5, aspect=1.3)
 g.set_axis_labels("Bill depth (mm)", "Body mass (g)")
+g.legend.set_title("Species")
 ```
 
 ```python check for=4.2
@@ -166,7 +171,8 @@ ax = chart_axes()[0]
 assert {"Adelie", "Chinstrap", "Gentoo"} <= set(legend_labels()), "Fit one line per species with hue='species'."
 assert len(ax.lines) >= 3, "I expected three regression lines."
 assert near_color(PENGUIN_COLORS["Gentoo"], colors_used(ax)), "Use palette=PENGUIN_COLORS."
-assert "_" not in ax.get_xlabel() and "mm" in ax.get_xlabel(), "Label the axes in plain English with units: g.set_axis_labels(...)."
+xlabel, ylabel = ax.get_xlabel(), ax.get_ylabel()
+assert "mm" in xlabel and ylabel.strip() and "_" not in xlabel + ylabel, "Label both axes in plain English with units: g.set_axis_labels(...)."
 print("Three upward slopes - within species, deeper bills do go with heavier birds.")
 ```
 

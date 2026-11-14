@@ -60,7 +60,7 @@ Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 
 ### Lesson 1 - Your first plot
 
 - **Core idea:** seaborn = DataFrame + column names mapped to visual channels. Spend the first 10 minutes on that table. It pays off all course long.
-- **Live-code:** start with the bare scatter, then add `hue`, then the `ax.set(...)` labels. Ask the room what title they'd give before you reveal "Longer flippers, heavier penguins."
+- **Live-code:** start with the bare scatter, then add `hue`, then the `ax.set(...)` labels and the legend title (`ax.get_legend().set_title("Species")`: seaborn titles a legend with the raw column name). Ask the room what title they'd give before you reveal "Longer flippers, heavier penguins."
 - **The hook:** the bill paradox. Show the gray scatter and poll the class: "Do longer bills mean shallower bills?" Then add `hue="species"`. This is the moment most learners remember.
 - **Misconceptions:** confusing `hue=` with `color=` (`color` takes one color, `hue` takes a column). In categorical plots (`barplot`, `boxplot`, ...), passing `palette=` without `hue=` raises a FutureWarning in seaborn 0.13. Learners also expect `sns.scatterplot` to return a figure. It returns an `Axes`. Finally, seaborn orders hue and style levels by first appearance in the data (so `sex` comes out Male, then Female); `hue_order=` and `style_order=` take control of that.
 - **Exercise tips:** 1.1 is fill-in-the-blank. Remind learners the `___` must be replaced with *quoted* column names. 1.2 is open-ended, so ask two learners to read their titles aloud.
@@ -70,7 +70,7 @@ Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 
 - **Core idea:** look at the shape before you summarize it.
 - **Live-code:** the three bin widths, then ask "which one is right?" The point is that there's no single right answer, only an honest one.
 - **Discussion:** why does `common_norm=True` make Chinstraps look rare in a KDE? (Because they *are* rarer. The question is whether you want to compare shapes or counts.)
-- **Misconceptions:** reading a KDE's y-axis as a count. Thinking ECDFs are "advanced." Learners usually find them the easiest to *read* once shown, so do the "follow the dashed line up" exercise together.
+- **Misconceptions:** reading a KDE's y-axis as a count. Expecting `binwidth=` to be exact: seaborn fits a whole number of bins to the data's range unless `binrange=` is given, so `binwidth=3` on flipper length draws 2.95 mm bins. Thinking ECDFs are "advanced." Learners usually find them the easiest to *read* once shown, so do the "follow the dashed line up" exercise together.
 - **Few connection:** common baselines. The stacked histogram is a good "spot the problem" moment.
 
 ### Lesson 3 - Comparing categories
@@ -92,7 +92,7 @@ Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 
 ### Lesson 5 - Small multiples
 
 - **Core idea:** axes-level vs figure-level. Put the four-row table on the board and refer back to it.
-- **Live-code:** turn one crowded chart into a `relplot(col="island")`. Then ask what changed and what stayed the same (the shared axes).
+- **Live-code:** turn one crowded chart into a `relplot(col="island")`. Then ask what changed and what stayed the same (the shared axes). Add `col_order=` last, and ask why Torgersen came first without it (order of first appearance, the same rule as hue and style levels in Lesson 1).
 - **Misconceptions:** passing `ax=` or `figsize=` to figure-level functions (use `height`/`aspect`). Calling `plt.title()` on a grid (use `g.figure.suptitle`). Using `g.fig`, the older spelling of `g.figure`.
 - **Few connection:** small multiples and shared scales. Discuss when unsharing y is defensible.
 

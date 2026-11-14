@@ -64,7 +64,7 @@ sns.histplot(data=penguins, x="body_mass_g", hue="species", palette=PENGUIN_COLO
              binwidth=200, legend=False, ax=ax)
 ax.xaxis.set_major_formatter(lambda v, pos: f"{v / 1000:.1f} kg")
 ax.set(xlabel="Body mass", ylabel="Penguins",
-       title="B. Gentoos are about 1.3 kg heavier")
+       title="B. Gentoos are more than 1.3 kg heavier on average")
 
 # C. Do males and females differ?
 ax = axes[1, 0]
@@ -108,7 +108,7 @@ The design choices to notice:
     3. **Honesty:** Do bars start at zero? Are facet scales shared? Are error bars explained?
     4. **Color:** Is color used only where it means something, consistently, and colorblind-safe?
     5. **Ink:** Is there anything I can delete, such as a redundant legend, a heavy border, or a gridline nobody needs?
-    6. **Words:** Plain-English labels with units, and titles that state findings.
+    6. **Words:** Plain-English labels with units, on axes and legends alike, and titles that state findings.
 
 ## Your turn: the sex-differences report
 

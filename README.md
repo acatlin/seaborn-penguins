@@ -18,6 +18,7 @@ A hands-on course that takes people who already know **Python and pandas** to ma
 | **Notebooks** | Student and solutions notebook for every lesson (`docs/notebooks/`), each with an *Open in Colab* link |
 | **Assessment pack (.docx)** | 25 multiple-choice questions with answers marked and explained, an answer key, and 3 assignments of increasing difficulty with rubrics and tested model solutions. Instructor and student editions. |
 | **Instructor guide** | Schedules, lesson-by-lesson talking points, common misconceptions, assessment mapping and troubleshooting ([on the site](https://acatlin.github.io/seaborn-penguins/instructor-guide.html) and as `.docx`) |
+| **Mastery objectives (.xlsx)** | 36 objectives for a three-section course taught for mastery (static, interactive, dashboards). Every page section, exercise, quiz question, exam question and rubric row of this site is mapped onto the first twelve, with a status, gaps, timings and next steps |
 
 ## Repository layout
 
@@ -27,8 +28,9 @@ site_src/           Page template, CSS, quiz/nav JS (app.js), in-browser Python 
 tools/
   runner.py         Runs one code cell and collects output/figures - shared by the build AND the browser
   build_site.py     content/ -> docs/ (HTML, figures, notebooks). Fails on any error, warning or bad exercise
-  build_materials.py instructor/*.yaml + content/instructor-guide.md -> Word files
-instructor/         exam_questions.yaml, assignments.yaml, and the generated .docx files
+  build_materials.py instructor/*.yaml + content/instructor-guide.md -> Word files and the objectives workbook
+  build_objectives.py instructor/mastery_objectives.yaml + the lessons -> the workbook (run by build_materials.py)
+instructor/         exam_questions.yaml, assignments.yaml, mastery_objectives.yaml, and the generated .docx and .xlsx files
 docs/               GENERATED website served by GitHub Pages - don't edit by hand
 data/penguins.csv   Bundled copy of the dataset (offline builds and the in-browser runtime)
 tests/              pytest suite
@@ -41,7 +43,7 @@ python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\a
 pip install -r requirements.txt
 
 python tools/build_site.py          # regenerate docs/ (about 40 s; runs every cell)
-python tools/build_materials.py     # regenerate the Word files in instructor/
+python tools/build_materials.py     # regenerate the Word files and the objectives workbook in instructor/
 python -m pytest                    # full test suite (about 90 s)
 python -m http.server -d docs 8000  # preview at http://localhost:8000
 ```
@@ -57,6 +59,7 @@ python -m http.server -d docs 8000  # preview at http://localhost:8000
 - Every page, notebook, script, stylesheet and data file in `docs/` **matches what the sources produce**, every figure is present, and no leftover figures or notebooks remain, so a stale site can't be committed. (PNG bytes are not compared: they differ between the machine that builds `docs/` and the CI runner.)
 - Quiz and exam answers are **evenly distributed across A-D**. There are no runs of three identical answers, and the correct option is rarely the longest (36% or less).
 - The exam covers all 7 lessons. The rubrics total 100 and both editions state the scoring scale. The instructor edition marks exactly the right answers, and the student edition contains no answers or solutions.
+- The **mastery objectives** map names only page sections, exercises, questions and rubric rows that exist, and leaves none out. The committed workbook matches its sources, and every formula in it has its result stored in the file. The statuses, counts and hours quoted in the instructor guide match the workbook.
 
 ## Authoring lessons
 

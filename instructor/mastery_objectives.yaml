@@ -1,0 +1,982 @@
+# Mastery objectives for the larger course this site belongs to, and the map from
+# this site's pages, exercises, quizzes, exam and rubrics onto them.
+#
+# tools/build_objectives.py turns this file into instructor/Seaborn_Mastery_Objectives.xlsx
+# (python tools/build_materials.py runs it). tests/test_objectives.py checks that every
+# page section, exercise, quiz question, exam question and rubric row named here exists,
+# and that none is left out.
+#
+# Three sections of twelve objectives each:
+#   S01-S12  static visualization   (this site: Start here and Lessons 1-7)
+#   I01-I12  interactive charts     (not written yet)
+#   D01-D12  dashboards             (not written yet)
+#
+# An objective's status (Covered, Partial, Planned) is not stored here. The workbook
+# works it out from the page map and the evidence map below.
+
+meta:
+  title: "Mastery objectives"
+  course: "Python visualization tools"
+  version: "1.0"
+  date: "2026-11-14"
+
+sections:
+  - key: S
+    label: "1 Static"
+    title: "Static visualization"
+    tools: "seaborn 0.13 and matplotlib"
+    content: "This site: Start here and Lessons 1-7."
+  - key: I
+    label: "2 Interactive"
+    title: "Interactive charts"
+    tools: "Assumed: Plotly (Altair where linked selections matter)."
+    content: "Not written yet."
+  - key: D
+    label: "3 Dashboards"
+    title: "Dashboards"
+    tools: "Assumed: Dash (Streamlit as the lighter alternative)."
+    content: "Not written yet."
+
+# ---------------------------------------------------------------- timing inputs
+# Every number here appears on the Timing sheet as an input cell with its basis beside it.
+timing:
+  session_minutes: 75
+  session_basis: "The instructor guide's first schedule: seven 75-minute sessions."
+  check_minutes: {S: 35, I: 35, D: 35}
+  check_basis: >-
+    Section 1: the existing 25-question exam (instructor guide: allow about 35 minutes).
+    Sections 2 and 3: assumed to end with a check of the same length.
+  project_hours: {S: 6.5, I: 6, D: 9}
+  project_basis: >-
+    Section 1: Assignments 1-3 (about 1 h, about 2 h and 3-4 h; the midpoint is 6.5 h).
+    Sections 2 and 3: planning estimates for one or two projects each.
+  allowance: 0.15
+  allowance_basis: >-
+    Assumed. Time for correctives and a second check, as a share of lesson and check time.
+    Revise it after the first run.
+  lesson_basis: >-
+    Section 1: the instructor guide gives 45-75 minutes per lesson. Each lesson is counted
+    at the 60-minute midpoint and split across the objectives it serves (table below).
+    Multiply by 0.75 or 1.25 for the ends of the range. Sections 2 and 3: planning
+    estimates of 30-120 minutes per objective, by analogy with section 1 (35 minutes per
+    objective on average), with more time where the tool brings a new mental model
+    (figure objects, callbacks, state) or the objective is a studio capstone.
+  to_write_basis: >-
+    Learner minutes that do not exist as pages yet. In section 1 these are the additions
+    named in the 'Next step' column of the Objectives sheet.
+
+# How each existing lesson's 60 minutes divide across the objectives (section 1 only).
+lesson_minutes:
+  01-first-plot: {S01: 30, S02: 15, S05: 15}
+  02-distributions: {S03: 60}
+  03-categories: {S04: 60}
+  04-relationships: {S05: 60}
+  05-small-multiples: {S06: 60}
+  06-polish: {S07: 15, S08: 15, S10: 10, S11: 15, S12: 5}
+  07-capstone: {S09: 10, S10: 35, S11: 15}
+
+# ---------------------------------------------------------------- read-me text
+mastery_rule:
+  - "An objective is mastered when (1) every exercise listed for it passes its automatic check, and (2) the learner scores 80% or better on a mastery check for that objective."
+  - "A mastery check is five or more questions the learner has not seen with their answers, or a rubric-scored task at full credit on the rubric rows mapped to the objective. On the assessment pack's three-level scale, 'about half' means not yet."
+  - "Not yet? The learner reworks the sections that teach the objective (Page detail sheet, filter on the objective), redoes its exercises from Reset, and takes a different check. There is no penalty for a second attempt."
+  - "Mastered early? The learner moves to the next objective whose prerequisites are met, or starts the next assignment."
+  - "With today's materials: the exam has at most four questions per objective and its answer key is public, so use the exercises and rubric rows to decide mastery and the exam questions to find what to rework."
+
+assumptions:
+  - "The larger course has three sections of twelve objectives: static visualization (this site), interactive charts and dashboards. This site is section 1 in full."
+  - "Learners arrive with Python basics and pandas, the prerequisite stated on the Start here page. Those skills are not objectives here, which is why one rubric row (Assignment 2, 'Code quality') maps to none."
+  - "The mastery standard is 80% on a check of five or more unseen questions, or full credit on the mapped rubric rows, with a second attempt on a different check."
+  - "The tools for sections 2 and 3 are placeholders: Plotly, with Altair where linked selections matter, and Dash, with Streamlit as the lighter alternative. The objectives are worded so that another library changes the 'Key tools' column, not the objective."
+  - "An exercise counts as evidence for an objective only when its automatic check tests that objective. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its 'full credit' text describes."
+  - "Status: Covered means the pages teach the objective, at least one checked exercise practices it, and at least one exam question or rubric row assesses it. Partial means it is taught but practice or assessment is missing. Planned means no page teaches it yet."
+  - "The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson's 60-minute midpoint across its objectives. Sections 2 and 3 are planning figures to revise after a pilot."
+
+strands:
+  Question: "Decide what to show, and whether to show it at all."
+  Build: "Turn data into the right chart or component."
+  Interact: "Let the reader act on the chart: hover, navigate, filter, select."
+  Compose: "Make several views read as one."
+  Refine: "Words, color, polish and critique."
+  Deliver: "Files, speed, robustness and hand-over."
+
+shown_by:
+  "Checked code + questions": "Code verified automatically (an in-page check or tests) plus a short set of questions."
+  "Rubric task": "A product or a piece of writing scored with rubric rows."
+  "Project": "A larger build scored with a rubric and a rationale."
+
+# ---------------------------------------------------------------- objectives
+# can:       completes the sentence "The learner can ..."
+# criteria:  what mastery looks like, as things an instructor can see
+# outcome:   the learning outcome (1-6) in the instructor guide that the objective refines
+# to_write:  learner minutes that the next step would add (existing minutes are in lesson_minutes)
+objectives:
+  - id: S01
+    name: "Map columns to visual channels"
+    strand: Build
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Given a tidy DataFrame and a question, write one seaborn call that maps named columns to position, color, marker shape and size, and say what each mapping lets the reader compare."
+    criteria:
+      - "Passes the DataFrame once with data= and names its columns for x, y and hue."
+      - "Adds style= or size= only when the question needs it."
+      - "Explains tidy data: one row per observation, one column per variable."
+      - "Tells hue= (a column) from color= (one fixed color)."
+    prerequisites: []
+    tools: "seaborn: scatterplot; data=, x=, y=, hue=, style=, size=, hue_order="
+    outcome: 1
+    to_write: 0
+    gap: ""
+    next_step: "Extension: start one example from a wide table and reshape it with pandas melt before plotting. Every example today arrives tidy."
+
+  - id: S02
+    name: "Label and title in plain language"
+    strand: Refine
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Finish any seaborn chart through the object it returns, so that every axis label, legend title and chart title reads as plain English."
+    criteria:
+      - "Axis labels are plain English with units, not raw column names."
+      - "The legend title is rewritten from the column name."
+      - "The title states the finding instead of naming the axes."
+      - "Uses ax.set(...) and ax.get_legend().set_title(...) on an Axes, and g.set_axis_labels(...) and g.legend.set_title(...) on a grid."
+    prerequisites: [S01]
+    tools: "matplotlib Axes: ax.set, ax.get_legend().set_title; seaborn grids: g.set_axis_labels, g.legend.set_title"
+    outcome: 5
+    to_write: 0
+    gap: "One exam question (Q4). The exercise checks measure only a title's length, so 'states the finding' is judged by the assignment rubrics alone."
+    next_step: "Write check questions that ask which of four titles states a finding."
+
+  - id: S03
+    name: "Show and compare distributions"
+    strand: Build
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Given one numeric variable and a grouping variable, draw the distribution as a histogram, a density curve or an ECDF, set the bin width or smoothing on purpose, and say what the shape shows."
+    criteria:
+      - "Chooses a bin width (or bandwidth) on purpose and can defend it."
+      - "Compares groups on a common baseline: overlaid step outlines or shared-axis panels, not stacked bars or blended fills."
+      - "Handles the density curve's hidden choices: common_norm, bw_adjust and cut."
+      - "Reads an ECDF to answer 'what share is at or below X?' and confirms it with pandas."
+    prerequisites: [S01, S02]
+    tools: "seaborn: histplot (binwidth=, binrange=, element=\"step\", fill=False), kdeplot (common_norm=, bw_adjust=, cut=), ecdfplot"
+    outcome: 3
+    to_write: 0
+    gap: "Exercise 2.2 cannot check the share the learner prints (REVIEW.md, L15)."
+    next_step: ""
+
+  - id: S04
+    name: "Compare categories honestly"
+    strand: Build
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Given a question about groups, build a count, summary or per-group distribution chart whose ranking reads at a glance and whose scale does not distort the comparison."
+    criteria:
+      - "Bars start at zero, are sorted by value with order=, and run horizontally when labels are long."
+      - "Says what the error bars show (errorbar=), or turns them off."
+      - "Uses points instead of bars when zero is not meaningful, with no lines between unordered categories."
+      - "Shows the spread with a box, violin or strip plot (or a box with the points on top) when a mean would hide it."
+    prerequisites: [S01, S02]
+    tools: "seaborn: countplot, barplot (order=, errorbar=), boxplot, violinplot, stripplot, pointplot (linestyle=\"none\")"
+    outcome: 3
+    to_write: 0
+    gap: ""
+    next_step: ""
+
+  - id: S05
+    name: "Show relationships and check for hidden groups"
+    strand: Build
+    bloom: Analyze
+    shown_by: "Checked code + questions"
+    can: "Given two or more numeric variables, show how they move together with a fitted trend, a line chart or a correlation heatmap, and check whether a grouping variable changes the story."
+    criteria:
+      - "Fits a trend overall and per group (regplot, lmplot with hue, or a groupby loop) and reports any reversal between the pooled and the within-group trend (Simpson's paradox)."
+      - "Describes the shaded band as uncertainty about the line, not the spread of individuals."
+      - "Connects points with a line only when x is ordered."
+      - "Draws a correlation heatmap on a diverging scale centered on zero, with limits fixed at -1 and 1 and the values printed."
+      - "Uses a pair plot to explore, not to present."
+    prerequisites: [S01, S02]
+    tools: "seaborn: regplot, lmplot, lineplot, heatmap (cmap=\"vlag\", center=0, vmin=-1, vmax=1, annot=True, mask=), pairplot (corner=True)"
+    outcome: 3
+    to_write: 0
+    gap: "The largest objective: all of Lesson 4 plus the bill paradox in Lesson 1."
+    next_step: "If mastery records show learners stalling here, split it in two: trends (regplot, lmplot, lineplot) and correlation (heatmap, pairplot)."
+
+  - id: S06
+    name: "Build small multiples"
+    strand: Compose
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Split a crowded chart into a grid of panels on shared axes with a figure-level function, then size, order and label the grid."
+    criteria:
+      - "Picks a figure-level function (relplot, displot, catplot, lmplot) when the layout is a grid of one chart type, and an axes-level one otherwise."
+      - "Facets with col=, row= and col_wrap=, and orders the panels on purpose (col_order=)."
+      - "Sizes the grid with height= and aspect=, not figsize."
+      - "Labels through the grid: set_axis_labels, set_titles(\"{col_name}\"), g.legend.set_title, g.figure.suptitle."
+      - "Keeps the axes shared, or says why not."
+    prerequisites: [S01, S02]
+    tools: "seaborn: relplot, displot, catplot, lmplot, FacetGrid; col=, row=, col_wrap=, col_order=, height=, aspect="
+    outcome: 4
+    to_write: 0
+    gap: ""
+    next_step: ""
+
+  - id: S07
+    name: "Use color with purpose"
+    strand: Refine
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Choose and apply colors so that each color means one thing, means it on every chart, and suits the kind of data it encodes."
+    criteria:
+      - "Pins each category to a color with a dict palette, reused on every chart; a second variable never borrows those colors."
+      - "Matches the palette type to the data: categorical for identity, sequential for amount, diverging for a meaningful midpoint."
+      - "Avoids rainbow palettes and does not rely on color alone: shape, position or a label carries the distinction too."
+      - "Uses gray for context and one strong color for the group the chart is about."
+    prerequisites: [S01]
+    tools: "seaborn: palette= with a dict, color_palette(\"colorblind\"), \"crest\", \"vlag\"; the course's PENGUIN_COLORS and SEX_COLORS"
+    outcome: 6
+    to_write: 0
+    gap: "Learners are told that PENGUIN_COLORS is safe for color-blind readers. They never test a palette themselves."
+    next_step: "Extension: have learners check a palette of their own with a color-vision simulator."
+
+  - id: S08
+    name: "Polish a chart with matplotlib"
+    strand: Refine
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Use matplotlib on the Axes that seaborn returns to remove ink that is not data and to point the reader at what matters."
+    criteria:
+      - "Sets a quiet theme with sns.set_theme, and scopes a temporary style so that it does not leak into later charts."
+      - "Removes non-data ink: sns.despine() and no redundant legend."
+      - "Labels groups directly with ax.text where a legend would make the reader look away."
+      - "Annotates the one point worth noticing (ax.annotate) and adds reference lines (ax.axvline, ax.axhline)."
+      - "Formats tick labels in the units people think in."
+    prerequisites: [S02]
+    tools: "seaborn: set_theme, axes_style, despine; matplotlib: ax.text, ax.annotate, ax.axvline, ax.axhline, axis.set_major_formatter"
+    outcome: 5
+    to_write: 10
+    gap: "No exercise checks ax.annotate or a tick formatter. Both are taught in the makeover, and only exam Q23 asks about annotate."
+    next_step: "Add an exercise: annotate the heaviest penguin and show the mass axis in kilograms."
+
+  - id: S09
+    name: "Choose the chart form from the question"
+    strand: Question
+    bloom: Evaluate
+    shown_by: "Rubric task"
+    can: "Given a question and a dataset, name the data's job (a distribution, a comparison across groups or a relationship) and choose a chart form that answers it, ruling out forms that would mislead."
+    criteria:
+      - "Names the question each chart answers before drawing it."
+      - "Matches the job to a form, as in the table in Lesson 7, Step 1."
+      - "Rules out a misleading form and says why: a pie or stacked bars for a comparison, a line across unordered categories, bars where zero means nothing."
+      - "Cuts any panel whose question cannot be named."
+    prerequisites: [S03, S04, S05]
+    tools: "No new functions: the chart forms from S03, S04 and S05"
+    outcome: 2
+    to_write: 20
+    gap: "Taught in Lesson 7, Step 1, but nothing assesses the choice: no exercise check, no exam question and no rubric row. Every assignment names its chart types."
+    next_step: "Add a 'questions only' task: three questions, and the learner picks and defends each form. Add check questions of the 'which chart answers this?' kind (quiz L3 Q3 and L7 Q3 are models)."
+
+  - id: S10
+    name: "Compose a multi-panel figure"
+    strand: Compose
+    bloom: Create
+    shown_by: "Project"
+    can: "Build a figure of several different charts with plt.subplots and axes-level functions that reads as one piece: one layout, one legend, one title and one color story."
+    criteria:
+      - "Creates the grid with plt.subplots(..., layout=\"constrained\") and draws each panel by passing ax= to an axes-level function."
+      - "Indexes or loops over the array of Axes correctly."
+      - "Uses one figure-level legend or direct labels instead of a legend in every panel."
+      - "Gives the figure a suptitle and every panel a title that states its finding."
+      - "Keeps categories in the same order and the same colors in every panel (order=, hue_order=)."
+    prerequisites: [S03, S04, S07, S08]
+    tools: "matplotlib: plt.subplots, layout=\"constrained\", fig.legend, fig.suptitle; seaborn: ax=, order=, hue_order=, despine(fig=fig)"
+    outcome: 4
+    to_write: 0
+    gap: ""
+    next_step: ""
+
+  - id: S11
+    name: "Critique and redesign a chart"
+    strand: Refine
+    bloom: Evaluate
+    shown_by: "Rubric task"
+    can: "Given a chart that works but says nothing, name what is wrong with it against the pre-flight checklist, rebuild it, and justify each change with the design principle behind it."
+    criteria:
+      - "Checks question, form, honesty, color, ink and words, in that order."
+      - "Removes encodings that do not serve the question."
+      - "Replaces lookups (a legend, raw column names) with direct labels and plain words."
+      - "Ties each change to a named principle (data-ink, common baseline, highlighting, direct labels, honest scales, consistent color) rather than listing buzzwords."
+    prerequisites: [S07, S08, S09]
+    tools: "The pre-flight checklist in Lesson 7 and the table 'Stephen Few's checklist, applied' in Lesson 6"
+    outcome: 6
+    to_write: 10
+    gap: "Exercise 6.1 lists the fixes for the learner, so the first critique in the learner's own words comes in Assignment 3. No exam question."
+    next_step: "Before the makeover, have learners write down three problems with the 'before' chart (the Lesson 6 notes already do this aloud), or add a peer review against the pre-flight checklist."
+
+  - id: S12
+    name: "Deliver a figure that stands on its own"
+    strand: Deliver
+    bloom: Apply
+    shown_by: "Rubric task"
+    can: "Hand over a finished figure as files and words: saved at publication quality from a notebook that runs top to bottom, with a short plain-language statement of what it shows."
+    criteria:
+      - "Saves with fig.savefig (or g.savefig) as a PNG at 200 dpi or more and as a vector file, with nothing cut off (bbox_inches=\"tight\" or a constrained layout)."
+      - "A restart-and-run-all of the notebook reproduces every figure."
+      - "One or two accurate sentences (a caption or alt text) tell a general reader what the chart shows."
+      - "States caveats that change the reading, such as rows left out."
+    prerequisites: [S02]
+    tools: "matplotlib: fig.savefig (dpi=, bbox_inches=\"tight\"), PNG and SVG; Jupyter: restart and run all"
+    outcome: 5
+    to_write: 25
+    gap: "Saving is shown in Lesson 6 as code that is not run, and no exercise practices it. Assignments 1 and 2 ask for a written reading of the charts, and the instructor guide suggests alt text, but no page teaches how to write either."
+    next_step: "Add a short 'Describe and deliver' section to Lesson 6 or 7: save a figure, open the file, write its alt text. Make alt text a rubric row."
+
+  - id: I01
+    name: "Decide when interaction earns its place"
+    strand: Question
+    bloom: Evaluate
+    shown_by: "Rubric task"
+    can: "Given a chart and what its readers need to do with it, decide whether interaction would help and which kind: an overview first, then zoom and filter, then details on demand."
+    criteria:
+      - "Names the reader's task that a static chart or small multiples cannot serve."
+      - "Matches the interaction to the task: hover for exact values, zoom for dense regions, filter for subsets, selection for linking views."
+      - "Keeps the chart static when the reader needs one message, as on a slide or in print."
+    prerequisites: [S09]
+    tools: "No code: a decision. Examples in Plotly or Altair"
+    outcome: null
+    to_write: 30
+    gap: "Not written yet."
+    next_step: "Open section 2 here. Lesson 7, 'Where to next?', already names the condition: 'when readers need to hover, zoom or filter'."
+
+  - id: I02
+    name: "Build an interactive chart from tidy data"
+    strand: Build
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Rebuild a static chart as an interactive one with a high-level API, mapping the same columns to the same channels."
+    criteria:
+      - "One call maps columns to x, y, color, symbol, size and facets."
+      - "Reuses the course's fixed colors and category order, so a species looks the same as in section 1."
+      - "Axis and legend labels are plain English with units, and the title states the finding."
+      - "Covers all three jobs: a distribution, a comparison and a relationship."
+    prerequisites: [S01, S02, S07]
+    tools: "Plotly Express: px.scatter, px.histogram, px.bar, px.box; color=, symbol=, facet_col=, color_discrete_map=, category_orders=, labels="
+    outcome: null
+    to_write: 60
+    gap: "Not written yet."
+    next_step: "The grammar carries over almost word for word (hue= becomes color=, style= becomes symbol=, col= becomes facet_col=), so teach it as a translation table."
+
+  - id: I03
+    name: "Design tooltips that give details on demand"
+    strand: Interact
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Write the hover text for a chart so that it says what one mark is and what it measures, in plain words and with sensible precision."
+    criteria:
+      - "The tooltip names the thing (for example the species and island) and shows only the fields that help."
+      - "Numbers carry units and are rounded, and no raw column name appears."
+      - "Uses one shared tooltip along x where the reader compares several series at one x value."
+      - "Nothing the reader must know appears only in a tooltip."
+    prerequisites: [I02]
+    tools: "Plotly: hover_name=, hover_data=, hovertemplate, hovermode=\"x unified\""
+    outcome: null
+    to_write: 40
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: I04
+    name: "Edit the figure object"
+    strand: Refine
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Explain an interactive figure as data (its traces) plus a layout, and change it after it is made: restyle marks, add layers and add annotations."
+    criteria:
+      - "Inspects a figure's traces and layout and says which part holds what."
+      - "Restyles marks with update_traces, and titles, axes and legend with update_layout and update_xaxes."
+      - "Adds a second trace, a reference line and an annotation to a figure made by the high-level API."
+      - "Carries over the polish from section 1: direct labels, a quiet template and tick labels in the units people think in."
+    prerequisites: [I02, S08]
+    tools: "Plotly graph objects: fig.data, fig.layout, update_traces, update_layout, add_trace, add_hline, add_vline, add_annotation, template="
+    outcome: null
+    to_write: 60
+    gap: "Not written yet."
+    next_step: "A Plotly figure is plain data, so the site's exercise checker could inspect it much as it inspects matplotlib objects now. Worth a prototype before the section is written."
+
+  - id: I05
+    name: "Set the first view and the navigation"
+    strand: Interact
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Configure zooming, panning and legend toggling so that the first view shows the main message and readers cannot get lost."
+    criteria:
+      - "Sets the starting ranges and the visible groups on purpose: the first view answers the question."
+      - "Adds a range slider or range buttons on an ordered axis when zooming is the reader's task."
+      - "Panels that are compared zoom together."
+      - "Removes toolbar buttons nobody needs and tells the reader how to get back to the first view."
+    prerequisites: [I02]
+    tools: "Plotly: axis range=, rangeslider, rangeselector, matches=, legend click behavior, config= (mode bar)"
+    outcome: null
+    to_write: 40
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: I06
+    name: "Add controls that switch, filter or animate"
+    strand: Interact
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Add controls inside the chart (a dropdown, buttons, a slider, a play button) that switch a variable, filter groups or step through an ordered variable, and justify them against small multiples."
+    criteria:
+      - "Each control changes one thing and is labeled with what it changes."
+      - "Axes stay fixed while the reader steps or plays, so positions remain comparable."
+      - "Animates only over an ordered variable such as time, with a slider to scrub."
+      - "Says why the control serves the task better than small multiples, or uses small multiples."
+    prerequisites: [I04, S06]
+    tools: "Plotly: updatemenus (buttons, dropdowns), sliders, animation_frame=, animation_group=, range_x=, range_y="
+    outcome: null
+    to_write: 60
+    gap: "Not written yet."
+    next_step: "Stepping and animation need an ordered variable such as time. Seaborn's penguins table has none, so plan a second dataset (I09 needs one too)."
+
+  - id: I07
+    name: "Build interactive small multiples"
+    strand: Compose
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Facet an interactive chart into panels, or combine different charts in one grid, on shared axes that stay linked."
+    criteria:
+      - "Facets with facet_col, facet_row and facet_col_wrap, or builds a grid with make_subplots and shared axes."
+      - "Panel titles carry just the category name."
+      - "Zooming one panel zooms the panels it is compared with."
+      - "One legend, and the same colors and category order in every panel."
+    prerequisites: [I02, S06, S10]
+    tools: "Plotly Express facets; plotly.subplots.make_subplots (shared_xaxes=, shared_yaxes=); for_each_annotation"
+    outcome: null
+    to_write: 45
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: I08
+    name: "Link views with a selection"
+    strand: Interact
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Link two views of the same data so that selecting marks in one highlights or filters the other."
+    criteria:
+      - "A brush or a click in one view drives the other."
+      - "Unselected marks fade to gray instead of vanishing, so context stays visible."
+      - "The chart tells the reader that it is linked and how to clear the selection."
+    prerequisites: [I04, I07]
+    tools: "Altair: selection_interval, selection_point, alt.condition, transform_filter. Plotly: linked brushing in px.scatter_matrix, or FigureWidget callbacks in a notebook"
+    outcome: null
+    to_write: 60
+    gap: "Not written yet."
+    next_step: "This is where the choice of library matters most: Altair links views in a few lines, while Plotly needs a scatter matrix, a notebook widget or the callbacks of section 3."
+
+  - id: I09
+    name: "Keep large data fast and readable"
+    strand: Deliver
+    bloom: Analyze
+    shown_by: "Rubric task"
+    can: "Given a dataset too large to draw mark by mark, choose and apply a way to keep the chart fast and honest: aggregate, bin, sample or switch renderer."
+    criteria:
+      - "Measures the problem first: rows, file size and time to draw."
+      - "Fixes overplotting by aggregating or binning (a 2-D histogram or density) before reaching for transparency."
+      - "Switches to WebGL rendering when many individual points must stay."
+      - "Says in the caption what was sampled or aggregated."
+      - "Keeps the exported file within a stated size."
+    prerequisites: [I02, S03]
+    tools: "pandas aggregation; Plotly: px.density_heatmap, render_mode=\"webgl\", go.Scattergl. Enrichment: Datashader"
+    outcome: null
+    to_write: 45
+    gap: "Not written yet."
+    next_step: "Needs a second, larger dataset: 344 penguins never strain a browser."
+
+  - id: I10
+    name: "Critique an interactive chart for honesty and access"
+    strand: Refine
+    bloom: Evaluate
+    shown_by: "Rubric task"
+    can: "Review an interactive chart against a checklist that extends the pre-flight list to interaction, and fix what fails."
+    criteria:
+      - "The first view answers the question with no interaction at all."
+      - "Nothing essential can be reached only by hovering: touch, keyboard, print and screen-reader users get it another way."
+      - "Colors match the static figures and are safe for color-blind readers."
+      - "Controls are few and labeled, and scales stay fixed when the view changes unless the reader is told."
+      - "A text alternative or a static fallback exists."
+    prerequisites: [I03, I05, S11]
+    tools: "The pre-flight checklist from section 1 plus interaction items; browser developer tools for keyboard and narrow-screen checks"
+    outcome: null
+    to_write: 40
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: I11
+    name: "Export and embed an interactive chart"
+    strand: Deliver
+    bloom: Apply
+    shown_by: "Rubric task"
+    can: "Deliver an interactive chart as a standalone HTML file and as a fragment embedded in a page, with a static image for print."
+    criteria:
+      - "The standalone file opens offline, or loads the library from a CDN to stay small, and the learner states the trade-off."
+      - "The embedded chart fits its container on a narrow screen."
+      - "A static PNG or SVG is exported for slides and print."
+      - "A clean environment with pinned versions reproduces the files."
+    prerequisites: [I02, S12]
+    tools: "Plotly: fig.write_html (include_plotlyjs=, full_html=False), fig.write_image (needs Kaleido), config={\"responsive\": True}"
+    outcome: null
+    to_write: 30
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: I12
+    name: "Capstone: build an interactive explorer"
+    strand: Compose
+    bloom: Create
+    shown_by: "Project"
+    can: "Plan and build an interactive explorer for a dataset (an overview, a way to filter and details on demand) and defend each interaction."
+    criteria:
+      - "Starts from the readers' questions and lists the interaction each one needs."
+      - "Has at least two views that are linked or coordinated."
+      - "Tooltips, first view and controls meet I03, I05 and I06."
+      - "Passes the I10 review and is delivered as in I11, with a short rationale."
+    prerequisites: [I06, I08, I10, I11]
+    tools: "Everything from I01-I11"
+    outcome: null
+    to_write: 90
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: D01
+    name: "Plan a dashboard from its users' decisions"
+    strand: Question
+    bloom: Create
+    shown_by: "Rubric task"
+    can: "Given a stakeholder brief, write a one-page plan: who uses the dashboard, what they decide with it, the few measures that matter and a wireframe of one screen."
+    criteria:
+      - "Names the audience and the decisions the dashboard supports."
+      - "Every element on the wireframe answers a named question."
+      - "The most important measures sit at the top left and are the largest."
+      - "Says whether the dashboard is for monitoring at a glance or for exploring, and designs for one."
+      - "Lists the data sources and how often they change."
+    prerequisites: [S09, I01]
+    tools: "Paper or a drawing tool; no framework yet"
+    outcome: null
+    to_write: 45
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: D02
+    name: "Build and run a minimal app"
+    strand: Build
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Create an app with one chart and one control, run it locally, and explain what runs when a control changes."
+    criteria:
+      - "The project has an entry script and pinned requirements, and starts from a clean environment with one command."
+      - "Explains in two or three sentences what the framework does on page load and after an input changes."
+      - "Uses the framework's debug or auto-reload mode while developing."
+    prerequisites: [I02]
+    tools: "Dash: Dash(), app.layout, dcc.Graph, dcc.Dropdown, @callback, app.run(debug=True). Streamlit: st.plotly_chart, st.selectbox, streamlit run"
+    outcome: null
+    to_write: 60
+    gap: "Not written yet."
+    next_step: "A dashboard needs a running server, so this site's in-browser Python does not carry over as it stands. Decide early how learners run and hand in apps."
+
+  - id: D03
+    name: "Lay out a screen with a clear hierarchy"
+    strand: Compose
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Arrange components in a responsive grid so that the screen reads in order of importance and fits one screen at the target size."
+    criteria:
+      - "Key figures come first, at the top left, and supporting detail sits below."
+      - "Related items are grouped and aligned on a grid."
+      - "A monitoring dashboard needs no scrolling at the target screen size."
+      - "The layout reflows on a narrow screen, and headings are in plain language."
+    prerequisites: [D02, S10]
+    tools: "Dash: html.Div with a CSS grid, or dash-bootstrap-components rows and columns. Streamlit: st.columns, st.container, st.sidebar, st.tabs"
+    outcome: null
+    to_write: 50
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: D04
+    name: "Show data with the right component"
+    strand: Build
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Choose and set up the component for each element of the plan: a static figure, an interactive figure, a table or a single big number."
+    criteria:
+      - "Reuses figures from sections 1 and 2 through functions that return a figure."
+      - "A key number carries its unit, a comparison (a target or the previous period) and sensible rounding."
+      - "Tables can be sorted and show only the columns the user needs."
+      - "Every component has a title that says what it shows."
+    prerequisites: [D02, S09, I02]
+    tools: "Dash: dcc.Graph, dash_table.DataTable or Dash AG Grid, html components. Streamlit: st.plotly_chart, st.pyplot, st.dataframe, st.metric"
+    outcome: null
+    to_write: 60
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: D05
+    name: "Choose input controls and defaults"
+    strand: Interact
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Pick the right control for each choice the user makes, with a default that gives a useful first screen."
+    criteria:
+      - "The control suits the variable: a dropdown or radio buttons for categories, a range slider for numbers and dates, a checklist for several groups."
+      - "Every control has a visible label."
+      - "The defaults show a meaningful first screen."
+      - "There are no more controls than the plan's questions need."
+      - "Choices that cannot work together are prevented, not reported afterwards."
+    prerequisites: [D02, I06]
+    tools: "Dash: dcc.Dropdown, dcc.RadioItems, dcc.Checklist, dcc.RangeSlider, dcc.DatePickerRange. Streamlit: st.selectbox, st.radio, st.multiselect, st.slider, st.date_input"
+    outcome: null
+    to_write: 40
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: D06
+    name: "Wire inputs to outputs"
+    strand: Interact
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Write the reactive code that updates the outputs when an input changes, with one clear path from each input to each output."
+    criteria:
+      - "Each output is updated by one function."
+      - "That function reads its inputs and returns its outputs, with no hidden global state."
+      - "The data is filtered once and shared, not filtered again for every chart."
+      - "Can say which functions run when a given control changes."
+    prerequisites: [D04, D05]
+    tools: "Dash: @callback with Input, Output and State. Streamlit: the top-to-bottom rerun, widget keys"
+    outcome: null
+    to_write: 75
+    gap: "Not written yet."
+    next_step: "Callbacks written as plain functions can be unit-tested, which gives this section an automatic check to stand in for the in-page one."
+
+  - id: D07
+    name: "Cross-filter between charts"
+    strand: Interact
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Use a selection, click or hover in one chart as the input that filters or highlights the others."
+    criteria:
+      - "Selecting in one chart updates the others."
+      - "The current selection is shown in words, for example 'Showing: Biscoe, females'."
+      - "Data outside the selection stays visible as gray context where the comparison matters."
+      - "One action clears every filter."
+    prerequisites: [D06, I08]
+    tools: "Dash: dcc.Graph selectedData, clickData and hoverData as callback inputs. Streamlit: st.plotly_chart(on_select=\"rerun\")"
+    outcome: null
+    to_write: 60
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: D08
+    name: "Manage state and navigation"
+    strand: Interact
+    bloom: Analyze
+    shown_by: "Rubric task"
+    can: "Keep the user's state (filters, selections, the current page) consistent across interactions, tabs and pages."
+    criteria:
+      - "State lives in one place that belongs to the user's session, never in a global variable shared between users."
+      - "Controls that depend on each other update in a defined order, without loops."
+      - "Tabs or pages share filters when the plan says they should."
+      - "A reload or a shared link restores the view where the framework allows it."
+    prerequisites: [D06]
+    tools: "Dash: dcc.Store, dcc.Location, Dash Pages, dcc.Tabs. Streamlit: st.session_state, st.query_params, multipage apps"
+    outcome: null
+    to_write: 60
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: D09
+    name: "Load data once and keep the app fast"
+    strand: Deliver
+    bloom: Analyze
+    shown_by: "Rubric task"
+    can: "Design the data layer so that the app loads data once, caches the slow steps and answers each interaction within a stated time."
+    criteria:
+      - "Loading and heavy computation are cached or precomputed, not repeated on every interaction."
+      - "Aggregation happens before plotting."
+      - "States a response-time budget, for example under one second per interaction, and measures against it."
+      - "Picks up refreshed data without a restart."
+    prerequisites: [D06, I09]
+    tools: "Dash: load at start-up, flask-caching, background callbacks. Streamlit: st.cache_data, st.cache_resource. pandas or DuckDB for aggregation"
+    outcome: null
+    to_write: 60
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: D10
+    name: "Critique and redesign a dashboard"
+    strand: Refine
+    bloom: Evaluate
+    shown_by: "Rubric task"
+    can: "Review a dashboard against dashboard design principles and the earlier checklists, and redesign what fails."
+    criteria:
+      - "Checks purpose (every element serves a named decision) and hierarchy first."
+      - "Checks that color and scales are consistent across the charts."
+      - "Removes decoration that carries no data: gauges, 3-D effects, ornamental images."
+      - "Checks honesty (shared scales, filters stated on screen) and access (keyboard use, contrast, text alternatives)."
+      - "The rationale names the principle behind each change."
+    prerequisites: [D03, D04, S11, I10]
+    tools: "Stephen Few, Information Dashboard Design; the checklists from S11 and I10"
+    outcome: null
+    to_write: 45
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: D11
+    name: "Test, package and deploy the app"
+    strand: Deliver
+    bloom: Apply
+    shown_by: "Rubric task"
+    can: "Make the app safe to hand over: it handles empty and bad input, its logic has automated tests, and it runs on a host where others can reach it."
+    criteria:
+      - "An empty selection or missing data shows a message, not a traceback."
+      - "The data functions and callbacks have unit tests that run without a browser."
+      - "The environment is pinned, and secrets and settings stay out of the repository."
+      - "The app is deployed at a URL (or packaged) with a README that says how to run and update it."
+    prerequisites: [D06, D09]
+    tools: "pytest. Dash: dash.testing, a WSGI server such as gunicorn on a hosting service. Streamlit: streamlit.testing (AppTest), Streamlit Community Cloud"
+    outcome: null
+    to_write: 75
+    gap: "Not written yet."
+    next_step: ""
+
+  - id: D12
+    name: "Capstone: build, deploy and defend a dashboard"
+    strand: Deliver
+    bloom: Create
+    shown_by: "Project"
+    can: "From a stakeholder brief, build a dashboard, put it where others can use it and defend its design."
+    criteria:
+      - "Follows the D01 plan, or records why it changed."
+      - "Meets D03 to D09 for layout, components, controls, reactivity, cross-filtering, state and speed."
+      - "Passes the D10 review and the D11 checks."
+      - "Comes with a short design rationale and a live walk-through."
+    prerequisites: [D01, D07, D08, D10, D11]
+    tools: "Everything from D01-D11"
+    outcome: null
+    to_write: 120
+    gap: "Not written yet."
+    next_step: ""
+
+# ---------------------------------------------------------------- lesson goals
+# One objective for each "By the end of this lesson you can" bullet, in page order.
+lesson_goals:
+  01-first-plot: [S01, S01, S02, S05]
+  02-distributions: [S03, S03, S03, S03]
+  03-categories: [S04, S04, S04, S04, S04]
+  04-relationships: [S05, S05, S05, S05]
+  05-small-multiples: [S06, S06, S06, S06]
+  06-polish: [S08, S07, S10, S08, S12]
+  07-capstone: [S09, S10, S10, S11]
+
+# ---------------------------------------------------------------- page map
+# One entry per (page section, objective): [anchor, objective, role, note].
+#   anchor  the id of the section's h2 on the built page, or "*" for the whole page
+#   role    T teaches      main instruction for the objective or for one of its criteria
+#           I introduces   a preview before the objective's main lesson
+#           R reinforces   used again after it was taught
+#           O orientation  no objective (write ~ for the objective)
+# Sections that hold exercises or a quiz need no entry: the evidence map covers them.
+page_map:
+  index:
+    - [who-this-is-for, ~, O, "The prerequisites the course assumes: Python basics and pandas."]
+    - [the-lessons, ~, O, "Navigation."]
+    - [meet-the-data-palmer-penguins, S01, I, "The columns and their types: the raw material for every mapping."]
+    - [three-ways-to-follow-along, S12, I, "Browser, Colab or a local install, and plt.show() in a script."]
+    - [the-design-thread, S09, I, "'Start from the question, and choose the chart form that answers it.'"]
+    - [the-design-thread, S11, I, "The principles every later critique uses."]
+
+  01-first-plot:
+    - [meet-the-penguins, S01, I, "One row per penguin. Seaborn drops missing values for each plot."]
+    - [the-one-idea-behind-seaborn, S01, T]
+    - [a-first-scatter-plot, S01, T]
+    - [add-a-third-variable-with-hue, S01, T]
+    - [add-a-third-variable-with-hue, S07, T, "Callout 'Color follows the thing, not its position': a dict palette pins each category to its color."]
+    - [labels-are-part-of-the-chart, S02, T]
+    - [plot-twist-the-paradox-in-the-bills, S05, T, "Simpson's paradox, exposed with hue. Lesson 4 returns to it with fitted lines."]
+    - [more-channels-style-and-size, S01, T]
+
+  02-distributions:
+    - [a-histogram-in-one-line, S03, T]
+    - [bin-width-changes-the-story, S03, T]
+    - [bin-width-changes-the-story, S10, I, "The first plt.subplots grid with ax=. The text points ahead to Lesson 6."]
+    - [compare-groups-layer-dont-stack, S03, T]
+    - [compare-groups-layer-dont-stack, S11, I, "The stacked histogram is a 'spot the problem' chart (see the Lesson 2 notes in the instructor guide)."]
+    - [smooth-curves-kernel-density-estimates, S03, T]
+    - [ecdf-the-most-honest-distribution-plot, S03, T]
+    - [ecdf-the-most-honest-distribution-plot, S08, I, "The first reference line (ax.axvline)."]
+    - ["*", S01, R, "Every chart is built by naming columns for x and hue."]
+    - ["*", S02, R, "Every finished chart relabels its axes and its legend."]
+    - ["*", S07, R, "Species keep PENGUIN_COLORS on every chart."]
+
+  03-categories:
+    - [counting-who-lives-where, S04, T]
+    - [bars-for-a-summary-statistic, S04, T]
+    - [make-the-ranking-obvious-sort-and-turn-sideways, S04, T]
+    - [make-the-ranking-obvious-sort-and-turn-sideways, S11, I, "The truncated-bar 'DON'T' chart is a two-minute critique (see the Lesson 3 notes in the instructor guide)."]
+    - [beyond-the-mean-boxes-violins-and-strips, S04, T]
+    - [point-plots-compare-when-zero-isnt-meaningful, S04, T]
+    - [point-plots-compare-when-zero-isnt-meaningful, S07, R, "SEX_COLORS: a second fixed palette, so sex never borrows the species colors."]
+    - [point-plots-compare-when-zero-isnt-meaningful, S09, I, "Bars or points? Decided by whether zero means anything. Callout: no pies."]
+    - ["*", S01, R, "Categories go on x or y, and hue splits or colors them."]
+    - ["*", S02, R, "Every finished chart relabels its axes and its legend."]
+    - ["*", S07, R, "Species keep PENGUIN_COLORS on every chart."]
+
+  04-relationships:
+    - [a-trend-line-with-regplot, S05, T]
+    - [one-line-per-group-with-lmplot, S05, T]
+    - [one-line-per-group-with-lmplot, S06, I, "The first figure-level function: it returns a grid, so the labels go through g."]
+    - [the-paradox-in-one-picture, S05, T]
+    - [line-charts-only-when-the-x-axis-has-an-order, S05, T]
+    - [line-charts-only-when-the-x-axis-has-an-order, S09, I, "Lines only when x is ordered, and bars or dots for named categories."]
+    - [correlation-heatmaps, S05, T]
+    - [correlation-heatmaps, S07, I, "A diverging palette centered on zero: color matched to the data. Lesson 6 names the three palette jobs."]
+    - [everything-at-once-pairplot, S05, T]
+    - ["*", S01, R, "The same grammar, with numbers on both axes."]
+    - ["*", S02, R, "Every finished chart relabels its axes and its legend."]
+    - ["*", S07, R, "Species keep PENGUIN_COLORS on every chart."]
+
+  05-small-multiples:
+    - [two-kinds-of-seaborn-function, S06, T]
+    - [one-panel-per-island, S06, T]
+    - [rows-and-columns, S06, T]
+    - [categorical-grids-with-catplot, S06, T]
+    - [shared-axes-keep-them-usually, S06, T]
+    - [wrapping-a-long-row, S06, T]
+    - [custom-panels-with-facetgrid, S06, T]
+    - ["*", S01, R, "col= and row= are two more channels."]
+    - ["*", S02, R, "Labels and legend titles now go through the grid."]
+    - ["*", S07, R, "PENGUIN_COLORS for species and SEX_COLORS for sex, in every grid."]
+
+  06-polish:
+    - [how-seaborn-and-matplotlib-fit-together, S08, T]
+    - [themes-and-contexts, S08, T]
+    - [palettes-do-jobs, S07, T]
+    - [highlight-gray-is-your-best-color, S07, T]
+    - [highlight-gray-is-your-best-color, S08, I, "The first direct label (ax.text) and sns.despine(), explained in the makeover."]
+    - [layouts-pltsubplots-ax, S10, T]
+    - [the-makeover, S11, T]
+    - [the-makeover, S08, T, "Direct labels, one annotation, a tick formatter and despine: steps 1-4 of the 'after' chart."]
+    - [saving-your-work, S12, T]
+    - ["*", S01, R, "The makeover removes channels that do not serve the question."]
+    - ["*", S02, R, "Plain words and a title that makes the point, as step 4 of the makeover."]
+
+  07-capstone:
+    - [step-1-questions-first-charts-second, S09, T]
+    - [step-2-lay-out-the-canvas, S10, T]
+    - [step-3-fill-the-panels, S10, T]
+    - [step-3-fill-the-panels, S03, R, "Panel B: step histograms of body mass."]
+    - [step-3-fill-the-panels, S04, R, "Panels A and C: a count chart and a point plot."]
+    - [step-3-fill-the-panels, S07, R, "One color story: species colors in A, B and D, two grays for sex in C."]
+    - [step-3-fill-the-panels, S08, R, "Tick formatters and despine on a whole figure."]
+    - [step-4-review-before-you-share, S11, T]
+    - [where-to-next, I01, I, "Names the condition for section 2: 'when readers need to hover, zoom or filter'."]
+    - ["*", S01, R, "Panel D is the Lesson 1 scatter."]
+    - ["*", S02, R, "Panel titles state findings and carry letters."]
+
+# ---------------------------------------------------------------- evidence map
+# The first objective listed is the primary one. An entry may be a list of objectives
+# or a mapping with 'objectives' and a 'note'.
+evidence:
+  # In-page exercises. An objective is listed only when the exercise's check tests it.
+  exercises:
+    "1.1": [S01, S02, S07]
+    "1.2": [S05, S02]
+    "2.1": [S03, S02, S07]
+    "2.2": {objectives: [S03, S07, S08], note: "The check sees the reference line but not the printed share."}
+    "3.1": [S04, S02, S07]
+    "3.2": [S04, S02, S07]
+    "4.1": {objectives: [S05, S07], note: "S07: the check requires the diverging palette."}
+    "4.2": [S05, S02, S07]
+    "5.1": [S06, S02, S07]
+    "5.2": [S06]
+    "6.1": {objectives: [S11, S02, S07, S08], note: "The brief lists the fixes, so this practices the rebuild, not the critique."}
+    "6.2": [S07, S02, S08]
+    "7.1": {objectives: [S10], note: "The chart type is the learner's choice, but the check does not judge it (S09)."}
+
+  # Lesson quiz questions, "lesson.question": exactly one objective each.
+  quiz:
+    "1.1": S01
+    "1.2": S01
+    "1.3": S02
+    "1.4": S05
+    "2.1": S03
+    "2.2": S03
+    "2.3": S03
+    "2.4": S03
+    "3.1": S04
+    "3.2": S04
+    "3.3": S09
+    "3.4": S04
+    "4.1": S05
+    "4.2": S07
+    "4.3": S05
+    "4.4": S05
+    "5.1": S06
+    "5.2": S06
+    "5.3": S06
+    "5.4": S06
+    "6.1": S11
+    "6.2": S08
+    "6.3": S10
+    "6.4": S07
+    "7.1": S10
+    "7.2": S10
+    "7.3": S09
+    "7.4": S11
+
+  # Exam questions by number: exactly one objective each.
+  exam:
+    1: S01
+    2: S01
+    3: S07
+    4: S02
+    5: S03
+    6: S03
+    7: S03
+    8: S03
+    9: S04
+    10: S04
+    11: S04
+    12: S04
+    13: S05
+    14: S05
+    15: S05
+    16: S05
+    17: S06
+    18: S06
+    19: S10
+    20: S06
+    21: S07
+    22: S08
+    23: S08
+    24: S10
+    25: S07
+
+  # Rubric rows, "assignment.row" in the order of instructor/assignments.yaml.
+  rubric:
+    "1.1": {objectives: [S01, S03, S04], note: "The tasks name each chart type, so this row is about building them correctly, not choosing them."}
+    "1.2": [S04]
+    "1.3": [S07]
+    "1.4": [S02]
+    "1.5": {objectives: [S12], note: "A sentence or two for a general reader: the 'words' half of S12."}
+    "1.6": [S12]
+    "2.1": [S06]
+    "2.2": [S04]
+    "2.3": [S05, S07, S10]
+    "2.4": {objectives: [S07, S06, S04], note: "Consistent color, shared scales and no truncated bars."}
+    "2.5": {objectives: [S12], note: "A written verdict that cites panels and notes what was left out."}
+    "2.6": {objectives: [], note: "Python fluency is a course prerequisite, not a visualization objective."}
+    "3.1": {objectives: [S03], note: "Reading thresholds off the ECDF is S03. The pandas work is a course prerequisite."}
+    "3.2": {objectives: [S04, S03, S07], note: "The task names each panel's chart, so this row is about building the forms, not choosing them."}
+    "3.3": [S10, S02, S07, S08]
+    "3.4": [S11]
+    "3.5": [S11]
+    "3.6": [S12]

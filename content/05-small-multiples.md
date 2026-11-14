@@ -130,7 +130,7 @@ xlims = {tuple(round(v) for v in ax.get_xlim()) for ax in axes}
 assert len(xlims) == 1, "Keep the x-axes shared so the panels are comparable."
 assert not legend_labels(), "Drop the legend with legend=False - the panel titles already name the species."
 assert near_color(PENGUIN_COLORS["Chinstrap"], set().union(*[colors_used(a) for a in axes]), tol=0.1), "Color by species: hue='species', palette=PENGUIN_COLORS."
-assert any("mm" in ax.get_xlabel() for ax in axes), "Label the x-axis with units, e.g. g.set_axis_labels('Flipper length (mm)', 'Penguins')."
+assert any("mm" in ax.get_xlabel() and "_" not in ax.get_xlabel() for ax in axes), "Label the x-axis in plain English with units, e.g. g.set_axis_labels('Flipper length (mm)', 'Penguins')."
 print("Six aligned panels on shared scales: species differences dominate, and males run longer in each.")
 ```
 

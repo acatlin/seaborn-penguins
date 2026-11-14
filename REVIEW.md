@@ -10,7 +10,8 @@ guide read as assessment instruments.
 The test suite was green before any change (50 passed). Findings are ranked by severity.
 "Fixed" means the fix is in the repository; "left alone" means it is documented here only.
 The High and Medium fixes were made with the review itself. Five of the Low items were fixed
-in a follow-up pass, which also turned up the new Low findings at the end of that section.
+in a follow-up pass. That pass turned up three more Low findings (L13-L15) and fixed two of
+them.
 
 Severity scale:
 
@@ -38,7 +39,8 @@ Severity scale:
 | M10 | Medium | Lesson 4 line-chart alt text claims a steady rise; ragged small-n ends unexplained | Fixed |
 | L1-L3, L10, L11 | Low | Legend titles, "1.3 kg", panel order, HTML-only stale-docs test, lax exercise 2.1 checker | Fixed in a follow-up |
 | L4-L9, L12 | Low | Raw pair-plot labels, box frames, an exam distractor, hover contrast and more | Left alone, see below |
-| L13, L14 | Low | Found in the follow-up: `binwidth=` is approximate; three unit checks pass on raw column names | Left alone, see below |
+| L13, L14 | Low | Found in the follow-up: `binwidth=` is approximate; unit checks pass on raw column names | Fixed in the follow-up |
+| L15 | Low | Found in the follow-up: exercise 2.2 checks neither its palette nor its printed answer | Left alone, see below |
 
 ## High
 
@@ -240,6 +242,23 @@ Fixed in a follow-up pass:
   that each hint is true. The bin width is deliberately not checked (see L13). A new test
   runs seven near misses through the checker.
 
+- **L13. `binwidth=` is approximate in seaborn 0.13** (found during the follow-up).
+  `histplot` turns it into a whole number of bins across the data's range, so in Lesson 2's
+  `02-binwidths` figure the panel titled "binwidth = 250 g" had 257 g bins and the one titled
+  "binwidth = 1000 g" had 900 g bins. Fix: the example passes `binrange=(2500, 6500)`, which
+  makes all three widths exact, and the paragraph underneath says what `binrange=` is for
+  and that seaborn otherwise rounds. The instructor guide lists it as a misconception, and a
+  new test checks that each panel draws the width its title names. Elsewhere the course asks
+  for a width without quoting the result (`binwidth=3` on flipper length draws 2.95 mm
+  bins), which is why exercise 2.1 does not test it.
+- **L14. Unit checks passed on raw column names** (found during the follow-up). Exercises
+  3.2, 5.1 and 6.1 looked for "mm" in an axis label, which `bill_depth_mm`,
+  `flipper_length_mm` and `bill_length_mm` satisfy untouched, so their "label the axes"
+  hints never fired. Exercise 4.2 checked its x label properly but ignored its y label. Fix:
+  each checker now also rejects an underscore, as 1.1 already did, and 3.2's brief asks for
+  the label its checker expects. A new test puts the raw names back on each solution's axes
+  and requires a hint.
+
 Left alone, with reasons:
 
 - **L4. `pairplot` keeps raw axis labels.** The text frames it as an exploration tool, and
@@ -260,19 +279,12 @@ Left alone, with reasons:
 
 Found during the follow-up pass, and left alone:
 
-- **L13. `binwidth=` is approximate in seaborn 0.13.** `histplot` turns it into a whole
-  number of bins across the data's range, so `binwidth=3` on flipper length draws 2.95 mm
-  bins. In Lesson 2's `02-binwidths` figure the panel titled "binwidth = 250 g" has 257 g
-  bins and the one titled "binwidth = 1000 g" has 900 g bins, and the alt text repeats the
-  nominal widths. The lesson's point (too narrow, sensible, too wide) survives. Passing
-  `binrange=(2500, 6500)` would make all three widths exact, at the cost of one more
-  argument in an early example; a sentence saying that seaborn rounds would also do.
-- **L14. Three more unit checks pass on raw column names.** Exercises 3.2, 5.1 and 6.1
-  look for "mm" in an axis label, which `bill_depth_mm`, `flipper_length_mm` and
-  `bill_length_mm` satisfy untouched, so their "label the axes" hints never fire. The
-  briefs of 5.1 and 6.1 ask for plain-English labels; 3.2's does not, so there the
-  assertion is dead rather than lax. The condition used in 1.1, 2.1 and 4.2
-  (`"_" not in label`) would fix each.
+- **L15. Exercise 2.2 checks neither its palette nor its printed answer.** The brief asks
+  for `PENGUIN_COLORS`, and the success message talks about "the purple line", but an ECDF
+  in seaborn's default colors passes. One more assertion
+  (`near_color(PENGUIN_COLORS["Chinstrap"], colors_used(ax))`) would close that. The second
+  task, printing the share of Chinstraps, cannot be checked at all: a checker sees the
+  chart, not what the cell printed.
 
 ## What checked out
 

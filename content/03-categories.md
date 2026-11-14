@@ -170,6 +170,7 @@ print("Sorted, horizontal, zero-based, consistently colored - a textbook bar cha
 ```python exercise id=3.2 title="Show every penguin's bill depth"
 # Box plot of bill_depth_mm by species (PENGUIN_COLORS, no legend),
 # with every penguin overlaid as small black dots using stripplot(ax=ax).
+# Label the y-axis in plain English, with units.
 ax = sns.boxplot(data=penguins, x="species", y="bill_depth_mm")
 ```
 
@@ -188,7 +189,7 @@ pts = points(ax)
 assert len(pts) > 300, "Overlay every penguin with sns.stripplot(..., ax=ax)."
 assert near_color(PENGUIN_COLORS["Adelie"], colors_used(ax), tol=0.15), "Color the boxes by species: hue='species', palette=PENGUIN_COLORS."
 assert ax.get_legend() is None, "The species names are already on the axis - pass legend=False."
-assert "mm" in ax.get_ylabel(), "Label the y-axis with units."
+assert "_" not in ax.get_ylabel() and "mm" in ax.get_ylabel(), "Label the y-axis in plain English with units, e.g. 'Bill depth (mm)'."
 print("Box for the summary, dots for the truth. Gentoo bills are clearly shallower.")
 ```
 

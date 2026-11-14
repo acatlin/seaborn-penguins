@@ -171,7 +171,8 @@ ax = chart_axes()[0]
 assert {"Adelie", "Chinstrap", "Gentoo"} <= set(legend_labels()), "Fit one line per species with hue='species'."
 assert len(ax.lines) >= 3, "I expected three regression lines."
 assert near_color(PENGUIN_COLORS["Gentoo"], colors_used(ax)), "Use palette=PENGUIN_COLORS."
-assert "_" not in ax.get_xlabel() and "mm" in ax.get_xlabel(), "Label the axes in plain English with units: g.set_axis_labels(...)."
+xlabel, ylabel = ax.get_xlabel(), ax.get_ylabel()
+assert "mm" in xlabel and ylabel.strip() and "_" not in xlabel + ylabel, "Label both axes in plain English with units: g.set_axis_labels(...)."
 print("Three upward slopes - within species, deeper bills do go with heavier birds.")
 ```
 

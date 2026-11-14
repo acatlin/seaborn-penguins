@@ -70,7 +70,7 @@ Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 
 - **Core idea:** look at the shape before you summarize it.
 - **Live-code:** the three bin widths, then ask "which one is right?" The point is that there's no single right answer, only an honest one.
 - **Discussion:** why does `common_norm=True` make Chinstraps look rare in a KDE? (Because they *are* rarer. The question is whether you want to compare shapes or counts.)
-- **Misconceptions:** reading a KDE's y-axis as a count. Thinking ECDFs are "advanced." Learners usually find them the easiest to *read* once shown, so do the "follow the dashed line up" exercise together.
+- **Misconceptions:** reading a KDE's y-axis as a count. Expecting `binwidth=` to be exact: seaborn fits a whole number of bins to the data's range unless `binrange=` is given, so `binwidth=3` on flipper length draws 2.95 mm bins. Thinking ECDFs are "advanced." Learners usually find them the easiest to *read* once shown, so do the "follow the dashed line up" exercise together.
 - **Few connection:** common baselines. The stacked histogram is a good "spot the problem" moment.
 
 ### Lesson 3 - Comparing categories

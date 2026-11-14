@@ -249,6 +249,53 @@ def test_exercise_2_1_only_accepts_step_outlines():
     assert result["check_ok"] is True, result["check_message"]
 
 
+# Every exercise that asks for plain-English axis labels, with a line that puts seaborn's raw
+# column names back on the solution's axes. The checker has to notice.
+RAW_LABELS = {
+    ("01-first-plot", "1.1"): 'ax.set(xlabel="bill_length_mm", ylabel="flipper_length_mm")',
+    ("02-distributions", "2.1"): 'ax.set(xlabel="flipper_length_mm")',
+    ("03-categories", "3.2"): 'ax.set(ylabel="bill_depth_mm")',
+    ("04-relationships", "4.2"): 'g.set_axis_labels("Bill depth (mm)", "body_mass_g")',
+    ("05-small-multiples", "5.1"): 'g.set_axis_labels("flipper_length_mm", "Count")',
+    ("06-polish", "6.1"): 'ax.set(xlabel="bill_length_mm", ylabel="bill_depth_mm")',
+}
+
+
+@pytest.mark.parametrize("slug, ex_id", sorted(RAW_LABELS))
+def test_exercises_reject_raw_column_names_as_axis_labels(slug, ex_id):
+    """`flipper_length_mm` contains "mm", so a unit check alone passes a chart nobody labelled."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / f"{slug}.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    solution = next(b.body for b in blocks if b.kind == "solution" and b.opts.get("for") == ex_id)
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == ex_id)
+    result = runner.run_cell(solution + "\n" + RAW_LABELS[(slug, ex_id)], setup=setup, check=check)
+    assert result["error"] is None, result["error"]
+    assert result["check_ok"] is False, f"exercise {ex_id} accepts raw column names as axis labels"
+    assert re.search(r"plain.English", result["check_message"]), result["check_message"]
+
+
+def test_bin_width_panels_draw_the_widths_they_name():
+    """seaborn fits a whole number of bins to the data's range unless binrange= is given,
+    so a panel titled "binwidth = 1000 g" used to draw 900 g bins."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / "02-distributions.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    cell = next(b.body for b in blocks if b.opts.get("fig") == "02-binwidths")
+    probe = ("import json\n"
+             "print(json.dumps([[a.get_title(), sorted({round(p.get_width(), 6) for p in a.patches})]"
+             " for a in plt.gcf().axes]))")
+    panels = json.loads(runner.run_cell(cell, setup=setup, check=probe)["check_message"])
+    assert len(panels) == 3
+    for title, widths in panels:
+        named = float(re.search(r"binwidth = (\d+) g", title).group(1))
+        assert widths == [named], f"the panel titled {title!r} draws bins of {widths} g"
+
+
 def _without_carriage_returns(path):
     """File contents with Windows line endings folded, so a checkout's autocrlf setting can't matter."""
     return path.read_bytes().replace(b"\r\n", b"\n")

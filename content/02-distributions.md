@@ -36,12 +36,13 @@ Seaborn picks a bin width for you. It's a reasonable guess, but still a guess. H
 ```python run fig=02-binwidths alt="Three histograms of body mass: 50 g bins look noisy, 250 g bins show two humps, 1,000 g bins hide the shape entirely."
 fig, axes = plt.subplots(1, 3, figsize=(11, 3.2), sharey=False)
 for ax, width in zip(axes, [50, 250, 1000]):
-    sns.histplot(data=penguins, x="body_mass_g", binwidth=width, ax=ax)
+    sns.histplot(data=penguins, x="body_mass_g", binwidth=width,
+                 binrange=(2500, 6500), ax=ax)
     ax.set(title=f"binwidth = {width} g", xlabel="Body mass (g)", ylabel="")
 axes[0].set_ylabel("Number of penguins")
 ```
 
-Narrow bins show noise. Very wide bins wash out the two humps. Try a few widths, and pick one that shows real structure without inventing any. You can set `binwidth=` or `bins=` (a count).
+Narrow bins show noise. Very wide bins wash out the two humps. Try a few widths, and pick one that shows real structure without inventing any. You can set `binwidth=` or `bins=` (a count). `binrange=` pins where the first bin starts and the last one ends. Without it, seaborn fits a whole number of bins between the smallest and largest value, so the width you get is only close to the one you asked for: `binwidth=1000` on its own would draw four 900 g bins here.
 
 ## Compare groups: layer, don't stack
 

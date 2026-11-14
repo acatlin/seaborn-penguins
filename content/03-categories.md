@@ -18,17 +18,20 @@ import seaborn as sns
 sns.set_theme(style="ticks")
 penguins = sns.load_dataset("penguins")
 PENGUIN_COLORS = {"Adelie": "#FF8C00", "Chinstrap": "#A034F0", "Gentoo": "#159090"}
+SEX_COLORS = {"Female": "#8c8c8c", "Male": "#333333"}
 ```
 
 ## Counting: who lives where?
 
-```python run fig=03-count alt="Count of penguins on each island by species: Biscoe has Adelie and Gentoo, Dream has Adelie and Chinstrap, Torgersen has only Adelie."
-ax = sns.countplot(data=penguins, x="island", hue="species", palette=PENGUIN_COLORS)
+```python run fig=03-count alt="Count of penguins on each island by species, islands sorted from most to fewest penguins: Biscoe has Adelie and Gentoo, Dream has Adelie and Chinstrap, Torgersen has only Adelie."
+island_order = penguins["island"].value_counts().index   # most to fewest penguins
+ax = sns.countplot(data=penguins, x="island", hue="species", palette=PENGUIN_COLORS,
+                   order=island_order)
 ax.set(xlabel="", ylabel="Number of penguins",
        title="Adelies live everywhere; Gentoos and Chinstraps each keep to one island")
 ```
 
-Here's a fun fact the chart makes obvious: **Gentoos were only found on Biscoe and Chinstraps only on Dream**, while Adelies live on all three islands. `countplot` is just a bar chart of `value_counts()`. Notice the x-label is blank: "island" adds nothing when the tick labels are island names.
+Here's a fun fact the chart makes obvious: **Gentoos were only found on Biscoe and Chinstraps only on Dream**, while Adelies live on all three islands. `countplot` is just a bar chart of `value_counts()`. Two small decisions already make it easier to read. `order=` lists the islands from busiest to quietest (`value_counts()` is already sorted, so its index is a ready-made order). Without it, seaborn uses the order in which the islands first appear in the data, which means nothing to a reader. And the x-label is blank: "island" adds nothing when the tick labels are island names.
 
 ## Bars for a summary statistic
 
@@ -115,13 +118,12 @@ ax.set(xlabel="", ylabel="Body mass (g)", title="Every penguin, plus the summary
 
 ```python run fig=03-point alt="Point plot of mean body mass by species for female and male penguins; males are heavier in every species."
 ax = sns.pointplot(data=penguins, x="species", y="body_mass_g", hue="sex",
-                   palette={"Female": "#7a7a7a", "Male": "#222222"},
-                   dodge=0.3, linestyle="none", markers=["o", "s"])
+                   palette=SEX_COLORS, dodge=0.3, linestyle="none", markers=["o", "s"])
 ax.set(xlabel="", ylabel="Body mass (g), mean and 95% CI",
        title="Males are heavier in every species")
 ```
 
-`linestyle="none"` removes the lines `pointplot` would otherwise draw *between species*. Lines imply a continuous path, and there's nothing "between" an Adelie and a Chinstrap.
+`linestyle="none"` removes the lines `pointplot` would otherwise draw *between species*. Lines imply a continuous path, and there's nothing "between" an Adelie and a Chinstrap. `SEX_COLORS` is the second fixed palette from the setup cell: two grays, so a chart about sex never borrows the species colors, and the marker shapes carry the distinction even without color.
 
 !!! few "Save the pie for dessert"
     People compare angles and areas poorly but lengths and positions well. A sorted bar or dot chart beats a pie chart for almost any comparison. Seaborn has no pie function, and that's no accident.
@@ -194,9 +196,9 @@ print("Box for the summary, dots for the truth. Gentoo bills are clearly shallow
 - q: "Why must the value axis of a bar chart start at zero?"
   options:
     - "Matplotlib cannot draw bars that start anywhere else"
-    - "Starting at zero makes the error bars symmetric around the mean"
+    - "Starting at zero makes the error bars symmetric about the mean value"
     - "Zero-based axes leave more room for the legend"
-    - "Bars encode values by length, so a cut axis distorts the comparison"
+    - "Bars encode value by length, so a cut axis distorts comparisons"
   answer: D
   explain: "Readers compare bar lengths. A truncated axis makes small differences look huge. If zero isn't meaningful, use points instead of bars."
 - q: "By default, what do the black lines on top of `sns.barplot` bars show?"
@@ -219,8 +221,8 @@ print("Box for the summary, dots for the truth. Gentoo bills are clearly shallow
   options:
     - "The ranking can be read at a glance"
     - "Seaborn computes the group means faster when the bars are sorted"
-    - "Sorted bars automatically start at zero"
-    - "It removes the need for axis labels"
+    - "The longest category label ends up next to the axis, so nothing overlaps"
+    - "The error bars shrink, because neighbouring groups are compared in order"
   answer: A
   explain: "Unless the categories have a natural order (like months), sort by value so the comparison the reader wants is already done."
 ```

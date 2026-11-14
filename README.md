@@ -50,11 +50,11 @@ python -m http.server -d docs 8000  # preview at http://localhost:8000
 
 - Every example cell runs **without errors or warnings**, and every figure has alt text.
 - Every exercise's **solution passes its checker**, and the **untouched starter does not**, so checks can't be vacuous.
-- Every lesson's **solutions notebook executes** top to bottom in a real Jupyter kernel.
-- All internal links, anchors, images and scripts resolve, and no template or Markdown leaks into the HTML.
+- Every lesson's **solutions notebook executes** top to bottom in a real Jupyter kernel, and **no cell leaves the theme or any other global setting changed** for the cells after it, so notebooks draw what the site shows.
+- All internal links, anchors, images and scripts resolve, and no template or Markdown leaks into the HTML. Design callouts become blockquotes in the notebooks, and every quiz question is a labelled group for screen readers.
 - `docs/` matches what the sources produce, so a stale site can't be committed.
 - Quiz and exam answers are **evenly distributed across A-D**. There are no runs of three identical answers, and the correct option is rarely the longest (36% or less).
-- The exam covers all 7 lessons. The rubrics total 100. The instructor edition marks exactly the right answers, and the student edition contains no answers or solutions.
+- The exam covers all 7 lessons. The rubrics total 100 and both editions state the scoring scale. The instructor edition marks exactly the right answers, and the student edition contains no answers or solutions.
 
 ## Authoring lessons
 
@@ -70,7 +70,7 @@ Lessons are Markdown with a few special code fences:
 ```quiz                                 <- YAML list of {q, options[4], answer: A-D, explain}
 ````
 
-Callouts use Markdown admonitions: `!!! few "Title"` (design principle), `!!! warning`, and `!!! note`.
+Callouts use Markdown admonitions: `!!! few "Title"` (design principle), `!!! warning`, and `!!! note`. In the generated notebooks they become blockquotes with a bold label. Every setup cell defines the two fixed palettes, `PENGUIN_COLORS` (species) and `SEX_COLORS` (two grays), so the same thing has the same color on every chart.
 
 ## Branches and workflow
 

@@ -17,6 +17,7 @@ import seaborn as sns
 sns.set_theme(style="ticks")
 penguins = sns.load_dataset("penguins")
 PENGUIN_COLORS = {"Adelie": "#FF8C00", "Chinstrap": "#A034F0", "Gentoo": "#159090"}
+SEX_COLORS = {"Female": "#8c8c8c", "Male": "#333333"}
 ```
 
 ## Step 1: questions first, charts second
@@ -51,7 +52,7 @@ species_order = ["Adelie", "Chinstrap", "Gentoo"]
 # A. Who lives where?
 ax = axes[0, 0]
 sns.countplot(data=penguins, y="island", hue="species", palette=PENGUIN_COLORS,
-              hue_order=species_order, order=["Biscoe", "Dream", "Torgersen"],
+              hue_order=species_order, order=["Biscoe", "Dream", "Torgersen"],  # busiest first
               legend=False, ax=ax)
 ax.set(xlabel="Penguins counted", ylabel="",
        title="A. Gentoos only on Biscoe, Chinstraps only on Dream")
@@ -68,7 +69,7 @@ ax.set(xlabel="Body mass", ylabel="Penguins",
 # C. Do males and females differ?
 ax = axes[1, 0]
 sns.pointplot(data=penguins, x="species", y="body_mass_g", hue="sex",
-              order=species_order, palette={"Female": "#9a9a9a", "Male": "#333333"},
+              order=species_order, palette=SEX_COLORS,
               dodge=0.35, linestyle="none", markers=["o", "s"], ax=ax)
 ax.yaxis.set_major_formatter(lambda v, pos: f"{v / 1000:.1f} kg")
 ax.set(xlabel="", ylabel="Mean body mass (95% CI)",
@@ -94,7 +95,7 @@ sns.despine(fig=fig)
 
 The design choices to notice:
 
-- **One color story.** Species are the same three colors in every panel, so a single figure-level legend (`fig.legend`) covers A, B and D. Panel C uses grays for sex, so the two encodings can't be confused.
+- **One color story.** Species are the same three colors in every panel, so a single figure-level legend (`fig.legend`) covers A, B and D. Panel C uses `SEX_COLORS`, two grays, so the two encodings can't be confused.
 - **Panel titles state findings and carry letters**, so the chief can say "look at panel C."
 - **`hue_order` everywhere** keeps the species in the same order in every panel.
 - **`loc="outside lower center"`** works with `layout="constrained"` and places the legend below the panels, never on the data.
@@ -129,11 +130,10 @@ measures = {"body_mass_g": "Body mass (g)",
             "bill_length_mm": "Bill length (mm)"}
 
 for ax, (column, label) in zip(axes, measures.items()):
-    sns.pointplot(data=penguins, x="species", y=column, hue="sex",
-                  palette={"Female": "#9a9a9a", "Male": "#333333"},
+    sns.pointplot(data=penguins, x="species", y=column, hue="sex", palette=SEX_COLORS,
                   dodge=0.35, linestyle="none", markers=["o", "s"], ax=ax)
     ax.set(xlabel="", ylabel=label, title=label.split(" (")[0])
-    ax.legend_.remove()
+    ax.get_legend().remove()          # one figure-level legend instead of three
 
 handles, labels = axes[0].get_legend_handles_labels()
 fig.legend(handles, labels, loc="outside upper right", frameon=False)
@@ -161,14 +161,14 @@ print("A clean, comparable three-panel report. You're ready to brief the station
   options:
     - "Repeated inside every panel, so each panel stands alone"
     - "Nowhere - readers can infer the colors from the data"
-    - "In a separate image file attached to the report"
+    - "In the first panel only, since readers start reading at the top left"
     - "Once, at figure level (or as direct labels)"
   answer: D
   explain: "Repeating legends is non-data ink. A single `fig.legend(...)` or direct labels do the job once."
 - q: "What does `layout=\"constrained\"` do in `plt.subplots`?"
   options:
-    - "It forces all panels to share the same x and y limits"
-    - "It automatically adjusts spacing so titles, labels and legends don't overlap"
+    - "It forces all panels to share the same x and y limits, like `sharex=True`"
+    - "It makes room automatically so titles, labels and legends don't overlap"
     - "It limits the figure to at most four panels"
     - "It converts the figure to a vector format when saved"
   answer: B
@@ -178,15 +178,15 @@ print("A clean, comparable three-panel report. You're ready to brief the station
     - "A pie chart of total body mass per species"
     - "A line chart connecting species means"
     - "Step histograms (or ECDFs) of body mass, one per species"
-    - "A correlation heatmap of all numeric columns"
+    - "A correlation heatmap of all numeric columns, one cell per pair"
   answer: C
   explain: "A distribution question needs a distribution chart: histogram, KDE, ECDF, or box/strip."
 - q: "According to the pre-flight checklist, what should you confirm first before sharing a chart?"
   options:
     - "That it clearly answers a question at a glance"
-    - "That it uses at least three different colors to keep readers engaged"
+    - "That every panel uses a different chart type, for variety"
     - "That every data point is labeled with its value"
-    - "That the figure is exported as SVG"
+    - "That the colors match the organisation's branding"
   answer: A
   explain: "Form, color and polish all serve the question. If the question isn't clear, no styling will save the chart."
 ```

@@ -24,7 +24,7 @@
     </div>
   </nav>
   <main id="main" class="content">
-    <div class="lesson-tools"><a href="https://colab.research.google.com/github/acatlin/seaborn-penguins/blob/main/docs/notebooks/01-first-plot.ipynb" target="_blank" rel="noopener">Open in Colab</a><a href="notebooks/01-first-plot.ipynb" download>Download notebook</a><a href="notebooks/01-first-plot-solutions.ipynb" download>Solutions notebook</a></div>
+    <div class="lesson-tools"><a href="https://colab.research.google.com/github/acatlin/seaborn-penguins/blob/main/docs/notebooks/01-first-plot.ipynb" target="_blank" rel="noopener" title="Opens in a new tab">Open in Colab</a><a href="notebooks/01-first-plot.ipynb" download>Download notebook</a><a href="notebooks/01-first-plot-solutions.ipynb" download>Solutions notebook</a></div>
     <article>
 <h1 id="lesson-1-your-first-plot-the-grammar-of-seaborn">Lesson 1 - Your first plot: the grammar of seaborn</h1>
 <p class="lede">Seaborn has one big idea: you hand it a DataFrame, then tell it which column goes on which visual channel. Learn that idea and the rest of the library follows.</p>
@@ -44,8 +44,10 @@
 <span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;ticks&quot;</span><span class="p">)</span>
 <span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;penguins&quot;</span><span class="p">)</span>
 
-<span class="c1"># One color per species, used on every chart in this course</span>
+<span class="c1"># Fixed colors, reused on every chart in this course: one per species, and two</span>
+<span class="c1"># grays for sex so that the species colors never mean anything else</span>
 <span class="n">PENGUIN_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Adelie&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF8C00&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">:</span> <span class="s2">&quot;#A034F0&quot;</span><span class="p">,</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">:</span> <span class="s2">&quot;#159090&quot;</span><span class="p">}</span>
+<span class="n">SEX_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Female&quot;</span><span class="p">:</span> <span class="s2">&quot;#8c8c8c&quot;</span><span class="p">,</span> <span class="s2">&quot;Male&quot;</span><span class="p">:</span> <span class="s2">&quot;#333333&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
 <h2 id="meet-the-penguins">Meet the penguins</h2>
@@ -179,8 +181,8 @@ dtype: int64</pre><div class="cell-live"></div></div>
 <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Bill length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Bill depth (mm)&quot;</span><span class="p">)</span>
 <span class="n">sns</span><span class="o">.</span><span class="n">move_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># park the legend outside the data</span>
 </pre></div>
-<script type="application/json" class="cell-data">{"code": "ax = sns.scatterplot(\n    data=penguins,\n    x=\"bill_length_mm\",\n    y=\"bill_depth_mm\",\n    hue=\"species\",\n    palette=PENGUIN_COLORS,\n    style=\"sex\",\n)\nax.set(xlabel=\"Bill length (mm)\", ylabel=\"Bill depth (mm)\")\nsns.move_legend(ax, \"upper left\", bbox_to_anchor=(1, 1))  # park the legend outside the data"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/01-scatter-style.png" alt="Bill scatter colored by species with circle markers for female and cross markers for male penguins." loading="lazy"></figure><div class="cell-live"></div></div>
-<p>Within each species, the males (circles) sit up and to the right. They have bigger bills. <code>sns.move_legend</code> moved the now-crowded legend off the data. Use these extra channels sparingly. Each one adds a legend entry the reader must decode, and shape is much weaker than position or color.</p>
+<script type="application/json" class="cell-data">{"code": "ax = sns.scatterplot(\n    data=penguins,\n    x=\"bill_length_mm\",\n    y=\"bill_depth_mm\",\n    hue=\"species\",\n    palette=PENGUIN_COLORS,\n    style=\"sex\",\n)\nax.set(xlabel=\"Bill length (mm)\", ylabel=\"Bill depth (mm)\")\nsns.move_legend(ax, \"upper left\", bbox_to_anchor=(1, 1))  # park the legend outside the data"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/01-scatter-style.png" alt="Bill scatter colored by species with circle markers for male and cross markers for female penguins; within each species the male markers sit up and to the right." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Within each species, the males (circles) sit up and to the right. They have bigger bills. Seaborn hands out markers, and colors, in the order the categories first appear in the data. The first penguin in the table is male, so males got the circle. Pass <code>hue_order=</code> or <code>style_order=</code> when you want to fix that order yourself. <code>sns.move_legend</code> moved the now-crowded legend off the data. Use these extra channels sparingly. Each one adds a legend entry the reader must decode, and shape is much weaker than position or color.</p>
 <h2 id="your-turn">Your turn</h2>
 <p>Replace each <code>___</code> with real code, then press <strong>Run &amp; check</strong>. The checker inspects your chart and gives hints. Your edits are saved in this browser.</p>
 
@@ -259,30 +261,30 @@ ax = sns.scatterplot(data=penguins, x=&quot;bill_depth_mm&quot;, y=&quot;body_ma
 
 <h2 id="quick-quiz">Quick quiz</h2>
 <section class="quiz" aria-label="Quiz">
-<div class="quiz-q" data-answer="B" id="01-first-plot-q1">
-  <p class="quiz-stem"><span class="quiz-num">Q1.</span> In <code>sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g")</code>, what does <code>data=</code> expect?</p>
+<div class="quiz-q" data-answer="B" id="01-first-plot-q1" role="group" aria-labelledby="01-first-plot-q1-stem">
+  <p class="quiz-stem" id="01-first-plot-q1-stem"><span class="quiz-num">Q1.</span> In <code>sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g")</code>, what does <code>data=</code> expect?</p>
   <ol class="quiz-options"><li><label><input type="radio" name="01-first-plot-q1" value="A"> <span class="opt-letter">A.</span> A Python list containing the column names you want to plot</label></li><li><label><input type="radio" name="01-first-plot-q1" value="B"> <span class="opt-letter">B.</span> A DataFrame whose columns you then name in <code>x</code> and <code>y</code></label></li><li><label><input type="radio" name="01-first-plot-q1" value="C"> <span class="opt-letter">C.</span> A NumPy array with exactly two rows, one for x and one for y</label></li><li><label><input type="radio" name="01-first-plot-q1" value="D"> <span class="opt-letter">D.</span> The file path of a CSV, which seaborn reads for you</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden>Seaborn&rsquo;s grammar is built on tidy DataFrames: pass the frame once with <code>data=</code>, then refer to its columns by name.</div>
 </div>
-<div class="quiz-q" data-answer="D" id="01-first-plot-q2">
-  <p class="quiz-stem"><span class="quiz-num">Q2.</span> What does adding <code>hue="species"</code> to a scatter plot do?</p>
+<div class="quiz-q" data-answer="D" id="01-first-plot-q2" role="group" aria-labelledby="01-first-plot-q2-stem">
+  <p class="quiz-stem" id="01-first-plot-q2-stem"><span class="quiz-num">Q2.</span> What does adding <code>hue="species"</code> to a scatter plot do?</p>
   <ol class="quiz-options"><li><label><input type="radio" name="01-first-plot-q2" value="A"> <span class="opt-letter">A.</span> It sorts the rows of the DataFrame by species before plotting</label></li><li><label><input type="radio" name="01-first-plot-q2" value="B"> <span class="opt-letter">B.</span> It draws a separate subplot for every species</label></li><li><label><input type="radio" name="01-first-plot-q2" value="C"> <span class="opt-letter">C.</span> It changes the marker shape for each species</label></li><li><label><input type="radio" name="01-first-plot-q2" value="D"> <span class="opt-letter">D.</span> It maps each species to a color and adds a legend</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden><code>hue</code> maps a column to color. Separate subplots come from <code>col=</code>/<code>row=</code> in figure-level functions (Lesson 5); marker shape is <code>style=</code>.</div>
 </div>
-<div class="quiz-q" data-answer="A" id="01-first-plot-q3">
-  <p class="quiz-stem"><span class="quiz-num">Q3.</span> What do axes-level functions such as <code>sns.scatterplot</code> return?</p>
+<div class="quiz-q" data-answer="A" id="01-first-plot-q3" role="group" aria-labelledby="01-first-plot-q3-stem">
+  <p class="quiz-stem" id="01-first-plot-q3-stem"><span class="quiz-num">Q3.</span> What do axes-level functions such as <code>sns.scatterplot</code> return?</p>
   <ol class="quiz-options"><li><label><input type="radio" name="01-first-plot-q3" value="A"> <span class="opt-letter">A.</span> A matplotlib <code>Axes</code> you can finish with <code>ax.set(...)</code></label></li><li><label><input type="radio" name="01-first-plot-q3" value="B"> <span class="opt-letter">B.</span> A pandas DataFrame containing the plotted x and y values</label></li><li><label><input type="radio" name="01-first-plot-q3" value="C"> <span class="opt-letter">C.</span> A PNG image of the finished chart, as raw bytes</label></li><li><label><input type="radio" name="01-first-plot-q3" value="D"> <span class="opt-letter">D.</span> Nothing - they return <code>None</code> once the chart is drawn</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden>Keeping the returned <code>Axes</code> is how you add labels, titles, reference lines and annotations with matplotlib.</div>
 </div>
-<div class="quiz-q" data-answer="C" id="01-first-plot-q4">
-  <p class="quiz-stem"><span class="quiz-num">Q4.</span> Across all penguins, longer bills look shallower, but within each species longer bills are deeper. What&rsquo;s the lesson?</p>
-  <ol class="quiz-options"><li><label><input type="radio" name="01-first-plot-q4" value="A"> <span class="opt-letter">A.</span> The overall trend is the true one; per-group trends are just noise</label></li><li><label><input type="radio" name="01-first-plot-q4" value="B"> <span class="opt-letter">B.</span> Negative correlations in scatter plots are usually artifacts</label></li><li><label><input type="radio" name="01-first-plot-q4" value="C"> <span class="opt-letter">C.</span> A hidden grouping variable can reverse a trend, so check for groups</label></li><li><label><input type="radio" name="01-first-plot-q4" value="D"> <span class="opt-letter">D.</span> Scatter plots cannot show relationships between two measurements</label></li></ol>
+<div class="quiz-q" data-answer="C" id="01-first-plot-q4" role="group" aria-labelledby="01-first-plot-q4-stem">
+  <p class="quiz-stem" id="01-first-plot-q4-stem"><span class="quiz-num">Q4.</span> Across all penguins, longer bills look shallower, but within each species longer bills are deeper. What&rsquo;s the lesson?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="01-first-plot-q4" value="A"> <span class="opt-letter">A.</span> The overall trend is the true one; per-group trends are just noise</label></li><li><label><input type="radio" name="01-first-plot-q4" value="B"> <span class="opt-letter">B.</span> Negative correlations in scatter plots are usually artifacts</label></li><li><label><input type="radio" name="01-first-plot-q4" value="C"> <span class="opt-letter">C.</span> A hidden group can reverse a trend, so always check for groups</label></li><li><label><input type="radio" name="01-first-plot-q4" value="D"> <span class="opt-letter">D.</span> Scatter plots cannot show relationships between two measurements</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden>This is Simpson&rsquo;s paradox. Coloring by a plausible grouping variable (<code>hue=</code>) is the cheapest way to check for it.</div>
@@ -304,7 +306,7 @@ ax = sns.scatterplot(data=penguins, x=&quot;bill_depth_mm&quot;, y=&quot;body_ma
     </footer>
   </main>
 </div>
-<script type="application/json" class="page-setup">{"setup": "import pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\n\n# One color per species, used on every chart in this course\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}"}</script>
+<script type="application/json" class="page-setup">{"setup": "import pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\n\n# Fixed colors, reused on every chart in this course: one per species, and two\n# grays for sex so that the species colors never mean anything else\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}\nSEX_COLORS = {\"Female\": \"#8c8c8c\", \"Male\": \"#333333\"}"}</script>
 <script src="assets/app.js"></script>
 <script src="assets/live.js"></script>
 </body>

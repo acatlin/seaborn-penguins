@@ -17,7 +17,7 @@
 By the end of the course learners can:
 
 1. Map DataFrame columns to visual channels (`x`, `y`, `hue`, `style`, `size`, `col`, `row`).
-2. Choose a chart form from the question: distribution, comparison, relationship, composition.
+2. Choose a chart form from the question: distribution, comparison or relationship (and recognise that most "composition" questions are better answered with sorted bars than with a pie).
 3. Build histograms, KDEs, ECDFs, count/bar/box/violin/strip/point plots, scatter/regression/line plots, heatmaps and pair plots.
 4. Use figure-level functions for small multiples and `plt.subplots` + `ax=` for custom layouts.
 5. Finish charts with matplotlib: labels, titles, annotations, reference lines, tick formatting, and saving.
@@ -62,7 +62,7 @@ Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 
 - **Core idea:** seaborn = DataFrame + column names mapped to visual channels. Spend the first 10 minutes on that table. It pays off all course long.
 - **Live-code:** start with the bare scatter, then add `hue`, then the `ax.set(...)` labels. Ask the room what title they'd give before you reveal "Longer flippers, heavier penguins."
 - **The hook:** the bill paradox. Show the gray scatter and poll the class: "Do longer bills mean shallower bills?" Then add `hue="species"`. This is the moment most learners remember.
-- **Misconceptions:** confusing `hue=` with `color=` (`color` takes one color, `hue` takes a column). In categorical plots (`barplot`, `boxplot`, ...), passing `palette=` without `hue=` raises a FutureWarning in seaborn 0.13. Learners also expect `sns.scatterplot` to return a figure. It returns an `Axes`.
+- **Misconceptions:** confusing `hue=` with `color=` (`color` takes one color, `hue` takes a column). In categorical plots (`barplot`, `boxplot`, ...), passing `palette=` without `hue=` raises a FutureWarning in seaborn 0.13. Learners also expect `sns.scatterplot` to return a figure. It returns an `Axes`. Finally, seaborn orders hue and style levels by first appearance in the data (so `sex` comes out Male, then Female); `hue_order=` and `style_order=` take control of that.
 - **Exercise tips:** 1.1 is fill-in-the-blank. Remind learners the `___` must be replaced with *quoted* column names. 1.2 is open-ended, so ask two learners to read their titles aloud.
 
 ### Lesson 2 - Distributions
@@ -78,7 +78,7 @@ Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 
 - **Core idea:** bars for amounts from zero, points when zero is meaningless, and box/strip to show the distribution.
 - **Live-code:** the default `barplot`, then ask "what are the black lines?" Most learners guess min/max or standard deviation. Explain the 95% bootstrap CI and the `errorbar=` options table.
 - **The truncated-axis chart** makes a good 2-minute critique. Ask learners to estimate "how many times heavier are Gentoos?" from it, then reveal the real ratio (about 1.4).
-- **Misconceptions:** sorting the DataFrame rows to sort the bars (use `order=`). Using `palette=` without `hue=`. Assuming the box plot's whiskers are the min/max (they reach 1.5 × IQR).
+- **Misconceptions:** sorting the DataFrame rows to sort the bars (use `order=`). Using `palette=` without `hue=`. Assuming the box plot's whiskers are the min/max (they extend to the furthest point within 1.5 × IQR of the box, and anything beyond is drawn as an outlier).
 - **Few connection:** sort by value, use horizontal bars for long labels, and no pies.
 
 ### Lesson 4 - Relationships
@@ -102,6 +102,7 @@ Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 
 - **The makeover** is the centerpiece. Show the "before" chart and ask learners to list problems for 3 minutes before you show the code for "after." Then map each fix to the Few checklist table.
 - **Palettes:** connect the categorical/sequential/diverging jobs back to the heatmap (Lesson 4) and species colors (Lesson 1).
 - **Misconceptions:** expecting `sns.set_theme()` to change an already-drawn chart. Forgetting `ax=` and drawing everything on the last subplot. Mixing up `ax.set_title` and `fig.suptitle`.
+- **Global state:** the "before" chart switches style inside `with sns.axes_style("darkgrid"):`, so nothing leaks into later cells. Exercise 6.1 deliberately leaves a bare `sns.set_theme(style="darkgrid")` in the starter, and its checker insists on the reset, because "someone changed the theme three cells ago" is a real-life bug worth meeting once.
 
 ### Lesson 7 - Capstone
 
@@ -121,13 +122,13 @@ Each lesson ends with a 4-question quiz. The score counts first attempts, and a 
 |---|---|
 | 1 - First plot | Q1-Q4 |
 | 2 - Distributions | Q5-Q8 |
-| 3 - Categories | Q9-Q13 |
-| 4 - Relationships | Q14-Q17 |
-| 5 - Small multiples | Q18-Q21 |
-| 6 - Polish | Q22-Q24 |
-| 7 - Capstone | Q25 |
+| 3 - Categories | Q9-Q12 |
+| 4 - Relationships | Q13-Q16 |
+| 5 - Small multiples | Q17-Q20 |
+| 6 - Polish | Q21-Q23 |
+| 7 - Capstone | Q24-Q25 |
 
-Answers are balanced (A = 6, B = 6, C = 7, D = 6). The correct option is the longest option in only 7 of 25 questions, close to the chance rate, so test-wise guessing doesn't help. Allow about 35 minutes. A suggested pass mark is 18/25 (72%).
+Answers are balanced (A = 6, B = 6, C = 7, D = 6). The correct option is the longest one in only 1 of 25 questions and the shortest in 3, so option length is no guide, and `pytest` fails if an edit upsets the balance. Allow about 35 minutes. A suggested pass mark is 18/25 (72%).
 
 ### Assignments
 
@@ -137,7 +138,7 @@ Answers are balanced (A = 6, B = 6, C = 7, D = 6). The correct option is the lon
 | 2 | Are males really bigger? | Lesson 5 | ~2 h | Small multiples, point plots, heatmap layout, evidence-based writing |
 | 3 | Field Report 2.0 | Lesson 7 | 3-4 h | Derived variable, multi-panel design, makeover, design rationale |
 
-Each has a 100-point rubric. Weight design and communication as heavily as code. The model solutions in the instructor edition were executed to produce the figures shown. **Grading tips:**
+Each has a 100-point rubric, and both editions of the pack state the three-level scale the rubrics assume (full credit, about half for a present-but-flawed element, zero for missing or wrong). Weight design and communication as heavily as code. The model solutions in the instructor edition were executed to produce the figures shown. **Grading tips:**
 
 - Accept any reasonable bin width, threshold or title that the learner *justifies*. The rubric rewards deliberate choices, not matching the model answer.
 - Deduct for chart crimes even when the code is correct: truncated bars, rainbow palettes, unlabeled units, legends covering data.
@@ -149,13 +150,14 @@ The design principle callouts (marked "Design principle") carry the course's sec
 
 - **Start every critique with "what question does this answer?"** If nobody can say, the form doesn't matter yet.
 - **Name the principle when you fix something.** For example: "I'm removing this legend: direct labeling."
-- **Keep one color dictionary on screen.** `PENGUIN_COLORS` is a small but powerful habit. Learners who adopt it produce noticeably more coherent multi-chart work.
+- **Keep the two color dictionaries on screen.** `PENGUIN_COLORS` for species and `SEX_COLORS` (two grays) for sex are a small but powerful habit. Learners who adopt them produce noticeably more coherent multi-chart work, and the grays make the point that a second variable shouldn't borrow the first one's colors.
 - **Use the before/after pair** from Lesson 6 as a reference throughout. It shows six principles in one chart.
 
 ## Accessibility and inclusion
 
 - The species palette was checked for distinguishability under protanopia, deuteranopia and tritanopia (minimum pairwise ΔE of about 16 in OKLab). Still, never rely on color alone: shape, position and direct labels carry identity too.
-- Every figure on the site has descriptive alt text, and the in-browser editors are keyboard-accessible (Ctrl/Cmd + Enter runs, Esc then Tab leaves the editor).
+- The light gray in `SEX_COLORS` keeps at least 3:1 contrast against a white background, and every chart that uses it also varies the marker shape or names the sex on an axis.
+- Every figure on the site has descriptive alt text, each quiz question is a labelled group for screen readers, and the in-browser editors are keyboard-accessible (Ctrl/Cmd + Enter runs, Esc then Tab leaves the editor).
 - Ask learners to write alt text for their assignment charts. It's an excellent test of whether they know what the chart says.
 
 ## Troubleshooting

@@ -24,7 +24,7 @@
     </div>
   </nav>
   <main id="main" class="content">
-    <div class="lesson-tools"><a href="https://colab.research.google.com/github/acatlin/seaborn-penguins/blob/main/docs/notebooks/04-relationships.ipynb" target="_blank" rel="noopener">Open in Colab</a><a href="notebooks/04-relationships.ipynb" download>Download notebook</a><a href="notebooks/04-relationships-solutions.ipynb" download>Solutions notebook</a></div>
+    <div class="lesson-tools"><a href="https://colab.research.google.com/github/acatlin/seaborn-penguins/blob/main/docs/notebooks/04-relationships.ipynb" target="_blank" rel="noopener" title="Opens in a new tab">Open in Colab</a><a href="notebooks/04-relationships.ipynb" download>Download notebook</a><a href="notebooks/04-relationships-solutions.ipynb" download>Solutions notebook</a></div>
     <article>
 <h1 id="lesson-4-relationships-trends-lines-and-correlations">Lesson 4 - Relationships: trends, lines and correlations</h1>
 <p class="lede">Do bigger flippers mean heavier penguins? How tightly do all the measurements move together? This lesson adds trend lines, line charts, correlation heatmaps and the "everything at once" pair plot to your toolkit.</p>
@@ -44,6 +44,7 @@
 <span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;ticks&quot;</span><span class="p">)</span>
 <span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;penguins&quot;</span><span class="p">)</span>
 <span class="n">PENGUIN_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Adelie&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF8C00&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">:</span> <span class="s2">&quot;#A034F0&quot;</span><span class="p">,</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">:</span> <span class="s2">&quot;#159090&quot;</span><span class="p">}</span>
+<span class="n">SEX_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Female&quot;</span><span class="p">:</span> <span class="s2">&quot;#8c8c8c&quot;</span><span class="p">,</span> <span class="s2">&quot;Male&quot;</span><span class="p">:</span> <span class="s2">&quot;#333333&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
 <h2 id="a-trend-line-with-regplot">A trend line with <code>regplot</code></h2>
@@ -87,8 +88,8 @@
 <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Flipper length, 5 mm bins&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Mean body mass (g)&quot;</span><span class="p">,</span>
        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Within each species, mass climbs with flipper length&quot;</span><span class="p">)</span>
 </pre></div>
-<script type="application/json" class="cell-data">{"code": "binned = penguins.assign(flipper_bin=(penguins[\"flipper_length_mm\"] // 5) * 5)\nax = sns.lineplot(data=binned, x=\"flipper_bin\", y=\"body_mass_g\",\n                  hue=\"species\", palette=PENGUIN_COLORS, marker=\"o\")\nax.set(xlabel=\"Flipper length, 5 mm bins\", ylabel=\"Mean body mass (g)\",\n       title=\"Within each species, mass climbs with flipper length\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/04-line.png" alt="Line chart of mean body mass by 5 mm flipper-length bin for each species, with shaded confidence bands; all three rise steadily." loading="lazy"></figure><div class="cell-live"></div></div>
-<p><code>lineplot</code> aggregates repeated x values (here, several penguins per bin) to a mean, and shades a 95% CI band. Pass <code>errorbar=None</code> to drop the band, or <code>errorbar="sd"</code> to show spread.</p>
+<script type="application/json" class="cell-data">{"code": "binned = penguins.assign(flipper_bin=(penguins[\"flipper_length_mm\"] // 5) * 5)\nax = sns.lineplot(data=binned, x=\"flipper_bin\", y=\"body_mass_g\",\n                  hue=\"species\", palette=PENGUIN_COLORS, marker=\"o\")\nax.set(xlabel=\"Flipper length, 5 mm bins\", ylabel=\"Mean body mass (g)\",\n       title=\"Within each species, mass climbs with flipper length\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/04-line.png" alt="Line chart of mean body mass by 5 mm flipper-length bin for each species, with shaded confidence bands; all three climb, with wobbly ends where a bin holds only one or two penguins." loading="lazy"></figure><div class="cell-live"></div></div>
+<p><code>lineplot</code> aggregates repeated x values (here, several penguins per bin) to a mean, and shades a 95% CI band. Pass <code>errorbar=None</code> to drop the band, or <code>errorbar="sd"</code> to show spread. Notice the ragged ends: the extreme bins hold only one or two penguins, so their means jump around and the band vanishes where there is a single bird. Small groups deserve a caveat in the caption, or a minimum count before you plot them.</p>
 <div class="admonition few">
 <p class="admonition-title">Don&rsquo;t connect unordered categories</p>
 <p>Lines between &ldquo;Biscoe&rdquo;, &ldquo;Dream&rdquo; and &ldquo;Torgersen&rdquo; would suggest a path through islands. No such path exists. For nominal categories, use bars or dots.</p>
@@ -181,30 +182,30 @@ g = sns.lmplot(data=penguins, x=&quot;bill_depth_mm&quot;, y=&quot;body_mass_g&q
 
 <h2 id="quick-quiz">Quick quiz</h2>
 <section class="quiz" aria-label="Quiz">
-<div class="quiz-q" data-answer="A" id="04-relationships-q1">
-  <p class="quiz-stem"><span class="quiz-num">Q1.</span> When is a line chart (<code>lineplot</code>) the right choice?</p>
+<div class="quiz-q" data-answer="A" id="04-relationships-q1" role="group" aria-labelledby="04-relationships-q1-stem">
+  <p class="quiz-stem" id="04-relationships-q1-stem"><span class="quiz-num">Q1.</span> When is a line chart (<code>lineplot</code>) the right choice?</p>
   <ol class="quiz-options"><li><label><input type="radio" name="04-relationships-q1" value="A"> <span class="opt-letter">A.</span> When x has a natural order, such as time or binned measurements</label></li><li><label><input type="radio" name="04-relationships-q1" value="B"> <span class="opt-letter">B.</span> Whenever there are more than about ten categories on the x-axis</label></li><li><label><input type="radio" name="04-relationships-q1" value="C"> <span class="opt-letter">C.</span> When you want to compare islands, species, or other named groups</label></li><li><label><input type="radio" name="04-relationships-q1" value="D"> <span class="opt-letter">D.</span> When the y values are percentages that add up to 100</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden>A line implies continuity from one x to the next. That only means something if x is ordered.</div>
 </div>
-<div class="quiz-q" data-answer="C" id="04-relationships-q2">
-  <p class="quiz-stem"><span class="quiz-num">Q2.</span> Why use a diverging palette such as <code>vlag</code> with <code>center=0</code> for a correlation heatmap?</p>
-  <ol class="quiz-options"><li><label><input type="radio" name="04-relationships-q2" value="A"> <span class="opt-letter">A.</span> Diverging palettes print more clearly in black and white</label></li><li><label><input type="radio" name="04-relationships-q2" value="B"> <span class="opt-letter">B.</span> It makes the strongest correlation stand out in bright yellow</label></li><li><label><input type="radio" name="04-relationships-q2" value="C"> <span class="opt-letter">C.</span> Zero becomes a neutral color, and the sign is shown by hue</label></li><li><label><input type="radio" name="04-relationships-q2" value="D"> <span class="opt-letter">D.</span> Seaborn refuses to draw negative numbers with sequential palettes</label></li></ol>
+<div class="quiz-q" data-answer="C" id="04-relationships-q2" role="group" aria-labelledby="04-relationships-q2-stem">
+  <p class="quiz-stem" id="04-relationships-q2-stem"><span class="quiz-num">Q2.</span> Why use a diverging palette such as <code>vlag</code> with <code>center=0</code> for a correlation heatmap?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="04-relationships-q2" value="A"> <span class="opt-letter">A.</span> Diverging palettes print more clearly in black and white</label></li><li><label><input type="radio" name="04-relationships-q2" value="B"> <span class="opt-letter">B.</span> It makes the strongest correlation stand out in bright yellow</label></li><li><label><input type="radio" name="04-relationships-q2" value="C"> <span class="opt-letter">C.</span> Zero becomes a neutral color, and the sign is shown by hue</label></li><li><label><input type="radio" name="04-relationships-q2" value="D"> <span class="opt-letter">D.</span> A sequential palette would clip every negative correlation to its lowest color</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden>Correlations have a meaningful midpoint (0) and two directions. Diverging palettes encode exactly that.</div>
 </div>
-<div class="quiz-q" data-answer="B" id="04-relationships-q3">
-  <p class="quiz-stem"><span class="quiz-num">Q3.</span> What does the shaded band around a <code>regplot</code> line show by default?</p>
-  <ol class="quiz-options"><li><label><input type="radio" name="04-relationships-q3" value="A"> <span class="opt-letter">A.</span> The range that contains 95% of individual penguins</label></li><li><label><input type="radio" name="04-relationships-q3" value="B"> <span class="opt-letter">B.</span> A 95% confidence interval for the fitted regression line</label></li><li><label><input type="radio" name="04-relationships-q3" value="C"> <span class="opt-letter">C.</span> One standard deviation above and below each point</label></li><li><label><input type="radio" name="04-relationships-q3" value="D"> <span class="opt-letter">D.</span> The region where the data were interpolated</label></li></ol>
+<div class="quiz-q" data-answer="B" id="04-relationships-q3" role="group" aria-labelledby="04-relationships-q3-stem">
+  <p class="quiz-stem" id="04-relationships-q3-stem"><span class="quiz-num">Q3.</span> What does the shaded band around a <code>regplot</code> line show by default?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="04-relationships-q3" value="A"> <span class="opt-letter">A.</span> The range that contains 95% of the individual penguins in the data</label></li><li><label><input type="radio" name="04-relationships-q3" value="B"> <span class="opt-letter">B.</span> A 95% confidence interval for the fitted regression line</label></li><li><label><input type="radio" name="04-relationships-q3" value="C"> <span class="opt-letter">C.</span> One standard deviation above and below each point</label></li><li><label><input type="radio" name="04-relationships-q3" value="D"> <span class="opt-letter">D.</span> The region where the data were interpolated</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden>It&rsquo;s uncertainty about the line (the mean trend), which is why it&rsquo;s much narrower than the scatter of points.</div>
 </div>
-<div class="quiz-q" data-answer="D" id="04-relationships-q4">
-  <p class="quiz-stem"><span class="quiz-num">Q4.</span> What does <code>corner=True</code> do in <code>sns.pairplot</code>?</p>
-  <ol class="quiz-options"><li><label><input type="radio" name="04-relationships-q4" value="A"> <span class="opt-letter">A.</span> It moves the legend into the bottom-right corner</label></li><li><label><input type="radio" name="04-relationships-q4" value="B"> <span class="opt-letter">B.</span> It only plots the first and last variables</label></li><li><label><input type="radio" name="04-relationships-q4" value="C"> <span class="opt-letter">C.</span> It rounds the corners of each panel for a softer look</label></li><li><label><input type="radio" name="04-relationships-q4" value="D"> <span class="opt-letter">D.</span> It drops the redundant upper triangle of mirror-image plots</label></li></ol>
+<div class="quiz-q" data-answer="D" id="04-relationships-q4" role="group" aria-labelledby="04-relationships-q4-stem">
+  <p class="quiz-stem" id="04-relationships-q4-stem"><span class="quiz-num">Q4.</span> What does <code>corner=True</code> do in <code>sns.pairplot</code>?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="04-relationships-q4" value="A"> <span class="opt-letter">A.</span> It moves the legend into the bottom-right corner of the figure</label></li><li><label><input type="radio" name="04-relationships-q4" value="B"> <span class="opt-letter">B.</span> It only plots the first and last variables</label></li><li><label><input type="radio" name="04-relationships-q4" value="C"> <span class="opt-letter">C.</span> It rounds the corners of each panel for a softer look</label></li><li><label><input type="radio" name="04-relationships-q4" value="D"> <span class="opt-letter">D.</span> It drops the redundant mirror-image upper triangle</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden>Every off-diagonal panel above the diagonal is a mirror of one below; <code>corner=True</code> hides them.</div>
@@ -227,7 +228,7 @@ g = sns.lmplot(data=penguins, x=&quot;bill_depth_mm&quot;, y=&quot;body_mass_g&q
     </footer>
   </main>
 </div>
-<script type="application/json" class="page-setup">{"setup": "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}"}</script>
+<script type="application/json" class="page-setup">{"setup": "import numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}\nSEX_COLORS = {\"Female\": \"#8c8c8c\", \"Male\": \"#333333\"}"}</script>
 <script src="assets/app.js"></script>
 <script src="assets/live.js"></script>
 </body>

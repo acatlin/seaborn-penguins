@@ -19,8 +19,10 @@ import seaborn as sns
 sns.set_theme(style="ticks")
 penguins = sns.load_dataset("penguins")
 
-# One color per species, used on every chart in this course
+# Fixed colors, reused on every chart in this course: one per species, and two
+# grays for sex so that the species colors never mean anything else
 PENGUIN_COLORS = {"Adelie": "#FF8C00", "Chinstrap": "#A034F0", "Gentoo": "#159090"}
+SEX_COLORS = {"Female": "#8c8c8c", "Male": "#333333"}
 ```
 
 ## Meet the penguins
@@ -125,7 +127,7 @@ Within **each** species the trend goes *up*. The downward slope came from mixing
 
 ## More channels: `style` and `size`
 
-```python run fig=01-scatter-style alt="Bill scatter colored by species with circle markers for female and cross markers for male penguins."
+```python run fig=01-scatter-style alt="Bill scatter colored by species with circle markers for male and cross markers for female penguins; within each species the male markers sit up and to the right."
 ax = sns.scatterplot(
     data=penguins,
     x="bill_length_mm",
@@ -138,7 +140,7 @@ ax.set(xlabel="Bill length (mm)", ylabel="Bill depth (mm)")
 sns.move_legend(ax, "upper left", bbox_to_anchor=(1, 1))  # park the legend outside the data
 ```
 
-Within each species, the males (circles) sit up and to the right. They have bigger bills. `sns.move_legend` moved the now-crowded legend off the data. Use these extra channels sparingly. Each one adds a legend entry the reader must decode, and shape is much weaker than position or color.
+Within each species, the males (circles) sit up and to the right. They have bigger bills. Seaborn hands out markers, and colors, in the order the categories first appear in the data. The first penguin in the table is male, so males got the circle. Pass `hue_order=` or `style_order=` when you want to fix that order yourself. `sns.move_legend` moved the now-crowded legend off the data. Use these extra channels sparingly. Each one adds a legend entry the reader must decode, and shape is much weaker than position or color.
 
 ## Your turn
 
@@ -244,7 +246,7 @@ print("Overall, deeper bills look LIGHTER (Gentoos are heavy with shallow bills)
   options:
     - "The overall trend is the true one; per-group trends are just noise"
     - "Negative correlations in scatter plots are usually artifacts"
-    - "A hidden grouping variable can reverse a trend, so check for groups"
+    - "A hidden group can reverse a trend, so always check for groups"
     - "Scatter plots cannot show relationships between two measurements"
   answer: C
   explain: "This is Simpson's paradox. Coloring by a plausible grouping variable (`hue=`) is the cheapest way to check for it."

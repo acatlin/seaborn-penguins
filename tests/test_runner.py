@@ -54,6 +54,19 @@ def test_each_cell_starts_fresh():
     assert float(size) == 10.0  # rcParams reset between cells
 
 
+def test_figures_with_randomness_are_reproducible():
+    """Jitter (stripplot) and bootstrapped CIs (regplot, barplot) must not change between runs,
+    so docs/img only changes when the content does."""
+    for code in (
+        "sns.stripplot(data=penguins, x='species', y='body_mass_g')",
+        "sns.regplot(data=penguins, x='flipper_length_mm', y='body_mass_g')",
+        "sns.barplot(data=penguins, x='species', y='body_mass_g')",
+    ):
+        first = runner.run_cell(code, setup=SETUP)["figures"][0]
+        second = runner.run_cell(code, setup=SETUP)["figures"][0]
+        assert first == second, code
+
+
 def test_json_entry_point_encodes_figures():
     import json
 

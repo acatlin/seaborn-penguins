@@ -121,6 +121,40 @@ def test_quiz_questions_are_labelled_for_assistive_tech(built_site):
             assert stem_id in ids, f"{slug}: aria-labelledby points at a missing id {stem_id}"
 
 
+def _contrast(rgb_a, rgb_b):
+    """WCAG 2 contrast ratio of two sRGB colors given as 0-1 triples."""
+    def luminance(rgb):
+        r, g, b = (c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in rgb)
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+    lighter, darker = sorted((luminance(rgb_a), luminance(rgb_b)), reverse=True)
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def test_muted_text_keeps_aa_contrast_on_every_background():
+    """`--ink-3` colors the small labels: lesson numbers in the sidebar, quiz option letters,
+    the "Design principle" tag. They sit on the page, on cards, on the hover and callout
+    surface, on the current sidebar item and on a graded quiz option. WCAG AA asks for
+    4.5:1 on each of them, in the light theme and in the dark one."""
+    css = (ROOT / "site_src" / "style.css").read_text(encoding="utf-8")
+    themes = re.findall(r":root[^{]*\{([^}]*)\}", css)
+    assert len(themes) == 2, "expected the light :root block and the dark one"
+    tints = re.findall(r"label\.is-(?:correct|wrong) \{[^}]*"
+                       r"color-mix\(in srgb, var\(--(\w+)\) (\d+)%, var\(--surface\)\)", css)
+    assert len(tints) == 2, "expected a tinted background for right and for wrong quiz options"
+    for theme, block in zip(("light", "dark"), themes):
+        color = {name: tuple(int(value[i:i + 2], 16) / 255 for i in (0, 2, 4))
+                 for name, value in re.findall(r"--([\w-]+):\s*#([0-9a-fA-F]{6})\b", block)}
+        backgrounds = {name: color[name] for name in ("bg", "surface", "surface-2", "note")}
+        for name, percent in tints:  # color-mix(in srgb, ...) blends the encoded channel values
+            share = int(percent) / 100
+            backgrounds[f"{name} tint"] = tuple(share * t + (1 - share) * s
+                                                for t, s in zip(color[name], color["surface"]))
+        for where, background in backgrounds.items():
+            ratio = _contrast(color["ink-3"], background)
+            assert ratio >= 4.5, f"{theme} theme: --ink-3 on {where} is only {ratio:.2f}:1"
+
+
 @pytest.mark.parametrize("slug", LESSONS)
 def test_notebook_callouts_render_as_blockquotes(built_site, slug):
     """Markdown admonitions have no meaning in Jupyter; the build turns them into blockquotes."""
@@ -277,9 +311,39 @@ def test_exercises_reject_raw_column_names_as_axis_labels(slug, ex_id):
     assert re.search(r"plain.English", result["check_message"]), result["check_message"]
 
 
+# Every exercise whose brief asks for PENGUIN_COLORS. Without the palette the chart comes out
+# in seaborn's default colors, and the checker has to say so.
+ASK_FOR_PENGUIN_COLORS = [
+    ("01-first-plot", "1.1"), ("02-distributions", "2.1"), ("02-distributions", "2.2"),
+    ("03-categories", "3.1"), ("03-categories", "3.2"), ("04-relationships", "4.2"),
+    ("05-small-multiples", "5.1"), ("06-polish", "6.1"),
+]
+
+
+@pytest.mark.parametrize("slug, ex_id", ASK_FOR_PENGUIN_COLORS)
+def test_exercises_reject_seaborn_default_colors(slug, ex_id):
+    """Exercise 2.2 named PENGUIN_COLORS in its brief and then passed an ECDF in seaborn's own colors."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / f"{slug}.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    brief = next(b.body for b in blocks if b.kind == "exercise" and b.opts.get("id") == ex_id)
+    solution = next(b.body for b in blocks if b.kind == "solution" and b.opts.get("for") == ex_id)
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == ex_id)
+    assert "PENGUIN_COLORS" in brief, f"exercise {ex_id} no longer asks for PENGUIN_COLORS"
+    default_colors, removed = re.subn(r",?\s*palette=PENGUIN_COLORS", "", solution)
+    assert removed == 1, f"exercise {ex_id}: expected one palette=PENGUIN_COLORS in the solution"
+    result = runner.run_cell(default_colors, setup=setup, check=check)
+    assert result["error"] is None, result["error"]
+    assert result["check_ok"] is False, f"exercise {ex_id} accepts seaborn's default colors"
+    assert "PENGUIN_COLORS" in result["check_message"], result["check_message"]
+
+
 def test_bin_width_panels_draw_the_widths_they_name():
     """seaborn fits a whole number of bins to the data's range unless binrange= is given,
-    so a panel titled "binwidth = 1000 g" used to draw 900 g bins."""
+    so a panel titled "binwidth = 1000 g" used to draw 900 g bins. The panels don't share a
+    y-axis (wider bins hold more penguins), so each of them has to label its own."""
     import build_site
     import runner
 
@@ -287,13 +351,14 @@ def test_bin_width_panels_draw_the_widths_they_name():
     setup = next(b.body for b in blocks if b.kind == "setup")
     cell = next(b.body for b in blocks if b.opts.get("fig") == "02-binwidths")
     probe = ("import json\n"
-             "print(json.dumps([[a.get_title(), sorted({round(p.get_width(), 6) for p in a.patches})]"
-             " for a in plt.gcf().axes]))")
+             "print(json.dumps([[a.get_title(), a.get_ylabel(),"
+             " sorted({round(p.get_width(), 6) for p in a.patches})] for a in plt.gcf().axes]))")
     panels = json.loads(runner.run_cell(cell, setup=setup, check=probe)["check_message"])
     assert len(panels) == 3
-    for title, widths in panels:
+    for title, ylabel, widths in panels:
         named = float(re.search(r"binwidth = (\d+) g", title).group(1))
         assert widths == [named], f"the panel titled {title!r} draws bins of {widths} g"
+        assert ylabel, f"the panel titled {title!r} has its own y scale but no y label"
 
 
 def _without_carriage_returns(path):

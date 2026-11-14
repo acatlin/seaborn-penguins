@@ -43,10 +43,10 @@
   options:
     - "`sns.kdeplot`"
     - "`sns.ecdfplot`"
-    - "`sns.histplot(cumulative=\"ecdf\")`"
+    - "`sns.histplot(element=\"step\")`"
     - "`sns.rugplot`"
   answer: B
-  explain: "`ecdfplot` plots the proportion of observations at or below each value, with no bins or smoothing to choose."
+  explain: "`ecdfplot` plots the proportion of observations at or below each value, with no bins or smoothing to choose. `histplot(element=\"step\")` draws stepped lines too, but they outline bin counts."
 - lesson: 2
   q: "What is the main problem with this chart for comparing species?"
   code: |

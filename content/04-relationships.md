@@ -132,9 +132,13 @@ ax = sns.heatmap(corr)
 
 ```python solution for=4.1
 gentoo = penguins[penguins["species"] == "Gentoo"]
-corr = gentoo.select_dtypes("number").corr()
+# Optional polish from the lesson: plain-English names and a labeled colorbar.
+nice = {"bill_length_mm": "Bill length", "bill_depth_mm": "Bill depth",
+        "flipper_length_mm": "Flipper length", "body_mass_g": "Body mass"}
+corr = gentoo.select_dtypes("number").rename(columns=nice).corr()
 ax = sns.heatmap(corr, annot=True, fmt=".2f", cmap="vlag",
-                 center=0, vmin=-1, vmax=1, square=True)
+                 center=0, vmin=-1, vmax=1, square=True,
+                 cbar_kws={"label": "Pearson r"})
 ax.set(title="Within Gentoos, every measurement correlates positively")
 ```
 

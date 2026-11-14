@@ -23,6 +23,8 @@ By the end of the course learners can:
 5. Finish charts with matplotlib: labels, titles, annotations, reference lines, tick formatting, and saving.
 6. Critique and improve charts using data-ink, consistent color, highlighting, direct labeling, and honest scales.
 
+For mastery-based teaching, these six outcomes are split into twelve objectives that can be checked one at a time. See [Mastery objectives](#mastery-objectives).
+
 ## Suggested schedules
 
 | Format | Plan |
@@ -45,6 +47,8 @@ Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 
 | Student assessment pack | `instructor/Seaborn_Assessment_Pack_STUDENT.docx` | Same questions and assignments, no answers or solutions. |
 | This guide | `instructor/Seaborn_Instructor_Guide.docx` and this page | Generated from `content/instructor-guide.md`. |
 | Question and assignment sources | `instructor/exam_questions.yaml`, `instructor/assignments.yaml` | Edit these, then run `python tools/build_materials.py`. |
+| Mastery objectives workbook | `instructor/Seaborn_Mastery_Objectives.xlsx` | 36 objectives for a three-section course, and the map from this site's pages, exercises and assessments onto the first twelve. See [Mastery objectives](#mastery-objectives). |
+| Objectives source | `instructor/mastery_objectives.yaml` | The objectives and the map. Edit this, then run `python tools/build_materials.py`. |
 
 !!! warning "Answers in a public repository"
     The repository is public so GitHub Pages can serve the site for free. That means the instructor edition and the YAML sources are visible to anyone who looks. For graded use, either keep a private copy of `instructor/` (for example in a private fork), or edit the questions and assignments before you use them. Every in-page exercise shows its solution on purpose. Those exercises are for practice, not grading.
@@ -128,7 +132,7 @@ Each lesson ends with a 4-question quiz. The score counts first attempts, and a 
 | 6 - Polish | Q21-Q23 |
 | 7 - Capstone | Q24-Q25 |
 
-Answers are balanced (A = 6, B = 6, C = 7, D = 6). The correct option is the longest one in only 1 of 25 questions and the shortest in 3, so option length is no guide, and `pytest` fails if an edit upsets the balance. Allow about 35 minutes. A suggested pass mark is 18/25 (72%).
+Answers are balanced (A = 6, B = 6, C = 7, D = 6). The correct option is the longest one in only 1 of 25 questions and the shortest in 3, so option length is no guide, and `pytest` fails if an edit upsets the balance. Allow about 35 minutes. A suggested pass mark is 18/25 (72%). For mastery-based use, see [Deciding mastery](#deciding-mastery).
 
 ### Assignments
 
@@ -143,6 +147,114 @@ Each has a 100-point rubric, and both editions of the pack state the three-level
 - Accept any reasonable bin width, threshold or title that the learner *justifies*. The rubric rewards deliberate choices, not matching the model answer.
 - Deduct for chart crimes even when the code is correct: truncated bars, rainbow palettes, unlabeled units, legends covering data.
 - For Assignment 3, the design rationale is where you'll see whether the principles stuck. Look for principles applied to *specific* changes, not a list of buzzwords.
+
+## Mastery objectives
+
+This site can serve as the first of three sections of a larger course on Python visualization tools: static visualization (this site), interactive charts, and dashboards. For that course, taught for mastery, the six learning outcomes at the top of this guide are split into objectives small enough to check one at a time: twelve per section, 36 in all. A learner moves on from an objective by showing mastery of it, and may try again after more practice, without penalty.
+
+The objectives, and the map from this site's pages onto them, are in `instructor/Seaborn_Mastery_Objectives.xlsx`. The workbook has six sheets:
+
+- **Read me:** the mastery rule, the assumptions and a guide to the columns.
+- **Objectives:** all 36, one per row: what the learner can do, what mastery looks like, prerequisites, where it is taught, practiced and checked today, the gap and the next step.
+- **Page map:** objectives down, pages across, with the evidence counted and a status for each objective.
+- **Page detail:** the same map section by section, with a link to each section. Filter on an objective to get the reading for a learner who has not mastered it yet.
+- **Evidence:** every exercise, quiz question, exam question and rubric row, with the objective it gives evidence for.
+- **Timing:** learner hours by section, from inputs you can change.
+
+The workbook is generated from `instructor/mastery_objectives.yaml`. Change that file, not the workbook, and run `python tools/build_materials.py`.
+
+### Where the pages fit
+
+The eight teaching pages map onto all twelve static objectives. Each of the 30 lesson goals (the "By the end of this lesson you can" bullets), the 13 exercises, the 28 quiz questions and the 25 exam questions has one of the twelve as its objective, and so do 17 of the 18 rubric rows. The exception is "Code quality" in Assignment 2: Python fluency is a prerequisite of this course, not one of its objectives.
+
+| Objective | Taught in | Evidence in today's materials | Status |
+|---|---|---|---|
+| **S01** Map columns to visual channels | Lesson 1 | 1 exercise, 2 quiz questions, 2 exam questions, 1 rubric row | Covered |
+| **S02** Label and title in plain language | Lesson 1 | 9 exercises, 1 quiz question, 1 exam question, 2 rubric rows | Covered |
+| **S03** Show and compare distributions | Lesson 2 | 2 exercises, 4 quiz questions, 4 exam questions, 3 rubric rows | Covered |
+| **S04** Compare categories honestly | Lesson 3 | 2 exercises, 3 quiz questions, 4 exam questions, 5 rubric rows | Covered |
+| **S05** Show relationships and check for hidden groups | Lessons 1, 4 | 3 exercises, 4 quiz questions, 4 exam questions, 1 rubric row | Covered |
+| **S06** Build small multiples | Lesson 5 | 2 exercises, 4 quiz questions, 3 exam questions, 2 rubric rows | Covered |
+| **S07** Use color with purpose | Lessons 1, 6 | 10 exercises, 2 quiz questions, 3 exam questions, 5 rubric rows | Covered |
+| **S08** Polish a chart with matplotlib | Lesson 6 | 3 exercises, 1 quiz question, 2 exam questions, 1 rubric row | Covered |
+| **S09** Choose the chart form from the question | Lesson 7 | no exercise, 2 quiz questions, no exam question, no rubric row | Partial |
+| **S10** Compose a multi-panel figure | Lessons 6, 7 | 1 exercise, 3 quiz questions, 2 exam questions, 2 rubric rows | Covered |
+| **S11** Critique and redesign a chart | Lessons 6, 7 | 1 exercise, 2 quiz questions, no exam question, 2 rubric rows | Covered |
+| **S12** Deliver a figure that stands on its own | Lesson 6 | no exercise, no quiz question, no exam question, 4 rubric rows | Partial |
+
+An exercise is counted for an objective only when its automatic check tests that objective, which is why S02 (labels) and S07 (color) count so many. **Covered** means the pages teach the objective, at least one exercise checks it, and at least one exam question or rubric row assesses it. **Partial** means it is taught, but practice or assessment is missing:
+
+- **S09** is taught in Lesson 7, Step 1, and assessed nowhere. Every assignment names its chart types, so no learner has to choose a form and defend the choice.
+- **S12:** saving a figure is shown in Lesson 6 as code that is not run, and no exercise practices it. Assignments 1 and 2 ask for a written reading of the charts, but no page teaches how to write one, or how to write alt text.
+
+The exam has questions on nine of the twelve objectives, and no more than four on any one. The other three (S09, S11 and S12) are assessed through the assignments, or not at all.
+
+The 24 objectives of sections 2 and 3 are **Planned**: no page teaches them yet. One page already points their way: "Where to next?" in Lesson 7 names the condition for an interactive chart, "when readers need to hover, zoom or filter."
+
+| Section 2: interactive charts | Section 3: dashboards |
+|---|---|
+| **I01** Decide when interaction earns its place | **D01** Plan a dashboard from its users' decisions |
+| **I02** Build an interactive chart from tidy data | **D02** Build and run a minimal app |
+| **I03** Design tooltips that give details on demand | **D03** Lay out a screen with a clear hierarchy |
+| **I04** Edit the figure object | **D04** Show data with the right component |
+| **I05** Set the first view and the navigation | **D05** Choose input controls and defaults |
+| **I06** Add controls that switch, filter or animate | **D06** Wire inputs to outputs |
+| **I07** Build interactive small multiples | **D07** Cross-filter between charts |
+| **I08** Link views with a selection | **D08** Manage state and navigation |
+| **I09** Keep large data fast and readable | **D09** Load data once and keep the app fast |
+| **I10** Critique an interactive chart for honesty and access | **D10** Critique and redesign a dashboard |
+| **I11** Export and embed an interactive chart | **D11** Test, package and deploy the app |
+| **I12** Capstone: build an interactive explorer | **D12** Capstone: build, deploy and defend a dashboard |
+
+### Deciding mastery
+
+1. An objective is mastered when (1) every exercise listed for it passes its automatic check, and (2) the learner scores 80% or better on a mastery check for that objective.
+2. A mastery check is five or more questions the learner has not seen with their answers, or a rubric-scored task at full credit on the rubric rows mapped to the objective. On the assessment pack's three-level scale, 'about half' means not yet.
+3. Not yet? The learner reworks the sections that teach the objective (Page detail sheet, filter on the objective), redoes its exercises from Reset, and takes a different check. There is no penalty for a second attempt.
+4. Mastered early? The learner moves to the next objective whose prerequisites are met, or starts the next assignment.
+5. With today's materials: the exam has at most four questions per objective and its answer key is public, so use the exercises and rubric rows to decide mastery and the exam questions to find what to rework.
+
+The pass mark of 18/25 suggested under Assessment is for a single sitting of the exam. It has no part in this rule.
+
+### Assumptions
+
+The objectives rest on seven assumptions. Each is yours to change in `instructor/mastery_objectives.yaml`.
+
+- The larger course has three sections of twelve objectives: static visualization (this site), interactive charts and dashboards. This site is section 1 in full.
+- Learners arrive with Python basics and pandas, the prerequisite stated on the Start here page. Those skills are not objectives here, which is why one rubric row (Assignment 2, 'Code quality') maps to none.
+- The mastery standard is 80% on a check of five or more unseen questions, or full credit on the mapped rubric rows, with a second attempt on a different check.
+- The tools for sections 2 and 3 are placeholders: Plotly, with Altair where linked selections matter, and Dash, with Streamlit as the lighter alternative. The objectives are worded so that another library changes the 'Key tools' column, not the objective.
+- An exercise counts as evidence for an objective only when its automatic check tests that objective. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its 'full credit' text describes.
+- Status: Covered means the pages teach the objective, at least one checked exercise practices it, and at least one exam question or rubric row assesses it. Partial means it is taught but practice or assessment is missing. Planned means no page teaches it yet.
+- The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson's 60-minute midpoint across its objectives. Sections 2 and 3 are planning figures to revise after a pilot.
+
+### Timings
+
+Learner hours, from the Timing sheet. Section 1 rests on figures given in this guide: seven lessons of 45-75 minutes, counted at the 60-minute midpoint, the 35-minute exam and the three assignments. Everything else is a planning estimate.
+
+| Section | Objectives | Lessons | Check | Projects | Reassessment | Total |
+|---|---|---|---|---|---|---|
+| 1 Static | 12 | 8.1 h | 0.6 h | 6.5 h | 1.3 h | 16.5 h |
+| 2 Interactive | 12 | 10.0 h | 0.6 h | 6.0 h | 1.6 h | 18.2 h |
+| 3 Dashboards | 12 | 12.5 h | 0.6 h | 9.0 h | 2.0 h | 24.0 h |
+| All sections | 36 | 30.6 h | 1.8 h | 21.5 h | 4.9 h | 58.7 h |
+
+- **Lessons:** of section 1's 8.1 hours, 7.0 exist as pages (5.25 to 8.75 at the ends of the 45-75 minute range). The other 1.1 hours are the additions in steps 2 and 4 below. Sections 2 and 3 are still to be written.
+- **Check:** one check of about 35 minutes at the end of each section. For section 1 this is the existing exam.
+- **Projects:** section 1's three assignments (about 1 hour, about 2 hours and 3-4 hours), and one or two projects for each later section.
+- **Reassessment:** an allowance of 15% of lesson and check time for correctives and second attempts.
+
+Of the 58.7 hours, 37.2 are lessons, checks and reassessment. That is about 30 sessions of 75 minutes: a 15-week term at two sessions a week, with nothing to spare. The 21.5 hours of project work are done outside class. In a shorter term, use the flipped format: learners work through the lessons before class, and class time goes to checks, correctives and projects.
+
+### Next steps
+
+1. **Settle the assumptions that are yours to make:** the mastery standard, the libraries for sections 2 and 3, and the hours.
+2. **Finish section 1's two partial objectives.** For S09, add a "questions only" task (three questions, and the learner picks and defends each chart form) and check questions of the "which chart answers this?" kind. For S12, add a short "Describe and deliver" section to Lesson 6 or 7 (save a figure, open the file, write its alt text) and make alt text a rubric row.
+3. **Build the mastery checks.** Each objective needs five or more questions, in two forms, kept out of the public repository. Start where today's exam is thinnest: S09, S11 and S12 have no questions, S02 has one, and S01, S08 and S10 have two each.
+4. **Make two smaller additions:** an exercise that checks `ax.annotate` and a tick formatter (S08), and a written critique before the Lesson 6 makeover (S11).
+5. **Draft section 2 from I01-I12.** The grammar carries over: in Plotly Express, `hue=` becomes `color=` and `col=` becomes `facet_col=`. Two things to settle first: a second, larger dataset with an ordered variable (the animation and large-data objectives need one), and whether the in-browser exercise checker can inspect a Plotly figure, which is plain data, the way it inspects matplotlib objects now.
+6. **Draft section 3 from D01-D12.** A dashboard needs a running server, so this site's in-browser Python does not carry over as it stands. Decide early how learners run and hand in their apps, and how the apps are tested.
+7. **Keep the map current.** After a change to a lesson, the exam or an assignment, update `instructor/mastery_objectives.yaml` and rebuild. The build and `pytest` fail until the map and the course agree.
 
 ## Teaching the design thread
 
@@ -177,6 +289,7 @@ The design principle callouts (marked "Design principle") carry the course's sec
 - **Edit a lesson:** change `content/NN-*.md`, run `python tools/build_site.py`, and review the page locally (`python -m http.server -d docs`).
 - **Add an exercise:** add an `exercise`, `solution` and `check` fence with matching ids. The build fails if the solution doesn't pass its check, or if the untouched starter already does.
 - **Edit the exam or assignments:** change the YAML in `instructor/` and run `python tools/build_materials.py`. `pytest` checks the answer balance.
+- **Edit the objectives or their map:** change `instructor/mastery_objectives.yaml` and run `python tools/build_materials.py`. The build and `pytest` name anything the map points at that no longer exists, and anything new that it leaves out.
 - **Swap the dataset:** possible, but every example, check and quiz explanation is written for penguins. Plan on a full rewrite of the content files rather than a find-and-replace.
 
 Source code and issues: [{{repo_url}}]({{repo_url}}).

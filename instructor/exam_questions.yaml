@@ -16,7 +16,7 @@
   options:
     - "One row per observation and one column per variable"
     - "Columns sorted alphabetically and rows sorted by the first column"
-    - "A table with every missing value removed in advance"
+    - "A table with all missing values removed in advance"
     - "A wide table with one column per category, such as one column per species"
   answer: A
   explain: "Tidy data lets you name any column as x, y, hue, col, and so on. Seaborn drops missing values per plot, so they needn't be removed first."
@@ -34,7 +34,7 @@
   options:
     - "Because seaborn stores a global label setting that `ax.set` updates"
     - "Because axes-level functions return the matplotlib `Axes` they drew on"
-    - "Because `ax` is a DataFrame and `set` renames its columns"
+    - "Because `sns.histplot` returns the figure, and `set` applies to every Axes in it"
     - "Because `sns.set_theme()` was called earlier in the notebook"
   answer: B
   explain: "Axes-level functions return a matplotlib `Axes`; everything after that is ordinary matplotlib."
@@ -61,10 +61,10 @@
 - lesson: 2
   q: "What will `sns.kdeplot(data=penguins, x=\"body_mass_g\", bw_adjust=0.2)` most likely show?"
   options:
-    - "A wiggly curve with spurious bumps, because it is under-smoothed"
+    - "A wiggly curve with many spurious bumps, because it is under-smoothed"
     - "One smooth hill that hides the two groups, because it is over-smoothed"
-    - "A histogram with 20 bins"
-    - "An error, because bw_adjust must be greater than 1"
+    - "The same curve as the default, since bw_adjust only matters when fill=True"
+    - "A curve clipped to the data range, as small values also set cut=0"
   answer: A
   explain: "Small `bw_adjust` values shrink the smoothing bandwidth, so the curve chases noise. Large values melt real peaks together."
 - lesson: 2
@@ -98,29 +98,20 @@
   q: "A colleague's bar chart of mean body mass (3,700-5,100 g) has its y-axis starting at 3,500 g. Why is that a problem?"
   options:
     - "Matplotlib hides the error bars whenever the axis does not start at zero"
-    - "The chart becomes too tall to fit on a standard presentation slide"
-    - "Seaborn can't compute means when the axis is truncated"
+    - "The confidence intervals are no longer centred on the tops of the bars"
+    - "Readers can no longer tell which species is the heaviest"
     - "Bar length no longer matches the value, exaggerating differences"
   answer: D
   explain: "Bars encode by length from zero. If zero isn't meaningful, switch to a dot or point plot instead of truncating bars."
-- lesson: 3
-  q: "Which function shows every individual observation for each category?"
-  options:
-    - "`sns.barplot`"
-    - "`sns.stripplot`"
-    - "`sns.countplot`"
-    - "`sns.pointplot`"
-  answer: B
-  explain: "`stripplot` (or `swarmplot`) draws one dot per observation. The others draw summaries."
 - lesson: 3
   q: "Why does the course pass `linestyle=\"none\"` to `sns.pointplot` when x is species?"
   options:
     - "Lines would imply a path between unordered categories"
     - "Connecting lines make the bootstrapped confidence intervals impossible to compute"
-    - "`pointplot` cannot draw lines and markers at the same time"
-    - "It makes the chart start at zero"
+    - "`pointplot` can't draw lines and markers together"
+    - "Lines are only drawn for numeric x, so the argument is required for text categories"
   answer: A
-  explain: "There is nothing 'between' Adelie and Chinstrap, so a connecting line suggests a trend that doesn't exist."
+  explain: "There is nothing 'between' Adelie and Chinstrap, so a connecting line suggests a trend that doesn't exist. `pointplot` happily draws lines across text categories unless you tell it not to."
 - lesson: 4
   q: "What does `sns.regplot` fit by default?"
   options:
@@ -136,13 +127,13 @@
     - "`annot=True`"
     - "`vmin=-1, vmax=1`"
     - "`square=True`"
-    - "`linewidths=2`"
+    - "`cbar_kws={\"label\": \"Pearson r\"}`"
   answer: B
   explain: "Fixing the color limits to the full range of r keeps -1, 0 and +1 the same colors everywhere. Pair it with `center=0` and a diverging cmap."
 - lesson: 4
   q: "`sns.lineplot` is given several penguins at each x value. What does it do by default?"
   options:
-    - "Connects every point in the order the rows appear"
+    - "Connects every point in the order the rows appear, without aggregating"
     - "Raises an error asking you to aggregate first"
     - "Keeps only the first penguin at each x value"
     - "Aggregates to the mean at each x and shades a 95% confidence band"
@@ -154,7 +145,7 @@
     - "A presentation chart that should be used as the headline figure"
     - "A replacement for correlation heatmaps that prints r in each cell"
     - "An exploration tool; usually too dense to present"
-    - "A function that only works with exactly two numeric columns"
+    - "A function that needs exactly two numeric columns"
   answer: C
   explain: "Pair plots are great for your first look at a dataset; pick one or two panels for an audience."
 - lesson: 5
@@ -163,13 +154,13 @@
     - "`sns.relplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\", col=\"island\")`"
     - "`sns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\", col=\"island\")`"
     - "`sns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\", hue=\"island\")`"
-    - "`sns.relplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\", panel=\"island\")`"
+    - "`sns.relplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\", by=\"island\")`"
   answer: A
-  explain: "Only figure-level functions accept `col=`/`row=`. `hue=` colors within one panel; `panel=` doesn't exist."
+  explain: "Only figure-level functions accept `col=`/`row=`. `hue=` colors within one panel; `by=` is a pandas habit that seaborn doesn't understand."
 - lesson: 5
   q: "What does `g.set_titles(\"{col_name}\")` do to a FacetGrid?"
   options:
-    - "Sets every panel's x-axis label to the column name"
+    - "Sets every panel's x-axis label to the name of the column variable"
     - "Adds one title above the whole figure"
     - "Sorts the panels alphabetically by column name"
     - "Replaces titles like \"species = Gentoo\" with just \"Gentoo\""
@@ -187,16 +178,16 @@
 - lesson: 5
   q: "What is the risk of `facet_kws={\"sharey\": False}` in a figure-level plot?"
   options:
-    - "The figure can no longer be saved as a PNG file with `savefig`, only as SVG"
-    - "Seaborn will drop the legend"
+    - "The legend is drawn once per panel instead of once for the whole grid"
+    - "The x-axes become unshared too, since one axis can't be unshared alone"
     - "Equal heights in two panels may mean different values"
-    - "Panels are drawn in random order"
+    - "The panels stop lining up in a grid"
   answer: C
   explain: "Shared scales make small multiples comparable. Unshare only when panels aren't meant to be compared, and tell the reader."
 - lesson: 6
   q: "You want to color islands by the change in mean body mass since last season (some up, some down). Which palette type fits?"
   options:
-    - "Categorical, such as `\"colorblind\"`"
+    - "Categorical, such as `\"colorblind\"`, one hue per island"
     - "Sequential, such as `\"crest\"`"
     - "Rainbow, such as `\"hsv\"`"
     - "Diverging, such as `\"vlag\"`, centered on zero"
@@ -207,8 +198,8 @@
   options:
     - "Removes the top and right axis lines"
     - "Removes all tick labels from both axes, keeping only the gridlines"
-    - "Rotates the x tick labels by 90 degrees"
-    - "Deletes the legend and moves its entries into the plot title"
+    - "Switches to the \"white\" style"
+    - "Removes the axis lines, tick marks and tick labels on all four sides"
   answer: A
   explain: "Despining removes non-data ink - Few's data-ink principle in one call."
 - lesson: 6
@@ -221,11 +212,20 @@
   answer: B
   explain: "`annotate` places text and an optional arrow (`xy=` target, `xytext=` label position)."
 - lesson: 7
-  q: "After `fig, axes = plt.subplots(2, 2)`, how do you refer to the bottom-left panel?"
+  q: "The capstone builds its species legend by hand (`handles = [plt.Line2D([], [], marker=\"o\", linestyle=\"\", color=PENGUIN_COLORS[s], label=s) for s in species_order]`) and passes it to `fig.legend`. Why is that necessary?"
   options:
-    - "`axes[0, 1]`"
-    - "`axes[2]`"
-    - "`axes[1, 0]`"
-    - "`axes[\"bottom-left\"]`"
+    - "`fig.legend` ignores seaborn's palette unless each handle carries its color explicitly"
+    - "Matplotlib only accepts `Line2D` objects as legend handles"
+    - "Every panel was drawn with `legend=False`, so there are no legend entries to reuse"
+    - "Seaborn legends cannot be placed outside an Axes, so a figure legend must be built from scratch"
   answer: C
-  explain: "`axes` is a 2D array indexed `[row, column]`, starting from zero at the top-left."
+  explain: "The panels suppress their own legends so the same three colors aren't explained four times. With nothing to collect, one small proxy artist per species gives `fig.legend` something to draw. Had one panel kept its legend, `ax.get_legend_handles_labels()` could have supplied the handles instead, as the Lesson 7 exercise solution does."
+- lesson: 7
+  q: "In the Lesson 7 field report, panels A, B and D color by species while panel C colors by sex using two grays. What is the design reason?"
+  options:
+    - "Sex has two levels, and seaborn draws two-level hues in gray by default"
+    - "So each color keeps one meaning: the species colors never stand for anything else"
+    - "Gray prints more reliably than color, and panel C is the one most likely to be printed"
+    - "The species palette has only three entries, so a fourth hue variable would raise an error"
+  answer: B
+  explain: "One color story per figure. If panel C reused the species palette for sex, teal would mean Gentoo in three panels and something else in the fourth. Grays plus different marker shapes keep sex readable without stealing the species colors."

@@ -198,10 +198,29 @@ def add_table(doc, header, rows, widths):
     return table
 
 
+def add_numbered_item(doc, label, text, level=0):
+    """One item of a numbered list with an explicit label such as "3.".
+
+    Word's built-in "List Number" style keeps counting across the whole
+    document, so the second assignment's tasks would start at 5. Writing the
+    number ourselves makes every list restart at 1.
+    """
+    p = doc.add_paragraph()
+    indent = 0.3 + 0.3 * level
+    p.paragraph_format.left_indent = Inches(indent)
+    p.paragraph_format.first_line_indent = Inches(-0.3)
+    p.paragraph_format.space_after = Pt(3)
+    add_rich(p, f"{label}\t", bold=True)
+    add_rich(p, text)
+    return p
+
+
 def add_bullets(doc, items, numbered=False):
-    style = "List Number" if numbered else "List Bullet"
-    for item in items:
-        add_rich(doc.add_paragraph(style=style), item)
+    for n, item in enumerate(items, 1):
+        if numbered:
+            add_numbered_item(doc, f"{n}.", item)
+        else:
+            add_rich(doc.add_paragraph(style="List Bullet"), item)
 
 
 def page_break(doc):
@@ -286,6 +305,11 @@ def build_assessment(questions, spec, results, instructor):
     doc.add_heading("Part 2 - Assignments", level=1)
     add_rich(doc.add_paragraph(), "All three use the Palmer penguins data and the course setup:")
     add_code(doc, spec["setup"])
+    scoring = doc.add_paragraph()
+    shade(scoring, "EEF6F6")
+    left_border(scoring)
+    add_rich(scoring, "How the rubrics are scored. ", bold=True)
+    add_rich(scoring, spec["scoring"])
     for a, assignment in enumerate(spec["assignments"]):
         if a:
             page_break(doc)
@@ -296,7 +320,8 @@ def build_assessment(questions, spec, results, instructor):
         doc.add_heading("Tasks", level=3)
         add_bullets(doc, assignment["tasks"], numbered=True)
         if assignment.get("intern_chart"):
-            add_rich(doc.add_paragraph(), "The intern's chart to make over:", bold=True)
+            lead = add_rich(doc.add_paragraph(), "The intern's chart to make over:", bold=True)
+            lead.paragraph_format.keep_with_next = True
             add_code(doc, assignment["intern_chart"])
         doc.add_heading("Deliverables", level=3)
         add_bullets(doc, assignment["deliverables"])
@@ -310,14 +335,16 @@ def build_assessment(questions, spec, results, instructor):
             continue
         doc.add_heading("Model solution", level=3)
         for p, part in enumerate(assignment["solution"]):
-            add_rich(doc.add_paragraph(), part["title"], bold=True, color=ACCENT)
+            title_par = add_rich(doc.add_paragraph(), part["title"], bold=True, color=ACCENT)
+            title_par.paragraph_format.keep_with_next = True  # never orphan a part title
             if "code" in part:
                 code_par = add_code(doc, part["code"])
                 result = results[(a, p)]
                 # keep a short solution on the same page as its figure
                 code_par.paragraph_format.keep_with_next = part["code"].count("\n") < 25
                 if result["stdout"].strip():
-                    add_rich(doc.add_paragraph(), "Output:", color=MUTED, size=9)
+                    out_label = add_rich(doc.add_paragraph(), "Output:", color=MUTED, size=9)
+                    out_label.paragraph_format.keep_with_next = True
                     add_code(doc, result["stdout"].rstrip())
                 for fig in result["figures"]:
                     doc.add_picture(io.BytesIO(fig), width=Inches(6.0))
@@ -389,11 +416,12 @@ def build_guide(md_text):
             continue
         m = re.match(r"^(\s*)([-*]|\d+\.)\s+(.*)", line)
         if m:
-            numbered = m.group(2)[0].isdigit()
-            style = "List Number" if numbered else "List Bullet"
-            if len(m.group(1)) >= 2:
-                style += " 2"
-            add_rich(doc.add_paragraph(style=style), m.group(3))
+            level = 1 if len(m.group(1)) >= 2 else 0
+            if m.group(2)[0].isdigit():
+                add_numbered_item(doc, m.group(2), m.group(3), level=level)
+            else:
+                style = "List Bullet 2" if level else "List Bullet"
+                add_rich(doc.add_paragraph(style=style), m.group(3))
             i += 1
             continue
         # paragraph: join continuation lines

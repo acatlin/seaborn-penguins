@@ -17,6 +17,7 @@ import seaborn as sns
 sns.set_theme(style="ticks")
 penguins = sns.load_dataset("penguins")
 PENGUIN_COLORS = {"Adelie": "#FF8C00", "Chinstrap": "#A034F0", "Gentoo": "#159090"}
+SEX_COLORS = {"Female": "#8c8c8c", "Male": "#333333"}
 ```
 
 ## A histogram in one line
@@ -69,11 +70,13 @@ ax.set(xlabel="Body mass (g)", ylabel="Number of penguins",
 
 A KDE replaces bars with a smooth curve. It's easier to overlay, but it involves a choice you don't see.
 
-```python run fig=02-kde alt="Filled density curves of body mass for each species; Adelie and Chinstrap peak near 3,700 g and Gentoo near 5,000 g."
+```python run fig=02-kde alt="Density curves of body mass for each species, drawn as outlines; Adelie and Chinstrap peak near 3,700 g and Gentoo near 5,000 g."
 ax = sns.kdeplot(data=penguins, x="body_mass_g", hue="species",
-                 palette=PENGUIN_COLORS, fill=True, common_norm=False, alpha=0.3)
+                 palette=PENGUIN_COLORS, common_norm=False, linewidth=2)
 ax.set(xlabel="Body mass (g)", ylabel="Density")
 ```
+
+Outlines again, for the same reason as the histogram. `fill=True` looks lovely for a single curve, but where filled curves overlap they blend into a color that belongs to no species.
 
 Two settings to know:
 
@@ -180,7 +183,7 @@ print("About 0.91 - read it off the plot: the purple line crosses 45 mm near 0.0
 - q: "You draw a histogram with very wide bins and see a single smooth hump. What's the risk?"
   options:
     - "None - wider bins always reduce noise, so the single hump is the truth"
-    - "Seaborn will raise an error when bins are wider than the data's standard deviation"
+    - "The first and last bins are dropped when they are only partly filled"
     - "Wide bins can merge separate peaks, hiding groups such as species"
     - "The y-axis switches from counts to densities, which changes the shape"
   answer: C
@@ -203,7 +206,7 @@ print("About 0.91 - read it off the plot: the purple line crosses 45 mm near 0.0
   explain: "An ECDF's height at x is the proportion of observations at or below x."
 - q: "Why are stacked histograms a poor choice for comparing groups?"
   options:
-    - "Stacking always double-counts observations that fall on bin edges"
+    - "Stacking double-counts any observation that falls exactly on a bin edge"
     - "Only the bottom layer sits on a shared baseline; the others float"
     - "Stacked histograms cannot use more than two colors"
     - "They require the data to be sorted before plotting"

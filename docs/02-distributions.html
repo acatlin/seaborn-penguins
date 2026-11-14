@@ -24,7 +24,7 @@
     </div>
   </nav>
   <main id="main" class="content">
-    <div class="lesson-tools"><a href="https://colab.research.google.com/github/acatlin/seaborn-penguins/blob/main/docs/notebooks/02-distributions.ipynb" target="_blank" rel="noopener">Open in Colab</a><a href="notebooks/02-distributions.ipynb" download>Download notebook</a><a href="notebooks/02-distributions-solutions.ipynb" download>Solutions notebook</a></div>
+    <div class="lesson-tools"><a href="https://colab.research.google.com/github/acatlin/seaborn-penguins/blob/main/docs/notebooks/02-distributions.ipynb" target="_blank" rel="noopener" title="Opens in a new tab">Open in Colab</a><a href="notebooks/02-distributions.ipynb" download>Download notebook</a><a href="notebooks/02-distributions-solutions.ipynb" download>Solutions notebook</a></div>
     <article>
 <h1 id="lesson-2-distributions-how-heavy-is-a-penguin">Lesson 2 - Distributions: how heavy is a penguin?</h1>
 <p class="lede">An average hides almost everything interesting. Before you compare means, look at the whole spread: where values pile up, how wide they range, and whether there's more than one peak.</p>
@@ -43,6 +43,7 @@
 <span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">&quot;ticks&quot;</span><span class="p">)</span>
 <span class="n">penguins</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s2">&quot;penguins&quot;</span><span class="p">)</span>
 <span class="n">PENGUIN_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Adelie&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF8C00&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">:</span> <span class="s2">&quot;#A034F0&quot;</span><span class="p">,</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">:</span> <span class="s2">&quot;#159090&quot;</span><span class="p">}</span>
+<span class="n">SEX_COLORS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Female&quot;</span><span class="p">:</span> <span class="s2">&quot;#8c8c8c&quot;</span><span class="p">,</span> <span class="s2">&quot;Male&quot;</span><span class="p">:</span> <span class="s2">&quot;#333333&quot;</span><span class="p">}</span>
 </pre></div>
 </div>
 <h2 id="a-histogram-in-one-line">A histogram in one line</h2>
@@ -83,10 +84,11 @@
 <h2 id="smooth-curves-kernel-density-estimates">Smooth curves: kernel density estimates</h2>
 <p>A KDE replaces bars with a smooth curve. It&rsquo;s easier to overlay, but it involves a choice you don&rsquo;t see.</p>
 <div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">kdeplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
-                 <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">common_norm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+                 <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">common_norm</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Density&quot;</span><span class="p">)</span>
 </pre></div>
-<script type="application/json" class="cell-data">{"code": "ax = sns.kdeplot(data=penguins, x=\"body_mass_g\", hue=\"species\",\n                 palette=PENGUIN_COLORS, fill=True, common_norm=False, alpha=0.3)\nax.set(xlabel=\"Body mass (g)\", ylabel=\"Density\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/02-kde.png" alt="Filled density curves of body mass for each species; Adelie and Chinstrap peak near 3,700 g and Gentoo near 5,000 g." loading="lazy"></figure><div class="cell-live"></div></div>
+<script type="application/json" class="cell-data">{"code": "ax = sns.kdeplot(data=penguins, x=\"body_mass_g\", hue=\"species\",\n                 palette=PENGUIN_COLORS, common_norm=False, linewidth=2)\nax.set(xlabel=\"Body mass (g)\", ylabel=\"Density\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><figure class="cell-figure"><img src="img/02-kde.png" alt="Density curves of body mass for each species, drawn as outlines; Adelie and Chinstrap peak near 3,700 g and Gentoo near 5,000 g." loading="lazy"></figure><div class="cell-live"></div></div>
+<p>Outlines again, for the same reason as the histogram. <code>fill=True</code> looks lovely for a single curve, but where filled curves overlap they blend into a color that belongs to no species.</p>
 <p>Two settings to know:</p>
 <ul>
 <li><strong><code>common_norm</code>.</strong> By default (<code>True</code>) all the curves <em>together</em> have area 1, so a small group (68 Chinstraps) gets a short curve. <code>common_norm=False</code> gives each species area 1, which compares <em>shapes</em> fairly.</li>
@@ -194,30 +196,30 @@ print(___)</textarea>
 
 <h2 id="quick-quiz">Quick quiz</h2>
 <section class="quiz" aria-label="Quiz">
-<div class="quiz-q" data-answer="C" id="02-distributions-q1">
-  <p class="quiz-stem"><span class="quiz-num">Q1.</span> You draw a histogram with very wide bins and see a single smooth hump. What&rsquo;s the risk?</p>
-  <ol class="quiz-options"><li><label><input type="radio" name="02-distributions-q1" value="A"> <span class="opt-letter">A.</span> None - wider bins always reduce noise, so the single hump is the truth</label></li><li><label><input type="radio" name="02-distributions-q1" value="B"> <span class="opt-letter">B.</span> Seaborn will raise an error when bins are wider than the data&rsquo;s standard deviation</label></li><li><label><input type="radio" name="02-distributions-q1" value="C"> <span class="opt-letter">C.</span> Wide bins can merge separate peaks, hiding groups such as species</label></li><li><label><input type="radio" name="02-distributions-q1" value="D"> <span class="opt-letter">D.</span> The y-axis switches from counts to densities, which changes the shape</label></li></ol>
+<div class="quiz-q" data-answer="C" id="02-distributions-q1" role="group" aria-labelledby="02-distributions-q1-stem">
+  <p class="quiz-stem" id="02-distributions-q1-stem"><span class="quiz-num">Q1.</span> You draw a histogram with very wide bins and see a single smooth hump. What&rsquo;s the risk?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="02-distributions-q1" value="A"> <span class="opt-letter">A.</span> None - wider bins always reduce noise, so the single hump is the truth</label></li><li><label><input type="radio" name="02-distributions-q1" value="B"> <span class="opt-letter">B.</span> The first and last bins are dropped when they are only partly filled</label></li><li><label><input type="radio" name="02-distributions-q1" value="C"> <span class="opt-letter">C.</span> Wide bins can merge separate peaks, hiding groups such as species</label></li><li><label><input type="radio" name="02-distributions-q1" value="D"> <span class="opt-letter">D.</span> The y-axis switches from counts to densities, which changes the shape</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden>Bin width is a modelling choice. Too wide hides structure (two humps become one); too narrow shows noise. Try several.</div>
 </div>
-<div class="quiz-q" data-answer="A" id="02-distributions-q2">
-  <p class="quiz-stem"><span class="quiz-num">Q2.</span> With <code>hue="species"</code>, <code>kdeplot</code> uses <code>common_norm=True</code> by default. What does that mean?</p>
+<div class="quiz-q" data-answer="A" id="02-distributions-q2" role="group" aria-labelledby="02-distributions-q2-stem">
+  <p class="quiz-stem" id="02-distributions-q2-stem"><span class="quiz-num">Q2.</span> With <code>hue="species"</code>, <code>kdeplot</code> uses <code>common_norm=True</code> by default. What does that mean?</p>
   <ol class="quiz-options"><li><label><input type="radio" name="02-distributions-q2" value="A"> <span class="opt-letter">A.</span> Together the curves integrate to 1, so small groups look short</label></li><li><label><input type="radio" name="02-distributions-q2" value="B"> <span class="opt-letter">B.</span> Each curve is scaled to the same peak height so shapes are comparable</label></li><li><label><input type="radio" name="02-distributions-q2" value="C"> <span class="opt-letter">C.</span> The curves share a common bandwidth chosen from the largest group</label></li><li><label><input type="radio" name="02-distributions-q2" value="D"> <span class="opt-letter">D.</span> Values are standardized to z-scores before the densities are estimated</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden>With a common normalization, curve area reflects group size. Use <code>common_norm=False</code> when you want to compare shapes.</div>
 </div>
-<div class="quiz-q" data-answer="D" id="02-distributions-q3">
-  <p class="quiz-stem"><span class="quiz-num">Q3.</span> On an ECDF of body mass, the Gentoo line has height 0.14 at x = 4,500. What does that mean?</p>
+<div class="quiz-q" data-answer="D" id="02-distributions-q3" role="group" aria-labelledby="02-distributions-q3-stem">
+  <p class="quiz-stem" id="02-distributions-q3-stem"><span class="quiz-num">Q3.</span> On an ECDF of body mass, the Gentoo line has height 0.14 at x = 4,500. What does that mean?</p>
   <ol class="quiz-options"><li><label><input type="radio" name="02-distributions-q3" value="A"> <span class="opt-letter">A.</span> 14 Gentoo penguins weigh exactly 4,500 g</label></li><li><label><input type="radio" name="02-distributions-q3" value="B"> <span class="opt-letter">B.</span> Gentoos are 14% heavier than average at 4,500 g</label></li><li><label><input type="radio" name="02-distributions-q3" value="C"> <span class="opt-letter">C.</span> The density of Gentoo weights peaks at 4,500 g</label></li><li><label><input type="radio" name="02-distributions-q3" value="D"> <span class="opt-letter">D.</span> About 14% of Gentoos weigh 4,500 g or less</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden>An ECDF&rsquo;s height at x is the proportion of observations at or below x.</div>
 </div>
-<div class="quiz-q" data-answer="B" id="02-distributions-q4">
-  <p class="quiz-stem"><span class="quiz-num">Q4.</span> Why are stacked histograms a poor choice for comparing groups?</p>
-  <ol class="quiz-options"><li><label><input type="radio" name="02-distributions-q4" value="A"> <span class="opt-letter">A.</span> Stacking always double-counts observations that fall on bin edges</label></li><li><label><input type="radio" name="02-distributions-q4" value="B"> <span class="opt-letter">B.</span> Only the bottom layer sits on a shared baseline; the others float</label></li><li><label><input type="radio" name="02-distributions-q4" value="C"> <span class="opt-letter">C.</span> Stacked histograms cannot use more than two colors</label></li><li><label><input type="radio" name="02-distributions-q4" value="D"> <span class="opt-letter">D.</span> They require the data to be sorted before plotting</label></li></ol>
+<div class="quiz-q" data-answer="B" id="02-distributions-q4" role="group" aria-labelledby="02-distributions-q4-stem">
+  <p class="quiz-stem" id="02-distributions-q4-stem"><span class="quiz-num">Q4.</span> Why are stacked histograms a poor choice for comparing groups?</p>
+  <ol class="quiz-options"><li><label><input type="radio" name="02-distributions-q4" value="A"> <span class="opt-letter">A.</span> Stacking double-counts any observation that falls exactly on a bin edge</label></li><li><label><input type="radio" name="02-distributions-q4" value="B"> <span class="opt-letter">B.</span> Only the bottom layer sits on a shared baseline; the others float</label></li><li><label><input type="radio" name="02-distributions-q4" value="C"> <span class="opt-letter">C.</span> Stacked histograms cannot use more than two colors</label></li><li><label><input type="radio" name="02-distributions-q4" value="D"> <span class="opt-letter">D.</span> They require the data to be sorted before plotting</label></li></ol>
   <button type="button" class="btn-primary" data-action="grade">Check answer</button>
   <div class="quiz-feedback" aria-live="polite"></div>
   <div class="quiz-explain" hidden>Upper layers start wherever the layer below ends, so their heights can&rsquo;t be compared by eye. Layer steps or use small multiples.</div>
@@ -240,7 +242,7 @@ print(___)</textarea>
     </footer>
   </main>
 </div>
-<script type="application/json" class="page-setup">{"setup": "import pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}"}</script>
+<script type="application/json" class="page-setup">{"setup": "import pandas as pd\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n\nsns.set_theme(style=\"ticks\")\npenguins = sns.load_dataset(\"penguins\")\nPENGUIN_COLORS = {\"Adelie\": \"#FF8C00\", \"Chinstrap\": \"#A034F0\", \"Gentoo\": \"#159090\"}\nSEX_COLORS = {\"Female\": \"#8c8c8c\", \"Male\": \"#333333\"}"}</script>
 <script src="assets/app.js"></script>
 <script src="assets/live.js"></script>
 </body>

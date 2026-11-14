@@ -106,7 +106,66 @@ def test_quiz_correct_option_is_not_usually_longest():
                 lengths = [len(o) for o in q["options"]]
                 total += 1
                 longest += lengths["ABCD".index(q["answer"])] == max(lengths)
-    assert longest / total <= 0.40, f"correct answer is the longest option in {longest}/{total}"
+    assert longest / total <= 0.36, f"correct answer is the longest option in {longest}/{total}"
+
+
+def test_quiz_questions_are_labelled_for_assistive_tech(built_site):
+    """Each question is a labelled group, so screen readers announce the stem with its options."""
+    for slug in LESSONS:
+        text = (built_site["out"] / f"{slug}.html").read_text(encoding="utf-8")
+        ids = set(re.findall(r'\sid="([^"]+)"', text))
+        groups = re.findall(r'<div class="quiz-q"[^>]*role="group"[^>]*aria-labelledby="([^"]+)"', text)
+        assert len(groups) == 4, f"{slug}: every quiz question should be a role=group"
+        for stem_id in groups:
+            assert stem_id in ids, f"{slug}: aria-labelledby points at a missing id {stem_id}"
+
+
+@pytest.mark.parametrize("slug", LESSONS)
+def test_notebook_callouts_render_as_blockquotes(built_site, slug):
+    """Markdown admonitions have no meaning in Jupyter; the build turns them into blockquotes."""
+    nb_dir = built_site["out"] / "notebooks"
+    for name in (f"{slug}.ipynb", f"{slug}-solutions.ipynb"):
+        nb = json.loads((nb_dir / name).read_text(encoding="utf-8"))
+        prose = "\n".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
+        assert "!!!" not in prose, f"{name}: raw admonition marker leaked into a notebook"
+        assert "> **Design principle: " in prose, f"{name}: the design-principle callout is missing"
+        assert "> **Note: Key takeaways**" in prose or "> **Note: Course takeaways**" in prose, name
+
+
+@pytest.mark.parametrize("slug", LESSONS)
+def test_no_cell_changes_global_style_for_later_cells(slug):
+    """Run a lesson's cells in notebook order, in one namespace, and check that no
+    example or solution leaves seaborn/matplotlib defaults changed. Otherwise a
+    notebook user would see later charts drawn in a theme the site never shows."""
+    import contextlib
+    import io
+    import warnings
+
+    import matplotlib
+    import matplotlib.pyplot as plt
+
+    import build_site
+    import runner  # patches sns.load_dataset to the bundled CSV
+
+    text = (ROOT / "content" / f"{slug}.md").read_text(encoding="utf-8")
+    _, blocks = build_site.split_blocks(text)
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    matplotlib.rcdefaults()
+    ns = {"__name__": "__main__"}
+    exec(compile(setup, "<setup>", "exec"), ns)
+    baseline = dict(matplotlib.rcParams)
+    with warnings.catch_warnings():
+        for pattern in runner.LIBRARY_WARNINGS:  # same allowance as the runner itself
+            warnings.filterwarnings("ignore", message=pattern)
+        for block in blocks:
+            if block.kind not in ("run", "solution"):
+                continue
+            with contextlib.redirect_stdout(io.StringIO()):
+                exec(compile(block.body, "<cell>", "exec"), ns)
+            plt.close("all")
+            changed = {k: (baseline[k], v) for k, v in matplotlib.rcParams.items() if baseline[k] != v}
+            assert not changed, f"{slug}: cell starting {block.body.splitlines()[0]!r} changed {changed}"
+    matplotlib.rcdefaults()
 
 
 def test_committed_docs_match_sources(built_site):

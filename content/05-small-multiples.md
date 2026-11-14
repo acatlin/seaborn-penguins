@@ -17,6 +17,7 @@ import seaborn as sns
 sns.set_theme(style="ticks")
 penguins = sns.load_dataset("penguins")
 PENGUIN_COLORS = {"Adelie": "#FF8C00", "Chinstrap": "#A034F0", "Gentoo": "#159090"}
+SEX_COLORS = {"Female": "#8c8c8c", "Male": "#333333"}
 ```
 
 ## Two kinds of seaborn function
@@ -58,7 +59,7 @@ Each row is a sex and each column a species, giving six histograms on identical 
 
 ```python run fig=05-catplot alt="Three box-plot panels, one per species, comparing body mass of female and male penguins; males are heavier in each."
 g = sns.catplot(data=penguins, x="sex", y="body_mass_g", col="species",
-                kind="box", hue="sex", palette={"Female": "#9a9a9a", "Male": "#4a4a4a"},
+                kind="box", hue="sex", palette=SEX_COLORS,
                 legend=False, height=3.4, aspect=0.8)
 g.set_axis_labels("", "Body mass (g)")
 g.set_titles("{col_name}")
@@ -94,8 +95,7 @@ g.set_titles("{col_name}")
 Under the hood, every figure-level function builds a `FacetGrid`. You can build one directly and map any plotting function onto it:
 
 ```python run fig=05-facetgrid alt="Three panels by species, each a scatter of bill length versus bill depth with female and male penguins in different grays."
-g = sns.FacetGrid(penguins, col="species", hue="sex",
-                  palette={"Female": "#a0a0a0", "Male": "#303030"}, height=3.2)
+g = sns.FacetGrid(penguins, col="species", hue="sex", palette=SEX_COLORS, height=3.2)
 g.map_dataframe(sns.scatterplot, x="bill_length_mm", y="bill_depth_mm", s=18)
 g.add_legend(title="")
 g.set_axis_labels("Bill length (mm)", "Bill depth (mm)")
@@ -140,8 +140,7 @@ g = sns.relplot(data=penguins, x="bill_length_mm", y="bill_depth_mm", col="speci
 
 ```python solution for=5.2
 g = sns.relplot(data=penguins, x="bill_length_mm", y="bill_depth_mm",
-                col="species", hue="sex",
-                palette={"Female": "#a0a0a0", "Male": "#303030"}, height=3.2)
+                col="species", hue="sex", palette=SEX_COLORS, height=3.2)
 g.set_axis_labels("Bill length (mm)", "Bill depth (mm)")
 g.set_titles("{col_name}")
 g.figure.suptitle("Males have bigger bills in every species", y=1.04)
@@ -166,9 +165,9 @@ print("Clean titles, shared axes, one message on top.")
     - "`sns.catplot`"
     - "`sns.displot`"
     - "`sns.relplot`"
-    - "`sns.histgrid`"
+    - "`sns.FacetGrid`"
   answer: B
-  explain: "`displot` covers the distribution family: `kind=\"hist\"` (default), `\"kde\"` and `\"ecdf\"`."
+  explain: "`displot` covers the distribution family: `kind=\"hist\"` (default), `\"kde\"` and `\"ecdf\"`. `FacetGrid` is the class every figure-level function builds on, not a counterpart of `histplot`."
 - q: "What do figure-level functions such as `relplot` return?"
   options:
     - "A single matplotlib `Axes`, just like `scatterplot` returns"
@@ -188,11 +187,11 @@ print("Clean titles, shared axes, one message on top.")
 - q: "How do you set the size of a `relplot` figure?"
   options:
     - "Pass `figsize=(10, 4)` to `relplot`"
-    - "Call `plt.figure(figsize=(10, 4))` before `relplot`"
+    - "Call `plt.figure(figsize=(10, 4))` immediately before calling `relplot`"
     - "Use `height=` (inches per panel) and `aspect=` (width/height)"
     - "Increase the `dpi=` argument until it looks right"
   answer: C
-  explain: "Figure-level functions create their own figure, so `plt.figure` beforehand has no effect; size is set per panel."
+  explain: "Figure-level functions create their own figure, so a `plt.figure` call beforehand only leaves an empty figure behind. Size is set per panel with `height` and `aspect`."
 ```
 
 !!! note "Key takeaways"

@@ -18,6 +18,7 @@ import seaborn as sns
 sns.set_theme(style="ticks")
 penguins = sns.load_dataset("penguins")
 PENGUIN_COLORS = {"Adelie": "#FF8C00", "Chinstrap": "#A034F0", "Gentoo": "#159090"}
+SEX_COLORS = {"Female": "#8c8c8c", "Male": "#333333"}
 ```
 
 ## A trend line with `regplot`
@@ -66,7 +67,7 @@ Two useful patterns here: calling seaborn several times on the **same `ax`**, an
 
 A line says "follow me from left to right." That only makes sense when x is ordered: time, a dose, or a binned measurement. Penguins weren't measured over time here, but flipper length is ordered. Bin it and plot the average mass per bin:
 
-```python run fig=04-line alt="Line chart of mean body mass by 5 mm flipper-length bin for each species, with shaded confidence bands; all three rise steadily."
+```python run fig=04-line alt="Line chart of mean body mass by 5 mm flipper-length bin for each species, with shaded confidence bands; all three climb, with wobbly ends where a bin holds only one or two penguins."
 binned = penguins.assign(flipper_bin=(penguins["flipper_length_mm"] // 5) * 5)
 ax = sns.lineplot(data=binned, x="flipper_bin", y="body_mass_g",
                   hue="species", palette=PENGUIN_COLORS, marker="o")
@@ -74,7 +75,7 @@ ax.set(xlabel="Flipper length, 5 mm bins", ylabel="Mean body mass (g)",
        title="Within each species, mass climbs with flipper length")
 ```
 
-`lineplot` aggregates repeated x values (here, several penguins per bin) to a mean, and shades a 95% CI band. Pass `errorbar=None` to drop the band, or `errorbar="sd"` to show spread.
+`lineplot` aggregates repeated x values (here, several penguins per bin) to a mean, and shades a 95% CI band. Pass `errorbar=None` to drop the band, or `errorbar="sd"` to show spread. Notice the ragged ends: the extreme bins hold only one or two penguins, so their means jump around and the band vanishes where there is a single bird. Small groups deserve a caveat in the caption, or a minimum count before you plot them.
 
 !!! few "Don't connect unordered categories"
     Lines between "Biscoe", "Dream" and "Torgersen" would suggest a path through islands. No such path exists. For nominal categories, use bars or dots.
@@ -185,12 +186,12 @@ print("Three upward slopes - within species, deeper bills do go with heavier bir
     - "Diverging palettes print more clearly in black and white"
     - "It makes the strongest correlation stand out in bright yellow"
     - "Zero becomes a neutral color, and the sign is shown by hue"
-    - "Seaborn refuses to draw negative numbers with sequential palettes"
+    - "A sequential palette would clip every negative correlation to its lowest color"
   answer: C
   explain: "Correlations have a meaningful midpoint (0) and two directions. Diverging palettes encode exactly that."
 - q: "What does the shaded band around a `regplot` line show by default?"
   options:
-    - "The range that contains 95% of individual penguins"
+    - "The range that contains 95% of the individual penguins in the data"
     - "A 95% confidence interval for the fitted regression line"
     - "One standard deviation above and below each point"
     - "The region where the data were interpolated"
@@ -198,10 +199,10 @@ print("Three upward slopes - within species, deeper bills do go with heavier bir
   explain: "It's uncertainty about the line (the mean trend), which is why it's much narrower than the scatter of points."
 - q: "What does `corner=True` do in `sns.pairplot`?"
   options:
-    - "It moves the legend into the bottom-right corner"
+    - "It moves the legend into the bottom-right corner of the figure"
     - "It only plots the first and last variables"
     - "It rounds the corners of each panel for a softer look"
-    - "It drops the redundant upper triangle of mirror-image plots"
+    - "It drops the redundant mirror-image upper triangle"
   answer: D
   explain: "Every off-diagonal panel above the diagonal is a mirror of one below; `corner=True` hides them."
 ```

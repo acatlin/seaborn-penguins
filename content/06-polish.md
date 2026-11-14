@@ -18,6 +18,7 @@ import seaborn as sns
 sns.set_theme(style="ticks")
 penguins = sns.load_dataset("penguins")
 PENGUIN_COLORS = {"Adelie": "#FF8C00", "Chinstrap": "#A034F0", "Gentoo": "#159090"}
+SEX_COLORS = {"Female": "#8c8c8c", "Male": "#333333"}
 ```
 
 ## How seaborn and matplotlib fit together
@@ -110,9 +111,9 @@ fig.suptitle("What drives a penguin's weight? Species first, sex second.")
 Here is a chart made with every default and every option turned on:
 
 ```python run fig=06-before alt="A cluttered scatter plot with rainbow colors, three different marker shapes, varying point sizes and a large legend overlapping the data."
-sns.set_theme(style="darkgrid")
-ax = sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
-                     hue="species", style="island", size="bill_depth_mm", palette="hsv")
+with sns.axes_style("darkgrid"):     # the busiest style, scoped to this one chart
+    ax = sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
+                         hue="species", style="island", size="bill_depth_mm", palette="hsv")
 ```
 
 Three encodings, a rainbow palette, a legend covering the data, and raw column names. It *contains* the data, but it doesn't *say* anything. Here's the same data made deliberate:
@@ -169,6 +170,7 @@ fig.savefig("penguin-makeover.svg", bbox_inches="tight")            # vector: cr
 
 ```python exercise id=6.1 title="Make over a messy chart"
 # This chart works but says nothing. Make it deliberate:
+#  - back to the course's quiet theme: sns.set_theme(style="ticks")
 #  - PENGUIN_COLORS for species, and drop the style= and size= encodings
 #  - no legend (label the species directly with ax.text if you like)
 #  - axis labels in plain English with units, and a title that states a finding
@@ -200,6 +202,7 @@ assert len(sizes) == 1, "Drop size= - point size shouldn't encode anything here.
 assert ax.get_legend() is None, "Remove the legend with legend=False (direct labels are optional)."
 assert "mm" in ax.get_xlabel() and "mm" in ax.get_ylabel(), "Use plain-English axis labels with units."
 assert len(ax.get_title()) >= 15, "Add a title that states a finding."
+assert tuple(ax.get_facecolor()[:3]) == (1.0, 1.0, 1.0), "Switch back to the quiet theme first: sns.set_theme(style='ticks')."
 assert not ax.spines["top"].get_visible() and not ax.spines["right"].get_visible(), "Call sns.despine() to remove the top and right spines."
 print("From noise to message. Compare it with the starter - same data, very different chart.")
 ```
@@ -240,7 +243,7 @@ print("Spotlight on. Gray is doing the heavy lifting here.")
 ## Quick quiz
 
 ```quiz
-- q: "Stephen Few's \"data-ink\" idea (from Edward Tufte) says you should..."
+- q: "Edward Tufte's \"data-ink ratio\", which Stephen Few builds on, says you should..."
   options:
     - "use as much ink as possible so charts look substantial"
     - "always print charts in black ink only"
@@ -258,16 +261,16 @@ print("Spotlight on. Gray is doing the heavy lifting here.")
   explain: "A legend is a lookup table. Direct labels put the answer where the eye already is."
 - q: "How do you draw a seaborn chart into the second panel of `fig, axes = plt.subplots(1, 2)`?"
   options:
-    - "Call `plt.subplot(2)` after the seaborn function"
-    - "Pass `hue=axes[1]`"
-    - "Use `sns.set_theme(ax=axes[1])` first"
+    - "Call `plt.subplot(2)` after the seaborn function has drawn"
+    - "Pass `ax=axes[1]` to `sns.relplot`, the figure-level function"
+    - "Call `sns.set_theme(ax=axes[1])` before drawing the chart"
     - "Pass `ax=axes[1]` to an axes-level seaborn function"
   answer: D
   explain: "Axes-level functions accept `ax=`. Figure-level functions don't - they make their own figure."
 - q: "Your chart is about one species. What does Few recommend for color?"
   options:
-    - "Use a rainbow palette so every species is equally vivid"
-    - "Gray out the others and give only the focus group a strong color"
+    - "Use a rainbow palette so every species is equally vivid and distinct"
+    - "Gray out the others; give only the focus group a strong color"
     - "Use the brightest available color for every group"
     - "Remove all color and rely on marker shapes"
   answer: B

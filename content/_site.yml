@@ -1,6 +1,6 @@
 title: Seaborn with Penguins
 description: A hands-on, browser-runnable course in seaborn and matplotlib for people who already know Python and pandas.
-github_user: maddogdatascience
+github_user: acatlin
 repo: seaborn-penguins
 pages:
   - slug: index

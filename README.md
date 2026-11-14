@@ -2,7 +2,7 @@
 
 A hands-on course that takes people who already know **Python and pandas** to making clear, honest, good-looking charts with **seaborn** and **matplotlib**. Seven short lessons use one dataset ([Palmer penguins](https://allisonhorst.github.io/palmerpenguins/)). Every example and exercise runs live in the browser.
 
-**Live site:** https://maddogdatascience.github.io/seaborn-penguins/
+**Live site:** https://acatlin.github.io/seaborn-penguins/
 
 ![The four-panel Penguin Field Report learners build in Lesson 7](docs/img/07-report.png)
 
@@ -17,7 +17,7 @@ A hands-on course that takes people who already know **Python and pandas** to ma
 | **Design thread** | "Design principle" callouts based on Stephen Few and Edward Tufte in every lesson: data-ink, common baselines, sorting, purposeful color, direct labels, small multiples |
 | **Notebooks** | Student and solutions notebook for every lesson (`docs/notebooks/`), each with an *Open in Colab* link |
 | **Assessment pack (.docx)** | 25 multiple-choice questions with answers marked and explained, an answer key, and 3 assignments of increasing difficulty with rubrics and tested model solutions. Instructor and student editions. |
-| **Instructor guide** | Schedules, lesson-by-lesson talking points, common misconceptions, assessment mapping and troubleshooting ([on the site](https://maddogdatascience.github.io/seaborn-penguins/instructor-guide.html) and as `.docx`) |
+| **Instructor guide** | Schedules, lesson-by-lesson talking points, common misconceptions, assessment mapping and troubleshooting ([on the site](https://acatlin.github.io/seaborn-penguins/instructor-guide.html) and as `.docx`) |
 
 ## Repository layout
 
@@ -84,7 +84,7 @@ CI (`.github/workflows/ci.yml`) installs the pinned requirements and runs the fu
 
 ## Using this for a class
 
-See the [instructor guide](https://maddogdatascience.github.io/seaborn-penguins/instructor-guide.html). **Note:** this repository is public, so the answer keys in `instructor/` are public too. For graded use, keep a private copy of the assessment materials or modify the questions.
+See the [instructor guide](https://acatlin.github.io/seaborn-penguins/instructor-guide.html). **Note:** this repository is public, so the answer keys in `instructor/` are public too. For graded use, keep a private copy of the assessment materials or modify the questions.
 
 ## Credits and license
 

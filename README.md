@@ -59,7 +59,7 @@ python -m http.server -d docs 8000  # preview at http://localhost:8000
 - Every page, notebook, script, stylesheet and data file in `docs/` **matches what the sources produce**, every figure is present, and no leftover figures or notebooks remain, so a stale site can't be committed. (PNG bytes are not compared: they differ between the machine that builds `docs/` and the CI runner.)
 - Quiz and exam answers are **evenly distributed across A-D**. There are no runs of three identical answers, and the correct option is rarely the longest (36% or less).
 - The exam covers all 7 lessons. The rubrics total 100 and both editions state the scoring scale. The instructor edition marks exactly the right answers, and the student edition contains no answers or solutions.
-- The **mastery objectives** map names only page sections, exercises, questions and rubric rows that exist, and leaves none out. The committed workbook matches its sources, and every formula in it has its result stored in the file. The statuses, counts and hours quoted in the instructor guide match the workbook.
+- The **mastery objectives** map names only page sections, exercises, questions and rubric rows that exist, and leaves none out. The committed workbook matches its sources, and every formula in it has its result stored in the file. The statuses, counts and hours quoted in the instructor guide match the workbook. Mastery of an objective never waits for an exercise on a page later than the first page that teaches an objective needing it.
 
 ## Authoring lessons
 

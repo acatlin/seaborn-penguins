@@ -13,7 +13,9 @@ The High and Medium fixes were made with the review itself. Five of the Low item
 in a follow-up pass. That pass turned up three more Low findings (L13-L15) and fixed two of
 them. A second follow-up fixed L6-L9 and the palette half of L15, and wrote down six more Low
 findings (L16-L21) without acting on them. A recheck of the mastery objectives added one more
-(L22) and nine questions about the objectives map (O1-O9), which are left for a decision.
+(L22) and nine questions about the objectives map (O1-O9). Seven of them (O1-O7) were decided
+as recommended on 2026-11-15 and applied. O8 and O9 are still open, with one more question (O10)
+that came up while the seven were applied.
 
 Severity scale:
 
@@ -46,7 +48,8 @@ Severity scale:
 | L15 | Low | Found in the follow-up: exercise 2.2 checks neither its palette nor its printed answer | Palette check fixed in the second follow-up; the printed answer left alone |
 | L16-L21 | Low | Found in the second follow-up: a give-away exam item, a 4.46:1 tick mark, heatmap label rotation, layout advice the course does not follow, an unnamed y-axis, an unshared x-axis | Left alone, see below |
 | L22 | Low | Found while rechecking the objectives: five of the nine pages scroll sideways at phone width | Left alone, see below |
-| O1-O9 | Decision | Questions about the mastery objectives map: a rule that cannot be followed as written, evidence that is tested but not listed, two page roles, overlapping criteria, section 2's library | Left for a decision, see "Recheck of the mastery objectives" |
+| O1-O7 | Decision | Questions about the mastery objectives map: a rule that cannot be followed as written, evidence that is tested but not listed, two page roles, overlapping criteria | Decided on 2026-11-15 as recommended, and applied |
+| O8-O10 | Decision | More questions about the map: two objectives that each hold several performances, section 2's library, an objective first taught before one of its prerequisites | Left for a decision, see "Recheck of the mastery objectives" |
 
 ## High
 
@@ -466,7 +469,8 @@ load, a Plotly selection and a fragment (stlite 1.12.2, which bundles Streamlit 
 minute to load the first time). It is a second runtime beside the site's own, the exercise
 checker cannot look inside it, and `streamlit.testing` is not in its build.
 
-**Left for a decision.** None of these was changed.
+**Questions about the map.** O1-O7 were decided on 2026-11-15, as recommended, and applied in
+version 1.2 of the map. Each of the seven ends with what was done. O8, O9 and O10 are still open.
 
 - **O1. Mastery rule 1 cannot be followed as written.** "An objective is mastered when every
   exercise listed for it passes its automatic check." S02 is listed for nine exercises, the last
@@ -475,23 +479,38 @@ checker cannot look inside it, and `streamlit.testing` is not in its build.
   have the same shape. Recommendation: for rule 1, count only the exercises on the pages that
   teach the objective (marked T on the Page map). S02 then needs 1.1 and 1.2, S07 needs 1.1, 6.1
   and 6.2, and S08 needs 6.1 and 6.2. The later exercises stay on the sheets as reinforcement.
+  Applied: rule 1 now reads "every exercise that checks it on the pages that teach it", and the
+  Objectives sheet names those exercises first under "Practice today" ("Exercises for mastery"),
+  with the others as "Further practice". S02 needs 1.1 and 1.2 and S08 needs 6.1 and 6.2, as
+  above. S07 needs 1.1, 3.1, 3.2, 6.1 and 6.2: O5 makes Lesson 3 a page that teaches S07, so its
+  two exercises count too. Two exercises still serve an objective and its prerequisites at once
+  (1.2 for S05, S01 and S02, and 6.1 for S11, S07 and S08), but each sits at the end of a page
+  that teaches all of them. A test now fails if an objective's mastery waits for an exercise on
+  a page later than the first page teaching an objective that needs it.
 - **O2. S01 is counted for one exercise, though seven more checks test it.** Exercises 1.2, 2.1,
   2.2, 4.2, 5.2, 6.1 and 7.1 assert which column sits on x, y or hue, and none lists S01. The
   stated rule ("only when its check tests that objective") is not broken, but the guide explains
   the high counts of S02 and S07 by that rule, and S01 would count higher still. Recommendation:
   add S01 to 1.2, which is in S01's own lesson and makes the learner add `hue=`, and say in the
   fifth assumption that later checks use the mapping to recognise the chart, not to test S01.
+  Applied: S01 is listed for exercise 1.2, two exercises in all, and the fifth assumption states
+  the convention.
 - **O3. "No redundant legend" is a criterion of S08, and two checks test it without listing
   S08.** Exercises 3.2 and 5.1 assert that the legend is gone, with a hint that it would repeat
   the axis or the panel titles. Exercises 6.1 and 6.2 count the same assert for S08.
   Recommendation: add S08 to both (3 exercises become 5), and map Lesson 5's `catplot` section,
   where the idea is first explained, as an introduction to S08.
+  Applied: S08 is listed for 3.2 and 5.1, five exercises in all, and Lesson 5's `catplot`
+  section is mapped as introducing it. Lesson 3 passes `legend=False` in two examples without
+  saying why, so a learner first meets the reason in the hint of exercise 3.2.
 - **O4. Two rubric rows are mapped more narrowly than their neighbours.** A3 R2 asks for "ECDF
   reference lines" and does not list S08, though exercise 2.2 counts a reference line for S08.
   A3 R4, the makeover, is mapped to S11 alone, while exercise 6.1, which is the same task, is
   S11, S02, S07 and S08, and A3 R3 is split in the same way. Recommendation: add S08 to A3 R2,
   and map A3 R4 to S11, S02, S07 and S08. The guide's table would change (S02 from 2 rubric rows
   to 3, S07 from 5 to 6, S08 from 1 to 3). No status would.
+  Applied: A3 R2 lists S08, and A3 R4 lists S11, S02, S07 and S08. The guide's table changed as
+  predicted.
 - **O5. Two page roles.** "Three ways to follow along" on Start here is mapped as an
   introduction to S12. It is about running the course's code, and reads as orientation, like the
   two sections before it. And Lesson 3's point-plot section is mapped as reinforcing S07, but it
@@ -499,13 +518,16 @@ checker cannot look inside it, and `streamlit.testing` is not in its build.
   should carry the distinction too. By the sheet's own definition (the main instruction for one
   of the criteria) that is teaching. Recommendation: orientation for the first, and "teaches"
   for the second, which makes S07 "taught in Lessons 1, 3, 6".
+  Applied: both roles changed, and the guide's table shows S07 as taught in Lessons 1, 3, 6.
 - **O6. S02's fourth criterion reaches into S06.** Labelling "on a grid" with
   `g.set_axis_labels` and `g.legend.set_title` cannot be done in Lesson 1, where S02 is taught,
   and S06 has the same criterion. Recommendation: end S02's criterion at the Axes and take
   "seaborn grids" out of its key tools.
+  Applied: the criterion ends "on an Axes", and S02's key tools name the Axes methods only.
 - **O7. I05 and I07 share a criterion.** "Panels that are compared zoom together" (I05) is
   I07's "Zooming one panel zooms the panels it is compared with", and I05 comes before panels
   are taught. Recommendation: keep it in I07 and move `matches=` there.
+  Applied: I05 keeps three criteria, and `matches=` is among I07's key tools.
 - **O8. S05 and S12 each hold more than one performance.** S05 is a fitted trend, a line chart,
   a correlation heatmap, a pair plot and the check for hidden groups. Its own next step says to
   split it "if learners stall". S12 is two: saving files that can be reproduced, and writing
@@ -518,3 +540,12 @@ checker cannot look inside it, and `streamlit.testing` is not in its build.
   `st.altair_chart` among them, for new 2-D charts, and `st.plotly_chart` for a Plotly figure
   you already have. Plotly still fits I03-I06 (tooltips, the figure object, navigation,
   controls), which are written around it.
+- **O10. S11 needs S09, but is first taught before it.** S11 (critique and redesign) lists S09
+  (choose the chart form) as a prerequisite. S09 is taught in Lesson 7, Step 1, while S11 is
+  first taught by the makeover in Lesson 6, where its one exercise, 6.1, sits too. It is the
+  only objective first taught before one of its prerequisites. Nothing deadlocks: S09 needs
+  nothing from S11, and a learner does exercise 6.1 in Lesson 6 in any case, for S07 and S08.
+  But the Prerequisites column promises "objectives to master first", and that cannot hold for
+  the Lesson 6 half of S11. Found while applying O1. Recommendation: leave the map as it is, and
+  when the mastery checks are written, place S11's after Lesson 7, where the rest of S11 is
+  taught.

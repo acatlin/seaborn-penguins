@@ -17,7 +17,8 @@ findings (L16-L21) without acting on them. A recheck of the mastery objectives a
 as recommended on 2026-11-15 and applied, and a tenth (O10) came up while they were. O8, O9 and
 O10 were decided later that day and applied as version 1.3 of the map. The same pass fixed L22
 and the British spellings (L27), rechecked the first seven as applied, and wrote down four more
-Low findings (L23-L26) and three more questions (O11-O13) without acting on them.
+Low findings (L23-L26) and three more questions (O11-O13) without acting on them. What comes
+next is planned in `PLAN.md`.
 
 Severity scale:
 
@@ -725,4 +726,8 @@ any of them can be reversed.
   mastery checks are written, a learner moves on when the exercises of rule 1 pass, and the
   rubric rows of the next assignment confirm the objective or send the learner back. The mastery
   checks of step 3 remove the problem, since a check can be taken at any time.
-  taught.
+
+**What comes next.** Steps 2 to 4 of the guide's "Next steps" are planned in `PLAN.md`: two
+exercises, a task, a new section in Lesson 7 and the mastery checks, with ten questions to answer
+first. None of it is built. One of the ten follows from O10. An exercise for S09 in Lesson 7
+would make the rule-1 test fail, because S11 needs S09 and is first taught one lesson earlier.

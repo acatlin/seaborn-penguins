@@ -120,12 +120,131 @@ def near_color(hex_color, used, tol=0.06):
     return any(max(abs(a - b) for a, b in zip(target, to_rgb(u))) <= tol for u in used)
 
 
+def chart_forms(ax):
+    """Names of the chart forms drawn on ax, read from the objects that seaborn, matplotlib
+    and pandas leave on an Axes. A chart built in layers has several.
+
+    One measurement:      "histogram" (bars, step outlines), "density" (a KDE curve), "ecdf",
+                          "area" (a filled histogram or density with no outline)
+    Groups on an axis:    "bars" (one bar per group: a mean or a count), "box", "violin",
+                          "strip" (one dot per row), "points" (one marker per group: a mean),
+                          "joined" (a line that runs from one group to the next)
+    Two measurements:     "scatter", "line" (a trend line or a line chart), "mesh" (a 2-D
+                          histogram, a heatmap, density contours)
+    Parts of a whole:     "pie"
+    """
+    import numpy as np
+
+    forms = set()
+
+    def numbers(values):
+        try:
+            return np.asarray(values, dtype=float)
+        except (TypeError, ValueError):
+            return np.array([])
+
+    group_axis = next((name for name, axis in (("x", ax.xaxis), ("y", ax.yaxis))
+                       if type(axis.get_units()).__name__ == "UnitData"), None)
+
+    def along_groups(x, y):
+        """The extent of something along the axis that carries the groups."""
+        values = x if group_axis == "x" else y
+        return float(np.ptp(values)) if len(values) else 0.0
+
+    # ---- patches: wedges, boxes, bars
+    kinds = [type(p).__name__ for p in ax.patches]
+    if "Wedge" in kinds:
+        forms.add("pie")
+    if "PathPatch" in kinds or any(type(c).__name__ == "BoxPlotContainer" for c in ax.containers):
+        forms.add("box")
+    bars = [p for p in ax.patches if type(p).__name__ == "Rectangle" and (p.get_width() or p.get_height())]
+    if bars:
+        def touching(rects):
+            """True if the bars stand edge to edge, as the bins of a histogram do."""
+            for start, size in ((lambda p: p.get_x(), lambda p: p.get_width()),
+                                (lambda p: p.get_y(), lambda p: p.get_height())):
+                spans = sorted({(round(start(p), 6), round(start(p) + size(p), 6)) for p in rects})
+                if len(spans) > 1 and all(abs(a[1] - b[0]) < 1e-6 * max(1.0, abs(a[1]))
+                                          for a, b in zip(spans, spans[1:])):
+                    return True
+            return False
+
+        groups = [list(c) for c in ax.containers if type(c).__name__ == "BarContainer"] or [bars]
+        if group_axis is None and (len(bars) >= 8 or all(touching(g) for g in groups)):
+            forms.add("histogram")
+        else:
+            forms.add("bars")
+
+    # ---- collections: points, violins, bands, meshes
+    filled = False
+    for c in ax.collections:
+        kind = type(c).__name__
+        if kind in ("QuadMesh", "QuadContourSet"):
+            forms.add("mesh")
+        elif kind == "PathCollection" and len(c.get_offsets()):
+            forms.add("strip" if group_axis else "scatter")
+        elif "PolyCollection" in kind and c.get_paths():
+            vertices = np.vstack([path.vertices for path in c.get_paths()])
+            if group_axis and along_groups(vertices[:, 0], vertices[:, 1]) < 1:
+                forms.add("violin")
+            else:
+                filled = True
+
+    # ---- lines: steps, curves, markers, trend lines
+    drawn = False
+    for line in ax.lines:
+        raw_x, raw_y = numbers(line.get_xdata(orig=False)), numbers(line.get_ydata(orig=False))
+        if not len(raw_x) or len(raw_x) != len(raw_y):
+            continue
+        keep = np.isfinite(raw_x) & np.isfinite(raw_y)
+        x, y = raw_x[keep], raw_y[keep]
+        if not len(x):
+            continue
+        solid = line.get_linestyle() not in ("None", "none", "", " ")
+        marked = line.get_marker() not in (None, "None", "none", "", " ")
+        if group_axis:
+            if marked and not (len(x) == 1 and solid):  # a violin marks its median with a one-point line
+                forms.add("points")
+            if len(x) == 5 and solid and x[0] == x[-1] and y[0] == y[-1]:
+                forms.add("box")  # the outline of an unfilled box
+            elif solid and len(x) > 1 and along_groups(x, y) >= 0.99:
+                forms.add("joined")
+            continue
+        if not solid or len(x) < 2 or np.ptp(x) == 0 or np.ptp(y) == 0:
+            continue  # markers alone, or a reference line (axvline, axhline)
+        drawn = True
+        if len(x) == 5 and x[0] == x[-1] and y[0] == y[-1]:
+            forms.add("box")
+        elif line.get_drawstyle().startswith("steps"):
+            # seaborn starts an ECDF at minus infinity, so look at each coordinate's own finite values
+            climbs = any(abs(v.min()) < 1e-9 and abs(v.max() - 1) < 1e-9 and (np.diff(v) >= 0).all()
+                         for v in (raw_x[np.isfinite(raw_x)], raw_y[np.isfinite(raw_y)]))
+            forms.add("ecdf" if climbs else "histogram")
+        else:
+            def area(base, height):
+                order = np.argsort(base, kind="stable")
+                base, height = base[order], height[order]
+                return float(np.sum(np.diff(base) * (height[1:] + height[:-1]) / 2))
+
+            chord = (y - y[0]) * (x[-1] - x[0]) - (x - x[0]) * (y[-1] - y[0])
+            bent = len(x) >= 50 and float(np.abs(chord).max()) > 1e-6 * np.ptp(x) * np.ptp(y)
+            curve = bent and any(height.min() >= 0 and 0.01 <= area(base, height) <= 1.05
+                                 for base, height in ((x, y), (y, x)))
+            forms.add("density" if curve else "line")
+    if "box" in forms:
+        forms.discard("points")  # the markers on a box plot are its outliers, not means
+    if filled and not drawn and group_axis is None and not forms & {"scatter", "histogram", "bars"}:
+        forms.add("area")
+    return forms
+
+
 CHECK_HELPERS = {
     "chart_axes": chart_axes,
     "points": points,
     "legend_labels": legend_labels,
     "colors_used": colors_used,
     "near_color": near_color,
+    "chart_forms": chart_forms,
 }
 
 

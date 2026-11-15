@@ -5,7 +5,7 @@ Usage:  python tools/build_objectives.py     (python tools/build_materials.py ru
 Reads   instructor/mastery_objectives.yaml    the objectives, the page map, the evidence map
         content/_site.yml, content/*.md       page sections, lesson goals, exercises, quizzes
         instructor/exam_questions.yaml        exam questions
-        instructor/assignments.yaml           rubric rows
+        instructor/assignments.yaml           rubric rows of the assignments and the short tasks
 Writes  instructor/Seaborn_Mastery_Objectives.xlsx
 
 The build is strict: it fails if the maps name a page section, exercise, question or
@@ -88,7 +88,7 @@ class Course:
     exercises: dict  # id -> {"page", "title"}
     quiz: dict       # "lesson.question" -> {"page", "number", "text"}
     exam: list       # the questions of exam_questions.yaml
-    rubric: dict     # "assignment.row" -> {"assignment", "criterion", "points"}
+    rubric: dict     # "assignment.row", or "T1.row" for a short task -> {"assignment", "criterion", "points"}
 
     def page(self, slug):
         return next(p for p in self.pages if p.slug == slug)
@@ -151,9 +151,14 @@ def read_course():
             for number, text in section.quiz:
                 quiz[f"{page.num}.{number}"] = {"page": page, "number": number, "text": text}
     exam = yaml.safe_load((INSTRUCTOR / "exam_questions.yaml").read_text(encoding="utf-8"))
-    assignments = yaml.safe_load((INSTRUCTOR / "assignments.yaml").read_text(encoding="utf-8"))["assignments"]
+    graded = yaml.safe_load((INSTRUCTOR / "assignments.yaml").read_text(encoding="utf-8"))
     rubric = {f"{a}.{r}": {"assignment": assignment["title"], "criterion": row[0], "points": row[1]}
-              for a, assignment in enumerate(assignments, 1) for r, row in enumerate(assignment["rubric"], 1)}
+              for a, assignment in enumerate(graded["assignments"], 1)
+              for r, row in enumerate(assignment["rubric"], 1)}
+    # A short task keeps its rows apart from the assignments', so adding one never renumbers them.
+    rubric.update({f"T{t}.{r}": {"assignment": task["title"], "criterion": row[0], "points": row[1]}
+                   for t, task in enumerate(graded.get("tasks") or [], 1)
+                   for r, row in enumerate(task["rubric"], 1)})
     return Course(pages=pages, exercises=exercises, quiz=quiz, exam=exam, rubric=rubric)
 
 
@@ -282,6 +287,12 @@ def validate(spec, course):
         raise ObjectivesError("instructor/mastery_objectives.yaml:\n  " + "\n  ".join(problems))
 
 
+def rubric_code(key):
+    """'3.4' -> 'A3 R4' (Assignment 3, row 4), and 'T1.2' -> 'T1 R2' (short task 1, row 2)."""
+    work, row = key.split(".")
+    return f"{work if work.startswith('T') else 'A' + work} R{row}"
+
+
 def _runs(numbers, prefix=""):
     """[5, 6, 7, 8, 10] -> 'Q5-Q8, Q10' (runs of three or more are folded)."""
     numbers = sorted(set(numbers))
@@ -373,8 +384,7 @@ def assemble(spec, course):
                          stem, None, objs[0], [], 1, "Summative", note))
     for key, info in course.rubric.items():
         objs, note = rubric[key]
-        a, r = key.split(".")
-        evidence.append((f"A{a} R{r}", RUBRIC_ROW, info["assignment"], info["criterion"], None,
+        evidence.append((rubric_code(key), RUBRIC_ROW, info["assignment"], info["criterion"], None,
                          objs[0] if objs else None, objs[1:], info["points"], "Summative, rubric", note))
 
     summary = {}
@@ -402,9 +412,6 @@ def assemble(spec, course):
         rub_main = [k for k, (objs, _) in rubric.items() if objs[:1] == [oid]]
         rub_also = [k for k, (objs, _) in rubric.items() if oid in objs[1:]]
 
-        def code(key):
-            return "A{} R{}".format(*key.split("."))
-
         practice = []
         if listed:
             practice.append("Exercises for mastery: " + (", ".join(decisive) or "none"))
@@ -415,9 +422,9 @@ def assemble(spec, course):
         quizzes = "; ".join(f"L{lesson} {_runs(qs, 'Q')}" for lesson, qs in sorted(quiz_by_lesson.items()))
         practice.append("Quiz: " + (quizzes or "none"))
         check = ["Exam: " + (_runs(exam_hits, "Q") or "none")]
-        rub = ", ".join(code(k) for k in rub_main)
+        rub = ", ".join(rubric_code(k) for k in rub_main)
         if rub_also:
-            rub += ("; also " if rub_main else "also ") + ", ".join(code(k) for k in rub_also)
+            rub += ("; also " if rub_main else "also ") + ", ".join(rubric_code(k) for k in rub_also)
         check.append("Rubric: " + (rub or "none"))
 
         teach = sum(1 for row in detail if row[4] == oid and row[3] == ROLES["T"])
@@ -1087,6 +1094,7 @@ def fill_read_me(grid, spec, course):
         ("Quiz L2 Q3", "Question 3 of the Lesson 2 quiz."),
         ("Exam Q5", "Question 5 of the 25-question exam in the assessment pack."),
         ("A1 R2", "Assignment 1, second row of its rubric."),
+        ("T1 R2", "Short task 1 ('Questions only'), second row of its rubric."),
     ])
     row += 2
     grid.put(row, 1, "Links", font=HEADING, border=UNDER)

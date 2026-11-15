@@ -19,7 +19,7 @@
 meta:
   title: "Mastery objectives"
   course: "Python visualization tools"
-  version: "1.4"
+  version: "1.5"
   date: "2026-11-15"
 
 sections:
@@ -48,9 +48,10 @@ timing:
   check_basis: >-
     Section 1: the existing 25-question exam (instructor guide: allow about 35 minutes).
     Sections 2 and 3: assumed to end with a check of the same length.
-  project_hours: {S: 6.5, I: 6, D: 9}
+  project_hours: {S: 7.0, I: 6, D: 9}
   project_basis: >-
-    Section 1: Assignments 1-3 (about 1 h, about 2 h and 3-4 h; the midpoint is 6.5 h).
+    Section 1: Assignments 1-3 (about 1 h, about 2 h and 3-4 h; the midpoint is 6.5 h) and
+    the short task 'Questions only' (about half an hour).
     Sections 2 and 3: planning estimates for one or two projects each.
   allowance: 0.15
   allowance_basis: >-
@@ -89,6 +90,7 @@ lesson_minutes:
 added_minutes:
   - {lesson: 06-polish, objective: S08, minutes: 10, what: "Exercise 6.3: annotate a point and format the tick labels."}
   - {lesson: 06-polish, objective: S11, minutes: 10, what: "Exercise 6.4: write down three problems with the 'before' chart of the makeover."}
+  - {lesson: 07-capstone, objective: S09, minutes: 20, what: "Exercise 7.2: three questions, and the learner chooses the chart form for each."}
 
 # ---------------------------------------------------------------- read-me text
 mastery_rule:
@@ -286,9 +288,9 @@ objectives:
     prerequisites: [S03, S04, S05]
     tools: "No new functions: the chart forms from S03, S04 and S05"
     outcome: 2
-    to_write: 20
-    gap: "Taught in Lesson 7, Step 1, but nothing assesses the choice: no exercise check, no exam question and no rubric row. Every assignment names its chart types."
-    next_step: "Add a 'questions only' task: three questions, and the learner picks and defends each form. Add check questions of the 'which chart answers this?' kind (quiz L3 Q3 and L7 Q3 are models)."
+    to_write: 0
+    gap: "No exam question. Exercise 7.2 judges the form of three charts and cannot read a reason, so the reasons for a choice are scored in the short task 'Questions only' alone. Assignments 1 to 3 name their chart types."
+    next_step: "For the mastery check: a second set of three questions for the task, and check questions of the 'which chart answers this?' kind (quiz L3 Q3 and L7 Q3 are models)."
 
   - id: S10
     name: "Compose a multi-panel figure"
@@ -953,7 +955,8 @@ evidence:
     "6.2": [S07, S02, S08]
     "6.3": {objectives: [S08], note: "The check wants ax.annotate with an arrow at the lightest bird, and kilograms on the mass axis. The starter supplies the colors and the labels, so S02 and S07 are not tested."}
     "6.4": {objectives: [S11], note: "A critique in words, before the page gives its own. The check counts three different statements and says which kinds of fault it recognized. It cannot judge them: rubric row A3 R5 does."}
-    "7.1": {objectives: [S10], note: "The chart type is the learner's choice, but the check does not judge it (S09)."}
+    "7.1": {objectives: [S10], note: "The chart type is the learner's choice, but the check does not judge it (S09). Exercise 7.2 does."}
+    "7.2": {objectives: [S09], note: "Three questions and no chart named. The check reads the form of each panel and nothing else: it accepts every honest form, and rejects bars of a mean where zero means nothing, a line between species and a pie. It cannot read a reason: the short task's rubric rows do."}
 
   # Lesson quiz questions, "lesson.question": exactly one objective each.
   quiz:
@@ -1014,7 +1017,8 @@ evidence:
     24: S10
     25: S07
 
-  # Rubric rows, "assignment.row" in the order of instructor/assignments.yaml.
+  # Rubric rows, "assignment.row" in the order of instructor/assignments.yaml. The rows of a
+  # short task are "T1.row": a task keeps its own numbers, so the assignments' rows never move.
   rubric:
     "1.1": {objectives: [S01, S03, S04], note: "The tasks name each chart type, so this row is about building them correctly, not choosing them."}
     "1.2": [S04]
@@ -1034,3 +1038,8 @@ evidence:
     "3.4": [S11, S02, S07, S08]
     "3.5": [S11]
     "3.6": [S12]
+    # The short task 'Questions only' (PLAN.md, step C).
+    "T1.1": [S09]
+    "T1.2": [S09]
+    "T1.3": [S09]
+    "T1.4": {objectives: [S09, S02], note: "S09: each chart names the question it answers. S02: plain labels with units."}

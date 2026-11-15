@@ -5,7 +5,8 @@ Usage:  python tools/build_materials.py
 Produces:
   instructor/Seaborn_Assessment_Pack_INSTRUCTOR.docx  25 MCQs with answers marked,
                                                       answer key, 3 assignments
-                                                      with rubrics and solutions
+                                                      and a short task, with
+                                                      rubrics and solutions
   instructor/Seaborn_Assessment_Pack_STUDENT.docx     the same without answers
                                                       or solutions
   instructor/Seaborn_Instructor_Guide.docx            content/instructor-guide.md
@@ -62,10 +63,16 @@ def load_assignments():
     return yaml.safe_load((INSTRUCTOR / "assignments.yaml").read_text(encoding="utf-8"))
 
 
+def graded_work(spec):
+    """The assignments, then the short tasks: both are written, scored and rendered alike."""
+    return list(spec["assignments"]) + list(spec.get("tasks") or [])
+
+
 def run_solutions(spec):
-    """Execute every solution part; return {(assignment_idx, part_idx): result}."""
+    """Execute every solution part; return {(assignment_idx, part_idx): result}. The short
+    tasks are numbered on from the assignments."""
     results = {}
-    for a, assignment in enumerate(spec["assignments"]):
+    for a, assignment in enumerate(graded_work(spec)):
         for p, part in enumerate(assignment["solution"]):
             if "code" not in part:
                 continue
@@ -250,7 +257,7 @@ def build_assessment(questions, spec, results, instructor):
     if instructor:
         add_rich(intro, "Contents: **Part 1** - 25 multiple-choice questions with the correct answer marked "
                         "and explained, followed by an answer key. **Part 2** - three assignments of "
-                        "increasing complexity, each with a rubric and a tested model solution. "
+                        "increasing complexity and a short task, each with a rubric and a tested model solution. "
                         "Every solution in this document was executed to produce the figures shown.")
         warn = doc.add_paragraph()
         shade(warn, "FFF6E6")
@@ -258,7 +265,8 @@ def build_assessment(questions, spec, results, instructor):
                        "provided alongside it.", italic=True)
     else:
         add_rich(intro, "**Part 1** - 25 multiple-choice questions: choose the single best answer. "
-                        "**Part 2** - three assignments of increasing complexity, each with a rubric.")
+                        "**Part 2** - three assignments of increasing complexity and a short task, "
+                        "each with a rubric.")
     add_rich(doc.add_paragraph(), "Dataset for every question: `penguins = sns.load_dataset(\"penguins\")`, "
                                   "seaborn 0.13.", color=MUTED, size=10)
 
@@ -315,14 +323,14 @@ def build_assessment(questions, spec, results, instructor):
     # Part 2
     page_break(doc)
     doc.add_heading("Part 2 - Assignments", level=1)
-    add_rich(doc.add_paragraph(), "All three use the Palmer penguins data and the course setup:")
+    add_rich(doc.add_paragraph(), "All of them use the Palmer penguins data and the course setup:")
     add_code(doc, spec["setup"])
     scoring = doc.add_paragraph()
     shade(scoring, "EEF6F6")
     left_border(scoring)
     add_rich(scoring, "How the rubrics are scored. ", bold=True)
     add_rich(scoring, spec["scoring"])
-    for a, assignment in enumerate(spec["assignments"]):
+    for a, assignment in enumerate(graded_work(spec)):
         if a:
             page_break(doc)
         doc.add_heading(assignment["title"], level=2)

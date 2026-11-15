@@ -11,12 +11,12 @@ A hands-on course that takes people who already know **Python and pandas** to ma
 | | |
 |---|---|
 | **8 lesson pages** | Start here, plus 7 lessons: first plot, distributions, categories, relationships, small multiples, polish with matplotlib, and a capstone |
-| **53 rendered figures** | Every figure is produced by the exact code shown beside it |
-| **15 auto-graded exercises** | In-browser editor (Pyodide), **Run & check** with specific hints, and a hidden solution with its rendered chart |
+| **54 rendered figures** | Every figure is produced by the exact code shown beside it |
+| **16 auto-graded exercises** | In-browser editor (Pyodide), **Run & check** with specific hints, and a hidden solution with its rendered chart |
 | **28 quiz questions** | 4 per lesson, instant feedback with explanations, correct answers spread evenly across A-D |
 | **Design thread** | "Design principle" callouts based on Stephen Few and Edward Tufte in every lesson: data-ink, common baselines, sorting, purposeful color, direct labels, small multiples |
 | **Notebooks** | Student and solutions notebook for every lesson (`docs/notebooks/`), each with an *Open in Colab* link |
-| **Assessment pack (.docx)** | 25 multiple-choice questions with answers marked and explained, an answer key, and 3 assignments of increasing difficulty with rubrics and tested model solutions. Instructor and student editions. |
+| **Assessment pack (.docx)** | 25 multiple-choice questions with answers marked and explained, an answer key, and 3 assignments of increasing difficulty and a short task ("Questions only"), with rubrics and tested model solutions. Instructor and student editions. |
 | **Instructor guide** | Schedules, lesson-by-lesson talking points, common misconceptions, assessment mapping and troubleshooting ([on the site](https://acatlin.github.io/seaborn-penguins/instructor-guide.html) and as `.docx`) |
 | **Mastery objectives (.xlsx)** | 38 objectives for a three-section course taught for mastery (static, interactive, dashboards). Every page section, exercise, quiz question, exam question and rubric row of this site is mapped onto the first fourteen, with a status, gaps, timings and next steps |
 
@@ -53,12 +53,12 @@ python -m http.server -d docs 8000  # preview at http://localhost:8000
 - Every example cell runs **without errors or warnings**, and every figure has alt text.
 - Legends are titled in **plain English**, not with seaborn's raw column names. The four deliberate exceptions are listed, with reasons, in the test.
 - The bin-width figure in Lesson 2 draws exactly the widths its panel titles name, and each of its panels labels its own y-axis.
-- Every exercise's **solution passes its checker**, and the **untouched starter does not**, so checks can't be vacuous. Exercise 2.1's near misses (bars, filled steps, a density curve, an ECDF, a missing axis label) must each earn a hint, and so must what three other briefs rule out: a histogram or a density curve where exercise 2.2 asks for an ECDF, a marker shape kept in 6.1, and a figure without a constrained layout or with a legend in every panel in 7.1. Exercise 6.3 passes only an `ax.annotate` arrow at the lightest penguin and a mass axis in kilograms. Exercise 6.4, a critique in words, passes three different statements and neither fewer nor shorter ones. No exercise that asks for plain-English axis labels accepts seaborn's raw column names, and none that asks for `PENGUIN_COLORS` accepts seaborn's default colors.
+- Every exercise's **solution passes its checker**, and the **untouched starter does not**, so checks can't be vacuous. Exercise 2.1's near misses (bars, filled steps, a density curve, an ECDF, a missing axis label) must each earn a hint, and so must what three other briefs rule out: a histogram or a density curve where exercise 2.2 asks for an ECDF, a marker shape kept in 6.1, and a figure without a constrained layout or with a legend in every panel in 7.1. Exercise 6.3 passes only an `ax.annotate` arrow at the lightest penguin and a mass axis in kilograms. Exercise 6.4, a critique in words, passes three different statements and neither fewer nor shorter ones. Exercise 7.2 names no chart: it accepts every honest form for each of its three questions, and rejects bars of a mean where zero means nothing, a line between species and a pie. No exercise that asks for plain-English axis labels accepts seaborn's raw column names, and none that asks for `PENGUIN_COLORS` accepts seaborn's default colors.
 - Every lesson's **solutions notebook executes** top to bottom in a real Jupyter kernel, and **no cell leaves the theme or any other global setting changed** for the cells after it, so notebooks draw what the site shows.
 - All internal links, anchors, images and scripts resolve, and no template or Markdown leaks into the HTML. Design callouts become blockquotes in the notebooks, and every quiz question is a labeled group for screen readers. The muted label color keeps at least 4.5:1 contrast on every background it sits on, in both themes.
 - Every page, notebook, script, stylesheet and data file in `docs/` **matches what the sources produce**, every figure is present, and no leftover figures or notebooks remain, so a stale site can't be committed. (PNG bytes are not compared: they differ between the machine that builds `docs/` and the CI runner.)
 - Quiz and exam answers are **evenly distributed across A-D**. There are no runs of three identical answers, and the correct option is rarely the longest (36% or less).
-- The exam covers all 7 lessons. The rubrics total 100 and both editions state the scoring scale. The instructor edition marks exactly the right answers, and the student edition contains no answers or solutions.
+- The exam covers all 7 lessons. The rubrics of the three assignments and of the short task total 100 each, the short task names no chart form, and both editions state the scoring scale. The instructor edition marks exactly the right answers, and the student edition contains no answers or solutions.
 - The **mastery objectives** map names only page sections, exercises, questions and rubric rows that exist, and leaves none out. The committed workbook matches its sources, and every formula in it has its result stored in the file. The statuses, counts and hours quoted in the instructor guide match the workbook. Mastery of an objective never waits for an exercise on a page later than the first page that teaches an objective needing it.
 
 ## Authoring lessons
@@ -71,7 +71,7 @@ Lessons are Markdown with a few special code fences:
 ```python exercise id=2.1 title="..."   <- starter code in a live editor
 ```python solution for=2.1              <- hidden solution (rendered with its figure)
 ```python check for=2.1                 <- assertions that grade the exercise (helpers: chart_axes, points,
-                                            legend_labels, colors_used, near_color)
+                                            legend_labels, colors_used, near_color, chart_forms)
 ```quiz                                 <- YAML list of {q, options[4], answer: A-D, explain}
 ````
 

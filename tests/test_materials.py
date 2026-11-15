@@ -49,12 +49,19 @@ def test_exam_covers_every_lesson():
 
 
 def test_three_assignments_increasing_and_rubrics_total_100():
-    assignments = SPEC["assignments"]
-    assert len(assignments) == 3
-    for a in assignments:
+    """Three assignments that grow, and one short task that is smaller than any of them: 'Questions
+    only', in which the learner chooses each chart form (PLAN.md, step C)."""
+    assignments, tasks = SPEC["assignments"], SPEC["tasks"]
+    assert len(assignments) == 3 and len(tasks) == 1
+    for a in assignments + tasks:
         assert sum(r[1] for r in a["rubric"]) == 100, a["title"]
     sizes = [sum(len(p.get("code", "")) for p in a["solution"]) for a in assignments]
     assert sizes == sorted(sizes), "assignments should grow in complexity"
+    assert "30 minutes" in tasks[0]["time"], "the map counts the short task as half an hour of project work"
+    assert len(tasks[0]["tasks"]) <= 4, "a fifth item would be numbered '5.', which the numbering test reads as a run-on"
+    named = " ".join(tasks[0]["tasks"]).lower()
+    for form in ("histogram", "scatter", "bar chart", "box plot", "count chart", "ecdf"):
+        assert form not in named, f"the short task must not name a chart form, and it names '{form}'"
 
 
 @pytest.fixture(scope="module")
@@ -64,7 +71,7 @@ def solution_results():
 
 def test_every_solution_runs_and_draws(solution_results):
     for (a, p), result in solution_results.items():
-        part = SPEC["assignments"][a]["solution"][p]
+        part = build_materials.graded_work(SPEC)[a]["solution"][p]
         assert result["error"] is None, part["title"]
         if "plt" in part["code"] or "sns." in part["code"]:
             assert result["figures"], f"{part['title']} drew nothing"
@@ -111,8 +118,8 @@ def test_student_edition_has_questions_but_no_answers(docs):
 
 def test_instructor_edition_has_solutions_and_figures(docs):
     joined = "\n".join(_texts(docs["inst"]))
-    assert joined.count("Model solution") == 3
-    assert len(docs["inst"].inline_shapes) >= 7
+    assert joined.count("Model solution") == 4
+    assert len(docs["inst"].inline_shapes) >= 10
 
 
 def test_both_editions_explain_the_scoring_scale(docs):
@@ -126,7 +133,7 @@ def test_task_lists_restart_at_one_for_every_assignment(docs):
     for name in ("inst", "stud"):
         paragraphs = docs[name].paragraphs
         starts = [i for i, p in enumerate(paragraphs) if p.text == "Tasks" and p.style.name.startswith("Heading")]
-        assert len(starts) == 3, name
+        assert len(starts) == 4, name
         for i in starts:
             assert paragraphs[i + 1].text.startswith("1.\t"), f"{name}: tasks after paragraph {i} don't start at 1"
         assert not any(p.text.startswith(("5.\t", "9.\t")) for p in paragraphs), f"{name}: numbering ran on"

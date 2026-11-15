@@ -19,7 +19,8 @@ O10 were decided later that day and applied as version 1.3 of the map. The same 
 and the British spellings (L27), rechecked the first seven as applied, and wrote down four more
 Low findings (L23-L26) and three more questions (O11-O13) without acting on them. All seven were
 decided on 2026-11-15, as recommended, and applied in a fourth follow-up, with version 1.4 of the
-map. What comes next is planned in `PLAN.md`.
+map. What comes next is planned in `PLAN.md`. Steps A to D of that plan are built, and a
+recheck of steps A and B added three more Low findings (L28-L30).
 
 Severity scale:
 
@@ -54,6 +55,7 @@ Severity scale:
 | L22 | Low | Found while rechecking the objectives: five of the nine pages scroll sideways at phone width | Fixed in a third follow-up |
 | L23-L26 | Low | Found in the third follow-up: a gap inside some quiz options at desktop width, three exercise checks that pass what their brief rules out, a small table that breaks across two printed pages | Fixed in a fourth follow-up |
 | L27 | Low | Found in the third follow-up: British spellings in a course written in American English | Fixed in the third follow-up |
+| L28-L30 | Low | Found in a recheck of exercises 6.3 and 6.4: grams with a thousands comma passed as kilograms, an honest sentence of under 20 characters is turned away, kinds of fault are recognized from letters inside other words | L28 fixed; L29 and L30 left alone, see below |
 | O1-O7 | Decision | Questions about the mastery objectives map: a rule that cannot be followed as written, evidence that is tested but not listed, two page roles, overlapping criteria | Decided on 2026-11-15 as recommended, and applied |
 | O8-O10 | Decision | More questions about the map: two objectives that each hold several performances, section 2's library, an objective first taught before one of its prerequisites | Decided on 2026-11-15 (split, Plotly, as recommended) and applied in version 1.3 of the map |
 | O11-O13 | Decision | Questions from the second recheck: an exercise whose check cannot fail on an objective it is listed for, and two parts of the mastery rule that cannot be followed with today's materials | Decided on 2026-11-15 as recommended, and applied in version 1.4 of the map |
@@ -359,6 +361,10 @@ Fixed in a third follow-up pass:
   "neighbouring" and "organisation's" in three quiz items (Lessons 2, 3 and 7); "centred" in exam
   Q11; "neighbours" and "labelled" in the assignments; six in this file and three in code
   comments. All are American now. The answer statistics given under M4 and M5 are unchanged.
+  Two words were left as they are, and whether to change them is not decided: "afterwards" (in
+  Lesson 6, "How seaborn and matplotlib fit together", and in D05 of the objectives map) and
+  "backwards" (in H1 of this file). Both are standard in American English, where "afterward"
+  and "backward" are the more common forms.
 
 Fixed in a fourth follow-up pass, after each was decided on 2026-11-15 ("as recommended", which
 for these four is the cure the finding itself names):
@@ -394,7 +400,26 @@ for these four is the cure the finding itself names):
   pages.** "Check: every lesson's minutes add up to the midpoint" had its heading and one row on
   the first page and six rows on the second. Fix: the builder puts a page break before the
   heading. Excel honors it although the sheet is fitted to one page wide: its second page now
-  starts at the heading.
+  starts at the heading. (Since step A of `PLAN.md` the break stands one table higher, before
+  "Additions built on top of the lessons", so the second page holds both small tables whole.)
+
+Found in a recheck of steps A and B of `PLAN.md`, on 2026-11-15. Each solution was changed in
+ways its test does not try (eight for exercise 6.3, ten for 6.4), and the check was run on each:
+
+- **L28. Exercise 6.3 passed grams as kilograms (fixed).** A formatter that writes the grams with
+  a thousands comma ("3,000") under an axis label that says "Body mass (kg)" passed, because the
+  check looked for four digits in a row. Fix: the check folds commas and spaces out of a tick
+  label first. The attempt is the tenth in the exercise's test.
+- **L29. Exercise 6.4 turns away an honest sentence of fewer than 20 characters (left alone).**
+  "There is no title." has 18 characters and "Too many encodings." has 19, and each is told to
+  "say more". The 20 characters are the plan's, and the message is a friendly one. Counting
+  words (three or more) would let both through and still stop "bad colors".
+- **L30. Exercise 6.4 recognizes kinds of fault from letters inside other words (left alone).**
+  "emphasize" holds "size" and "community" holds "unit", so a learner who wrote neither about
+  encodings nor about labels is told "You wrote about the encodings, the labels". And one
+  sentence written three times with different punctuation counts as three. Both touch the
+  message only, and the check says of itself that it counts and cannot judge. Matching whole
+  words, and comparing statements without their punctuation, would close both.
 
 Left alone, with reasons:
 
@@ -485,7 +510,10 @@ objectives", and `instructor/Seaborn_Mastery_Objectives.xlsx`). It found two mor
 the same kind, both left alone. Nothing assesses the choice of chart form: every assignment
 names its chart types, and no exam question or exercise check asks for the choice. And
 saving a figure is shown in Lesson 6 as code that is not run, with no exercise to practice
-it. The guide lists both, and what to add, under "Next steps".
+it. The guide lists both, and what to add, under "Next steps". (Since 2026-11-15 the first gap is
+closed: exercise 7.2 and the short task "Questions only" name no chart, `PLAN.md`, step C. And
+the second since step D: Step 5 of Lesson 7 runs the code that saves a figure, and exercise 7.3
+checks the file.)
 
 ## Recheck of the mastery objectives
 
@@ -633,7 +661,8 @@ later the same day and applied in version 1.3: each ends with the decision.
   taught.
   Decided on 2026-11-15, as recommended. The map is as it was. S11's "Next step" on the
   Objectives sheet and step 3 of the guide's "Next steps" now say that S11's mastery check
-  belongs after Lesson 7.
+  belongs after Lesson 7. Since step C of `PLAN.md` S09 has an exercise in Lesson 7, and the
+  rule-1 test names this pair as the one that was decided.
 
 ## Second recheck of the mastery objectives
 
@@ -743,7 +772,10 @@ in version 1.4 of the map. Each ends with what was done.
   outputs", in the YAML, on the Read me sheet and in the guide. One thing the wording leaves to
   the instructor: a notebook has no automatic check, so a notebook that is handed in shows the
   charts, and the instructor compares them with the solutions notebook. How a learner takes a
-  mastery check (`PLAN.md`, question 3) is still open, and may change this again.
+  mastery check (`PLAN.md`, question 3) was answered later on 2026-11-15: an honor system for
+  now, and web pages with a database later. Whether part 1 of rule 1 is then taken on the
+  learner's word as well was not said, so its wording stands. Recording a pass in the browser,
+  the other way out that this item names, is not decided either.
 - **O13. With today's materials, part 2 of rule 1 comes too late.** Part 2 needs a mastery check,
   and none exists yet. Rule 5 says to use "the exercises and rubric rows" meanwhile. The rubric
   rows come with the assignments, after Lessons 3, 5 and 7, which is later than the objectives
@@ -763,6 +795,15 @@ in version 1.4 of the map. Each ends with what was done.
 **What comes next.** Steps 2 to 4 of the guide's "Next steps" are planned in `PLAN.md`: two
 exercises, a task, a new section in Lesson 7 and the mastery checks, with ten questions to answer
 first. Nine of the ten were answered on 2026-11-15, as recommended, and the answers are written
-under each question there. Question 3 (how a learner takes a check) is still open. Steps A and B
-of the plan are built: exercise 6.3 for S08, and exercise 6.4 for S11. One of the ten follows from O10. An exercise for S09 in Lesson 7
-would make the rule-1 test fail, because S11 needs S09 and is first taught one lesson earlier.
+under each question there. Question 3 (how a learner takes a check) was answered later that day:
+an honor system for now. Steps A and B
+of the plan are built: exercise 6.3 for S08, and exercise 6.4 for S11. So is step C: exercise 7.2
+and the short task "Questions only" for S09, which is Covered now. One of the ten follows from
+O10. An exercise for S09 in Lesson 7 makes the rule-1 test fail as it was written, because S11
+needs S09 and is first taught one lesson earlier. Since step C the test names that pair.
+
+Step D is built as well: Step 5 of Lesson 7, "Describe and deliver", with exercise 7.3, for S12
+and S14, and a rubric row for alt text and a caption in Assignment 3. All fourteen static
+objectives are Covered, in version 1.6 of the map. What remains of the plan is step E, the
+mastery checks. It waits for two answers that question 3 left open: where a learner gets a check
+and its key, and who scores it. `HANDOFF.md` says how to pick the work up on another machine.

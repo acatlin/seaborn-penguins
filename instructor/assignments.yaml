@@ -1,4 +1,4 @@
-# Three graded assignments of increasing complexity.
+# Three graded assignments of increasing complexity, and one short task (at the end).
 # Every solution part is executed by tests/test_materials.py and
 # tools/build_materials.py (its figure is embedded in the Word file).
 setup: |
@@ -153,21 +153,22 @@ assignments:
     tasks:
       - "Derive bill_ratio = bill_length_mm / bill_depth_mm with pandas."
       - "Build a 2 x 2 report figure (plt.subplots + axes-level functions) with: (A) ECDFs of bill_ratio by species with reference lines at the two thresholds you would use to classify species; (B) box + strip of bill_ratio by species; (C) a scatter of bill ratio vs. body mass with only the misclassified penguins highlighted (everyone else gray); (D) a sorted horizontal bar chart of classification accuracy by species."
-      - "Use one figure-level legend (or direct labels), lettered panel titles that state findings, and a suptitle."
+      - "Use one figure-level legend (or direct labels), lettered panel titles that state findings, and a suptitle. Then write the report figure's alt text (one or two sentences) and a one-sentence caption with any caveat that changes how the figure should be read."
       - "Make over the intern's chart (provided below) and write a 200-word design rationale that names at least four of Few's principles you applied."
     intern_chart: |
       sns.set_theme(style="darkgrid")
       sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
                       hue="island", style="species", size="bill_depth_mm", palette="hsv")
     deliverables:
-      - "Notebook, final report PNG (200 dpi), makeover PNG, and design rationale."
+      - "Notebook, final report PNG (200 dpi) with its alt text and caption, makeover PNG, and design rationale."
     rubric:
       - ["Derived variable and classification logic", 20, "bill_ratio computed correctly; thresholds chosen from the ECDF and applied with pandas; accuracy computed per species."]
-      - ["Report figure - form", 20, "Each panel uses the right chart for its question; ECDF reference lines; highlight strategy in panel C; sorted bars from zero in D."]
-      - ["Report figure - design", 20, "Consistent dict palette, one legend or direct labels, lettered titles stating findings, constrained layout, despined."]
+      - ["Report figure - form", 15, "Each panel uses the right chart for its question; ECDF reference lines; highlight strategy in panel C; sorted bars from zero in D."]
+      - ["Report figure - design", 15, "Consistent dict palette, one legend or direct labels, lettered titles stating findings, constrained layout, despined."]
       - ["Makeover", 20, "Removes redundant encodings and the rainbow palette, adds units, direct labels or a single clean legend, and a finding-stating title."]
       - ["Design rationale", 15, "Names and correctly applies four or more principles (data-ink, highlight, direct labels, common baseline, honest scales, color meaning)."]
       - ["Reproducibility", 5, "Runs top to bottom; files exported with savefig at 200 dpi."]
+      - ["Alt text and caption", 10, "One or two accurate sentences say what the report shows, not which charts it holds; a one-sentence caption states the finding and a caveat that changes the reading."]
     solution:
       - title: "Derive the ratio and classify"
         code: |
@@ -239,6 +240,16 @@ assignments:
                        fontsize=15, fontweight="bold")
           sns.despine(fig=fig)
         notes: "Panel C uses the gray-context highlight from Lesson 6; panel D labels values directly inside zero-based, sorted bars, so no value axis lookup is needed."
+      - title: "Sample alt text and caption for the report"
+        text: >-
+          Alt text: Four panels on the bill ratio, bill length divided by bill
+          depth, of 342 Palmer penguins. The ratio rises from Adelie to
+          Chinstrap to Gentoo with little overlap, and two cut-offs, at 2.4 and
+          2.9, put 329 of the 342 birds in the right species. Caption: One bill
+          ratio identifies 96% of the penguins; the cut-offs were chosen and
+          tested on the same birds, so new birds may fare a little worse, and
+          the 2 penguins without bill measurements are left out.
+        notes: "Full credit for alt text that gives the finding with a number, and for a caption with a caveat that matters. 'Four charts about bill ratio' names the figure and earns about half. The row is at the end of the rubric so that the rows above it keep their numbers."
       - title: "The makeover"
         code: |
           fig, ax = plt.subplots(figsize=(7.5, 4.6))
@@ -267,3 +278,78 @@ assignments:
           classifications so the eye goes straight to the few mistakes (highlight
           the exception), and panel D sorts zero-based bars by value (common
           baseline, ranked for easy comparison).
+
+# Short tasks. Each stands alone, with a 100-point rubric of its own, scored on the same
+# three-level scale. In the objectives map their rubric rows are "T1.1", "T1.2", ...
+# (shown as T1 R1, T1 R2, ... in the workbook).
+tasks:
+  - title: "Short task - Questions only"
+    level: "After Lesson 7, before Assignment 3"
+    time: "About 30 minutes"
+    scenario: >-
+      The station chief sends three questions and no instructions. Nobody names
+      the chart this time: choosing the form is the task.
+    tasks:
+      - "Question 1 - How many penguins of each sex were measured on each island?"
+      - "Question 2 - Which species has the widest spread of bill lengths?"
+      - "Question 3 - Among Gentoos, is flipper length a good guide to body mass?"
+      - "For each question, draw ONE chart that answers it, with the question as its title. Under each chart write two sentences: one that says why this form answers the question, and one that names a form you ruled out and says how it would mislead."
+    deliverables:
+      - "One notebook that runs top to bottom, with the three charts and the six sentences in Markdown cells."
+    rubric:
+      - ["The form fits the question", 45, "Each chart's form matches the job its question sets: counts in two categories, a distribution for each group, a relationship between two numbers."]
+      - ["Reason for the choice", 20, "One sentence per chart names the data's job and says why this form shows it."]
+      - ["A form ruled out", 20, "One sentence per chart names a form that would mislead here and says how: a pie, a bar of means that hides the spread, a line between categories that have no order."]
+      - ["Question and labels", 15, "Each chart carries the question it answers, and plain-English axis labels with units."]
+    solution:
+      - title: "Question 1 - Counts in two categories"
+        code: |
+          ax = sns.countplot(data=penguins, y="island", hue="sex", palette=SEX_COLORS,
+                             order=["Biscoe", "Dream", "Torgersen"])
+          ax.set(xlabel="Penguins measured", ylabel="",
+                 title="How many penguins of each sex were measured on each island?")
+          ax.legend(title="", frameon=False)
+          sns.despine()
+        notes: "The answer is 'about as many of each': 80 and 83 on Biscoe, 61 and 62 on Dream, 24 and 23 on Torgersen. A count has a meaningful zero, so bars are right here. Full credit also for a table printed with the chart."
+      - title: "Sample sentences for question 1"
+        text: >-
+          Why this form: the question asks for counts in two categories, and a
+          bar from zero shows a count as a length that the eye compares well.
+          Ruled out: one pie per island. The reader would compare angles across
+          three pies, and could not see that Biscoe holds three times as many
+          penguins as Torgersen.
+      - title: "Question 2 - A distribution for each group"
+        code: |
+          ax = sns.boxplot(data=penguins, x="species", y="bill_length_mm", hue="species",
+                           palette=PENGUIN_COLORS, legend=False, fliersize=0,
+                           boxprops={"alpha": 0.35})
+          sns.stripplot(data=penguins, x="species", y="bill_length_mm",
+                        color="black", size=2.5, alpha=0.5, ax=ax)
+          ax.set(xlabel="", ylabel="Bill length (mm)",
+                 title="Which species has the widest spread of bill lengths?")
+          sns.despine()
+        notes: "Chinstraps have the widest middle half (4.7 mm, against 4.3 for Gentoos and 4.0 for Adelies). A Gentoo has the longest bill of all, so the full range is widest for Gentoos (18.7 mm). Accept either answer when it is read off the chart. Histograms, density curves, ECDFs and violins fit the question too."
+      - title: "Sample sentences for question 2"
+        text: >-
+          Why this form: the question is about spread, so the chart has to show
+          every bill, not a summary. The box marks the middle half and the dots
+          show each bird. Ruled out: a bar of the mean bill length for each
+          species. It shows three numbers and no spread at all, so it cannot
+          answer the question.
+      - title: "Question 3 - A relationship between two numbers"
+        code: |
+          gentoo = penguins[penguins["species"] == "Gentoo"]
+          ax = sns.regplot(data=gentoo, x="flipper_length_mm", y="body_mass_g",
+                           color=PENGUIN_COLORS["Gentoo"], scatter_kws={"s": 18, "alpha": 0.7})
+          ax.set(xlabel="Flipper length (mm)", ylabel="Body mass (g)",
+                 title="Among Gentoos, is flipper length a good guide to body mass?")
+          sns.despine()
+        notes: "A fair guide and no more: r = 0.70 among the 123 Gentoos with both measurements, and birds with the same flipper length differ by a kilogram. The scatter is the answer, so a chart that shows only a line of averages earns about half."
+      - title: "Sample sentences for question 3"
+        text: >-
+          Why this form: these are two measurements of the same bird, so each
+          gets an axis and every Gentoo is one point. The line sums up the
+          trend, and the scatter around it shows how far to trust it. Ruled
+          out: bars of mean body mass for a few flipper-length classes. They
+          would show the trend and hide the scatter, and "a good guide?" is a
+          question about the scatter.

@@ -67,6 +67,76 @@ def test_figures_with_randomness_are_reproducible():
         assert first == second, code
 
 
+def test_a_cell_that_saves_a_file_leaves_nothing_behind(tmp_path, monkeypatch):
+    """A cell runs in a temporary folder of its own. Before that, fig.savefig("name.png") in a lesson
+    wrote into the folder the build was started from, which is the repository."""
+    import os
+
+    monkeypatch.chdir(tmp_path)
+    code = ("ax = sns.histplot(data=penguins, x='body_mass_g')\n"
+            "ax.figure.savefig('saved-by-a-cell.png', dpi=200)\n"
+            "open('notes.txt', 'w').write('x')")
+    check = ("import os\nfrom PIL import Image\n"
+             "assert sorted(os.listdir('.')) == ['notes.txt', 'saved-by-a-cell.png'], os.listdir('.')\n"
+             "print(round(Image.open('saved-by-a-cell.png').info['dpi'][0]))")
+    result = runner.run_cell(code, setup=SETUP, check=check)
+    assert result["error"] is None and result["check_ok"] is True, (result["error"], result["check_message"])
+    assert result["check_message"] == "200", "a PNG saved at 200 dpi reads back as 199.9994, so a check has to round"
+    assert os.getcwd() == str(tmp_path) and not list(tmp_path.iterdir())
+    failed = runner.run_cell("open('half.txt', 'w').write('x')\nraise ValueError('boom')", setup=SETUP)
+    assert "ValueError" in failed["error"]
+    assert os.getcwd() == str(tmp_path) and not list(tmp_path.iterdir()), "an error must not leave the folder changed"
+
+
+def test_data_is_found_by_a_relative_path_as_in_the_browser(monkeypatch):
+    """The browser writes penguins.csv beside runner.py and leaves DATA_PATH relative. The path is
+    resolved before the cell moves into its temporary folder."""
+    monkeypatch.chdir(ROOT / "data")
+    monkeypatch.setattr(runner, "DATA_PATH", "penguins.csv")
+    result = runner.run_cell("penguins.shape", setup=SETUP)
+    assert result["error"] is None and result["stdout"].strip() == "(344, 7)"
+
+
+FORMS = {
+    'sns.histplot(data=penguins, x="body_mass_g", hue="species")': {"histogram"},
+    'sns.histplot(data=penguins, y="body_mass_g", bins=5)': {"histogram"},
+    'sns.histplot(data=penguins, x="body_mass_g", hue="species", element="step", fill=False)': {"histogram"},
+    'sns.histplot(data=penguins, x="body_mass_g", element="step")': {"area"},
+    'sns.kdeplot(data=penguins, x="body_mass_g", hue="species")': {"density"},
+    'sns.kdeplot(data=penguins, y="bill_depth_mm", cut=0)': {"density"},
+    'sns.kdeplot(data=penguins, x="body_mass_g", fill=True)': {"area"},
+    'ax = sns.ecdfplot(data=penguins, x="body_mass_g", hue="species")\nax.axvline(4500)': {"ecdf"},
+    'sns.boxplot(data=penguins, x="species", y="body_mass_g")': {"box"},
+    'sns.boxplot(data=penguins, y="species", x="body_mass_g", hue="sex", fill=False)': {"box"},
+    'sns.violinplot(data=penguins, x="species", y="body_mass_g")': {"violin"},
+    'sns.stripplot(data=penguins, x="species", y="body_mass_g")': {"strip"},
+    'sns.boxplot(data=penguins, x="species", y="body_mass_g")\n'
+    'sns.stripplot(data=penguins, x="species", y="body_mass_g")': {"box", "strip"},
+    'sns.barplot(data=penguins, x="species", y="body_mass_g")': {"bars"},
+    'sns.countplot(data=penguins, y="island", hue="species")': {"bars"},
+    'penguins.groupby("species")["body_mass_g"].mean().plot.bar()': {"bars"},
+    'sns.pointplot(data=penguins, x="species", y="body_mass_g")': {"points", "joined"},
+    'sns.pointplot(data=penguins, x="species", y="body_mass_g", hue="sex", linestyle="none")': {"points"},
+    'sns.pointplot(data=penguins, x="species", y="body_mass_g", hue="species", linestyle="none")': {"points"},
+    'sns.lineplot(data=penguins, x="species", y="body_mass_g")': {"joined"},
+    'sns.lineplot(data=penguins, x="flipper_length_mm", y="body_mass_g")': {"line"},
+    'sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g", hue="species")': {"scatter"},
+    'sns.regplot(data=penguins, x="flipper_length_mm", y="body_mass_g")': {"scatter", "line"},
+    'sns.histplot(data=penguins, x="flipper_length_mm", y="body_mass_g")': {"mesh"},
+    'sns.heatmap(penguins.select_dtypes("number").corr())': {"mesh"},
+    'plt.pie(penguins["species"].value_counts())': {"pie"},
+}
+
+
+def test_chart_forms_names_what_is_on_the_axes():
+    """Exercise 7.2 asks the learner to choose a chart form, so its check has to tell the forms
+    apart from the objects each one leaves on the Axes."""
+    for code, forms in FORMS.items():
+        result = runner.run_cell(code, setup=SETUP, check="print(sorted(chart_forms(plt.gca())))")
+        assert result["error"] is None and result["check_ok"], (code, result["error"], result["check_message"])
+        assert result["check_message"] == str(sorted(forms)), code
+
+
 def test_json_entry_point_encodes_figures():
     import json
 

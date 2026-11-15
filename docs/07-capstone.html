@@ -35,6 +35,8 @@
 <li>build it panel by panel with <code>plt.subplots</code> and axes-level functions</li>
 <li>give a whole figure one legend, one title and a consistent color story</li>
 <li>review your own chart against a design checklist</li>
+<li>save the figure in the format its destination needs, from a notebook that runs top to bottom</li>
+<li>describe a figure in alt text and a caption</li>
 </ul>
 <div class="cell cell-setup"><div class="code-label">Setup - run this first</div><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
@@ -79,6 +81,71 @@
 </tbody>
 </table>
 <p>Picking the chart <em>from the question</em> is the most important step in the whole course. If you can&rsquo;t name the question a panel answers, cut the panel.</p>
+<p>Choosing a form also means ruling others out. Three forms mislead, and you have met each of them:</p>
+<ul>
+<li><strong>Bars for a mean when zero means nothing.</strong> Bars start at zero, so three bill depths between 15 and 18 mm become three bars of nearly the same height (Lesson 3). Use points.</li>
+<li><strong>A line between groups that have no order.</strong> It draws a trend from one species to the next, and there is none (Lesson 4).</li>
+<li><strong>A pie.</strong> People compare angles poorly, and lengths and positions well (Lesson 3).</li>
+</ul>
+<p>Now try it with three questions the chief did not ask. Nobody names the chart this time.</p>
+
+<div class="exercise" id="ex-7.2" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 7.2</span>
+    <span class="exercise-title">Questions only: choose the form</span></div>
+  <textarea class="cell-editor" rows="18" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 7.2"># Draw one panel for each question, in a chart form that answers it:
+#   A. How are flipper lengths spread within each species?
+#   B. Which species has the deepest bill on average?
+#   C. Do penguins with longer flippers weigh more?
+# Pass ax=axes[0], ax=axes[1] and ax=axes[2].
+# The check looks at the form of each panel, and at nothing else.
+fig, axes = plt.subplots(1, 3, figsize=(13, 4), layout=&quot;constrained&quot;)
+
+# A
+___
+
+# B
+___
+
+# C
+___</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;constrained&quot;</span><span class="p">)</span>
+
+<span class="c1"># A. How one measurement is spread: a distribution, one outline per species</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+             <span class="n">element</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Penguins&quot;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;A. Gentoo flippers are the longest&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend</span><span class="p">()</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Species&quot;</span><span class="p">)</span>
+
+<span class="c1"># B. A mean compared across groups, where zero means nothing: points, not bars,</span>
+<span class="c1">#    and no line from one species to the next</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">pointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;bill_depth_mm&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+              <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Mean bill depth (mm), 95% CI&quot;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;B. Adelie and Chinstrap bills are the deepest&quot;</span><span class="p">)</span>
+
+<span class="c1"># C. Two measurements of the same penguin: a relationship, one point per bird</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span>
+                <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">18</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Body mass (g)&quot;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;C. Longer flippers, heavier penguins&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">(</span><span class="n">fig</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-7.2.png" alt="Solution chart for exercise 7.2" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# Draw one panel for each question, in a chart form that answers it:\n#   A. How are flipper lengths spread within each species?\n#   B. Which species has the deepest bill on average?\n#   C. Do penguins with longer flippers weigh more?\n# Pass ax=axes[0], ax=axes[1] and ax=axes[2].\n# The check looks at the form of each panel, and at nothing else.\nfig, axes = plt.subplots(1, 3, figsize=(13, 4), layout=\"constrained\")\n\n# A\n___\n\n# B\n___\n\n# C\n___", "solution": "fig, axes = plt.subplots(1, 3, figsize=(13, 4), layout=\"constrained\")\n\n# A. How one measurement is spread: a distribution, one outline per species\nsns.histplot(data=penguins, x=\"flipper_length_mm\", hue=\"species\", palette=PENGUIN_COLORS,\n             element=\"step\", fill=False, binwidth=3, ax=axes[0])\naxes[0].set(xlabel=\"Flipper length (mm)\", ylabel=\"Penguins\",\n            title=\"A. Gentoo flippers are the longest\")\naxes[0].get_legend().set_title(\"Species\")\n\n# B. A mean compared across groups, where zero means nothing: points, not bars,\n#    and no line from one species to the next\nsns.pointplot(data=penguins, x=\"species\", y=\"bill_depth_mm\", hue=\"species\",\n              palette=PENGUIN_COLORS, linestyle=\"none\", legend=False, ax=axes[1])\naxes[1].set(xlabel=\"\", ylabel=\"Mean bill depth (mm), 95% CI\",\n            title=\"B. Adelie and Chinstrap bills are the deepest\")\n\n# C. Two measurements of the same penguin: a relationship, one point per bird\nsns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\", hue=\"species\",\n                palette=PENGUIN_COLORS, s=18, legend=False, ax=axes[2])\naxes[2].set(xlabel=\"Flipper length (mm)\", ylabel=\"Body mass (g)\",\n            title=\"C. Longer flippers, heavier penguins\")\nsns.despine(fig=fig)", "check": "axes = chart_axes()\nassert len(axes) == 3, f\"Draw three panels, one for each question, by passing ax=axes[0], ax=axes[1] and ax=axes[2]. I found {len(axes)} with a chart on it.\"\nspread = {\"histogram\", \"density\", \"ecdf\", \"area\", \"box\", \"violin\", \"strip\"}\na, b, c = (chart_forms(ax) for ax in axes)\nfor panel, forms in zip(\"ABC\", (a, b, c)):\n    assert \"pie\" not in forms, f\"Panel {panel}: a pie makes the reader compare angles. Choose a form that compares lengths or positions.\"\n\nassert \"joined\" not in a, \"Panel A: a line from one species to the next draws a trend, and species have no order. The question asks how flipper lengths are spread: draw a distribution.\"\nassert \"bars\" not in a, \"Panel A: one bar per species shows one number, a mean or a count. The question asks how the flipper lengths are spread, so show the whole distribution: a histogram, a density curve, an ECDF, or a box, violin or strip plot.\"\nif not a & spread:\n    assert \"points\" not in a, \"Panel A: a point plot shows a mean and its interval, two numbers per species. The question asks how the flipper lengths are spread, so show the whole distribution: a histogram, a density curve, an ECDF, or a box, violin or strip plot.\"\n    assert not a & {\"scatter\", \"line\", \"mesh\"}, \"Panel A: that form relates two measurements. This question is about one, flipper length: draw its distribution for each species.\"\n    assert False, \"Panel A: I can't tell which form this is. For a question about spread I know a histogram, a density curve, an ECDF, and a box, violin or strip plot.\"\n\nassert \"joined\" not in b, \"Panel B: a line from one species to the next draws a trend, and species have no order. Keep the points and drop the line: linestyle=\\\"none\\\" in sns.pointplot.\"\nassert \"bars\" not in b, \"Panel B: bars start at zero, and a bill 0 mm deep means nothing. Drawn from zero, depths of 15 to 18 mm look nearly alike. Use points (sns.pointplot with linestyle=\\\"none\\\"), or show each species' spread with a box, violin or strip plot.\"\nif not b & (spread | {\"points\"}):\n    assert not b & {\"scatter\", \"line\", \"mesh\"}, \"Panel B: that form relates two measurements. This question compares the species on one, bill depth: put species on one axis.\"\n    assert False, \"Panel B: I can't tell which form this is. For a mean compared across groups I know a point plot, and a box, violin or strip plot.\"\n\nassert \"bars\" not in c, \"Panel C: bars compare groups. This question relates two measurements of the same penguin, so give each an axis: a scatter plot, with a trend line if you like.\"\nif not c & {\"scatter\", \"line\", \"mesh\"}:\n    assert not c & {\"histogram\", \"density\", \"ecdf\", \"area\"}, \"Panel C: that shows how one measurement is spread. This question relates two, flipper length and body mass, so give each an axis: a scatter plot, with a trend line if you like.\"\n    assert not c & {\"box\", \"violin\", \"strip\", \"points\", \"joined\"}, \"Panel C: that compares groups. This question relates two measurements of the same penguin, so give each an axis: a scatter plot, with a trend line if you like.\"\n    assert False, \"Panel C: I can't tell which form this is. For a relationship between two measurements I know a scatter plot, a trend line and a 2-D histogram.\"\n\nplain = {\"histogram\": \"a histogram\", \"density\": \"density curves\", \"ecdf\": \"ECDFs\", \"area\": \"filled outlines\",\n         \"box\": \"a box plot\", \"violin\": \"a violin plot\", \"strip\": \"a strip plot\", \"points\": \"a point plot\",\n         \"scatter\": \"a scatter plot\", \"line\": \"a line\", \"mesh\": \"a 2-D histogram\"}\ndef named(forms):\n    return \" with \".join(plain.get(form, form) for form in sorted(forms))\nprint(f\"Three questions, three forms that answer them. A: {named(a)}. B: {named(b)}. C: {named(c)}. I looked at the forms only. Whether the labels and titles do their job is for the pre-flight checklist in Step 4.\")"}</script>
+</div>
+
+
 <h2 id="step-2-lay-out-the-canvas">Step 2: lay out the canvas</h2>
 <div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;constrained&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">letter</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">flat</span><span class="p">,</span> <span class="s2">&quot;ABCD&quot;</span><span class="p">):</span>
@@ -154,6 +221,127 @@
 <li><strong>Words:</strong> Plain-English labels with units, on axes and legends alike, and titles that state findings.</li>
 </ol>
 </div>
+<h2 id="step-5-describe-and-deliver">Step 5: describe and deliver</h2>
+<p>A figure is finished when someone else can use it without you. That takes three things: a file, a notebook that makes the file again, and a few words that say what the figure shows.</p>
+<p><strong>Save it for where it is going.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Where the figure goes</th>
+<th>Save it as</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A slide or a document</td>
+<td>PNG, at <code>dpi=200</code> or more</td>
+<td>Pixels, and enough of them to stay sharp at the size it is shown</td>
+</tr>
+<tr>
+<td>A printed report, a poster, anything that will be resized</td>
+<td>SVG or PDF</td>
+<td>A vector file stays sharp at any size</td>
+</tr>
+</tbody>
+</table>
+<p>Here is panel A of the report as a chart of its own, saved both ways:</p>
+<div class="cell" data-cell><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;constrained&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">countplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;island&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span>
+              <span class="n">hue_order</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Adelie&quot;</span><span class="p">,</span> <span class="s2">&quot;Chinstrap&quot;</span><span class="p">,</span> <span class="s2">&quot;Gentoo&quot;</span><span class="p">],</span>
+              <span class="n">order</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Biscoe&quot;</span><span class="p">,</span> <span class="s2">&quot;Dream&quot;</span><span class="p">,</span> <span class="s2">&quot;Torgersen&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Penguins counted&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Gentoos only on Biscoe, Chinstraps only on Dream&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_legend</span><span class="p">()</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Species&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;penguin-islands.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>   <span class="c1"># for a slide or a document</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;penguin-islands.svg&quot;</span><span class="p">)</span>            <span class="c1"># vector: sharp at any size</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>                         <span class="c1"># open the file that was just written</span>
+<span class="k">with</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;penguin-islands.png&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">saved</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">saved</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="s2">&quot;pixels at&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">saved</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;dpi&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">&quot;dots per inch&quot;</span><span class="p">)</span>
+</pre></div>
+<script type="application/json" class="cell-data">{"code": "fig, ax = plt.subplots(figsize=(6, 3.6), layout=\"constrained\")\nsns.countplot(data=penguins, y=\"island\", hue=\"species\", palette=PENGUIN_COLORS,\n              hue_order=[\"Adelie\", \"Chinstrap\", \"Gentoo\"],\n              order=[\"Biscoe\", \"Dream\", \"Torgersen\"], ax=ax)\nax.set(xlabel=\"Penguins counted\", ylabel=\"\",\n       title=\"Gentoos only on Biscoe, Chinstraps only on Dream\")\nax.get_legend().set_title(\"Species\")\nsns.despine()\n\nfig.savefig(\"penguin-islands.png\", dpi=200)   # for a slide or a document\nfig.savefig(\"penguin-islands.svg\")            # vector: sharp at any size\n\nfrom PIL import Image                         # open the file that was just written\nwith Image.open(\"penguin-islands.png\") as saved:\n    print(saved.size, \"pixels at\", round(saved.info[\"dpi\"][0]), \"dots per inch\")"}</script><div class="cell-toolbar"><button type="button" class="btn-ghost" data-action="edit" title="Open this example in a live Python editor">Edit &amp; run</button></div><pre class="cell-stdout">(1200, 720) pixels at 200 dots per inch</pre><figure class="cell-figure"><img src="img/07-deliver.png" alt="Horizontal bars of penguins counted on three islands. Biscoe has the most, 124 Gentoos and 44 Adelies; Dream has 68 Chinstraps and 56 Adelies; Torgersen has 52 Adelies and no other species." loading="lazy"></figure><div class="cell-live"></div></div>
+<p><code>savefig</code> takes the format from the file name. The figure was made with <code>layout="constrained"</code>, so nothing is cut off. For a figure made without it, add <code>bbox_inches="tight"</code> (Lesson 6). The last three lines open the PNG and print what is in it: 1,200 by 720 pixels is 6 by 3.6 inches at 200 dots per inch.</p>
+<p><strong>Open the file and look at it.</strong> A notebook shows the figure at screen size. The file is what the reader gets, so look at it at the size it will be shown. Can you read the smallest label?</p>
+<p><strong>Run the notebook from the top.</strong> A notebook remembers every cell you ran, in the order you ran it, and that includes cells you have since changed or deleted. Before you hand it over, restart it and run every cell in order: <em>Kernel &gt; Restart &amp; Run All</em> in Jupyter, <em>Runtime &gt; Restart session and run all</em> in Colab. If the figure still appears, someone else can make it too. This page runs each cell on its own, so do this one in the notebook.</p>
+<p><strong>Say what it shows.</strong> Alt text is read aloud by a screen reader in place of the figure. A caption sits under the figure for everyone. Both state the finding, not the chart type. Two alt texts for the chart above:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Alt text</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Names the chart</td>
+<td>&ldquo;A bar chart of penguin counts by island and species.&rdquo;</td>
+</tr>
+<tr>
+<td>Describes it</td>
+<td>&ldquo;Horizontal bars of penguins counted on three islands. Biscoe has the most, 124 Gentoos and 44 Adelies; Dream has 68 Chinstraps and 56 Adelies; Torgersen has 52 Adelies and no other species.&rdquo;</td>
+</tr>
+</tbody>
+</table>
+<p>The first is true and useless: a reader who cannot see the chart learns nothing from it. The second gives the finding and the numbers behind it, in two sentences.</p>
+<p>A caption is one sentence for a reader who can see the chart, and it carries any caveat that changes how the chart should be read: <em>&ldquo;Gentoos were counted only on Biscoe and Chinstraps only on Dream; these are the 344 birds that were measured, not every bird on the islands.&rdquo;</em></p>
+
+<div class="exercise" id="ex-7.3" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 7.3</span>
+    <span class="exercise-title">Hand over panel C</span></div>
+  <textarea class="cell-editor" rows="18" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 7.3"># The chief wants panel C on a slide of its own. The chart is drawn for you.
+fig, ax = plt.subplots(figsize=(6, 4), layout=&quot;constrained&quot;)
+sns.pointplot(data=penguins, x=&quot;species&quot;, y=&quot;body_mass_g&quot;, hue=&quot;sex&quot;, palette=SEX_COLORS,
+              dodge=0.35, linestyle=&quot;none&quot;, markers=[&quot;o&quot;, &quot;s&quot;], ax=ax)
+ax.yaxis.set_major_formatter(lambda v, pos: f&quot;{v / 1000:.1f} kg&quot;)
+ax.set(xlabel=&quot;&quot;, ylabel=&quot;Mean body mass (95% CI)&quot;,
+       title=&quot;Males outweigh females in every species&quot;)
+ax.legend(title=&quot;&quot;, frameon=False, loc=&quot;upper left&quot;)
+sns.despine()
+
+# 1. Save it for a slide: a PNG named &quot;penguin-sexes.png&quot;, at 200 dpi.
+# 2. Write alt text: one or two sentences that say what the chart shows.
+# 3. Write a caption: one sentence, with the caveat a reader needs.
+#    (Eleven penguins have no recorded sex, so they are not in this chart.)
+alt_text = &quot;&quot;
+caption = &quot;&quot;</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;constrained&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">pointplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">SEX_COLORS</span><span class="p">,</span>
+              <span class="n">dodge</span><span class="o">=</span><span class="mf">0.35</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">markers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> kg&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Mean body mass (95% CI)&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Males outweigh females in every species&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;penguin-sexes.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+
+<span class="n">alt_text</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Mean body mass of female and male penguins in three species. Males are heavier &quot;</span>
+            <span class="s2">&quot;in every species: by about 0.7 kg in Adelies, 0.4 kg in Chinstraps and 0.8 kg &quot;</span>
+            <span class="s2">&quot;in Gentoos.&quot;</span><span class="p">)</span>
+<span class="n">caption</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Male penguins outweigh females in all three species; the 11 birds whose sex was &quot;</span>
+           <span class="s2">&quot;not recorded are left out.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">alt_text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">caption</span><span class="p">)</span>
+</pre></div>
+<pre class="cell-stdout">Mean body mass of female and male penguins in three species. Males are heavier in every species: by about 0.7 kg in Adelies, 0.4 kg in Chinstraps and 0.8 kg in Gentoos.
+Male penguins outweigh females in all three species; the 11 birds whose sex was not recorded are left out.</pre><figure class="cell-figure"><img src="img/sol-7.3.png" alt="Solution chart for exercise 7.3" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# The chief wants panel C on a slide of its own. The chart is drawn for you.\nfig, ax = plt.subplots(figsize=(6, 4), layout=\"constrained\")\nsns.pointplot(data=penguins, x=\"species\", y=\"body_mass_g\", hue=\"sex\", palette=SEX_COLORS,\n              dodge=0.35, linestyle=\"none\", markers=[\"o\", \"s\"], ax=ax)\nax.yaxis.set_major_formatter(lambda v, pos: f\"{v / 1000:.1f} kg\")\nax.set(xlabel=\"\", ylabel=\"Mean body mass (95% CI)\",\n       title=\"Males outweigh females in every species\")\nax.legend(title=\"\", frameon=False, loc=\"upper left\")\nsns.despine()\n\n# 1. Save it for a slide: a PNG named \"penguin-sexes.png\", at 200 dpi.\n# 2. Write alt text: one or two sentences that say what the chart shows.\n# 3. Write a caption: one sentence, with the caveat a reader needs.\n#    (Eleven penguins have no recorded sex, so they are not in this chart.)\nalt_text = \"\"\ncaption = \"\"", "solution": "fig, ax = plt.subplots(figsize=(6, 4), layout=\"constrained\")\nsns.pointplot(data=penguins, x=\"species\", y=\"body_mass_g\", hue=\"sex\", palette=SEX_COLORS,\n              dodge=0.35, linestyle=\"none\", markers=[\"o\", \"s\"], ax=ax)\nax.yaxis.set_major_formatter(lambda v, pos: f\"{v / 1000:.1f} kg\")\nax.set(xlabel=\"\", ylabel=\"Mean body mass (95% CI)\",\n       title=\"Males outweigh females in every species\")\nax.legend(title=\"\", frameon=False, loc=\"upper left\")\nsns.despine()\n\nfig.savefig(\"penguin-sexes.png\", dpi=200)\n\nalt_text = (\"Mean body mass of female and male penguins in three species. Males are heavier \"\n            \"in every species: by about 0.7 kg in Adelies, 0.4 kg in Chinstraps and 0.8 kg \"\n            \"in Gentoos.\")\ncaption = (\"Male penguins outweigh females in all three species; the 11 birds whose sex was \"\n           \"not recorded are left out.\")\nprint(alt_text)\nprint(caption)", "check": "import os\nfrom PIL import Image\nothers = sorted(os.listdir(\".\"))\nassert os.path.exists(\"penguin-sexes.png\"), (\"I found \" + \", \".join(others) + \", but the slide needs a file named penguin-sexes.png.\" if others else \"No file was saved. After the chart, add fig.savefig('penguin-sexes.png', dpi=200).\")\nwith Image.open(\"penguin-sexes.png\") as picture:\n    kind, dpi, (width, height) = picture.format, picture.info.get(\"dpi\"), picture.size\nassert kind == \"PNG\", f\"The file is named .png, but it holds a {kind} image. Leave format= out, and savefig takes the format from the name.\"\nshown = round(dpi[0]) if dpi else 0\nassert shown >= 200, f\"The file was saved at {shown} dots per inch, which turns soft on a slide. Pass dpi=200 to savefig.\"\ntitle = chart_axes()[0].get_title()\ndef squash(text):\n    return \"\".join(ch for ch in str(text).lower() if ch.isalnum())\nfound_alt, found_caption = globals().get(\"alt_text\"), globals().get(\"caption\")\nassert isinstance(found_alt, str) and found_alt.strip(), \"Write the alt text: fill alt_text with one or two sentences that say what the chart shows.\"\nassert squash(found_alt) != squash(title), \"Your alt text repeats the title. Say more: which groups are compared, and what are the numbers behind the finding?\"\nn_alt = len(found_alt.split())\nassert n_alt >= 12, f\"Alt text of {n_alt} words says too little. Say what the chart shows: which groups are compared, and what the finding is.\"\nassert n_alt <= 60, f\"Alt text is read aloud, and {n_alt} words is a long listen. Keep it to one or two sentences, 60 words at most.\"\nassert isinstance(found_caption, str) and found_caption.strip(), \"Write the caption: fill caption with one sentence that states the finding and the caveat a reader needs.\"\nassert squash(found_caption) not in (squash(title), squash(found_alt)), \"The caption repeats the title or the alt text. Give it a sentence of its own, with the caveat a reader needs.\"\nn_caption = len(found_caption.split())\nassert n_caption >= 8, f\"A caption of {n_caption} words has no room for a finding and a caveat. Write one full sentence.\"\nassert n_caption <= 40, f\"A caption of {n_caption} words is a paragraph. Keep it to one sentence, 40 words at most.\"\nprint(f\"Saved penguin-sexes.png: {width} by {height} pixels at {shown} dpi. Alt text of {n_alt} words and a caption of {n_caption}. I can check the file and count the words, but I can't tell whether they are true. Compare them with the solution, and read your alt text aloud to someone who can't see the chart.\")"}</script>
+</div>
+
+
 <h2 id="your-turn-the-sex-differences-report">Your turn: the sex-differences report</h2>
 
 <div class="exercise" id="ex-7.1" data-exercise>
@@ -242,6 +430,7 @@ for ax, column in zip(axes, [&quot;body_mass_g&quot;, &quot;flipper_length_mm&qu
 <li>Tidy DataFrame in, column names to channels: <code>x</code>, <code>y</code>, <code>hue</code>, <code>col</code>, <code>row</code>.</li>
 <li>Axes-level functions + <code>plt.subplots</code> for custom layouts. Figure-level functions for quick small multiples.</li>
 <li>Honest scales, purposeful color, direct labels, plain words.</li>
+<li>Hand over three things: the file, the notebook that makes it again, and the words that say what it shows.</li>
 </ul>
 </div>
     </article>

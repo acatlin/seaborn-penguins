@@ -8,6 +8,8 @@
 - build it panel by panel with `plt.subplots` and axes-level functions
 - give a whole figure one legend, one title and a consistent color story
 - review your own chart against a design checklist
+- save the figure in the format its destination needs, from a notebook that runs top to bottom
+- describe a figure in alt text and a caption
 
 ```python setup
 import pandas as pd
@@ -30,6 +32,93 @@ SEX_COLORS = {"Female": "#8c8c8c", "Male": "#333333"}
 | Can bills tell species apart? | relationship between two numbers, by group | `scatterplot` (1) |
 
 Picking the chart *from the question* is the most important step in the whole course. If you can't name the question a panel answers, cut the panel.
+
+Choosing a form also means ruling others out. Three forms mislead, and you have met each of them:
+
+- **Bars for a mean when zero means nothing.** Bars start at zero, so three bill depths between 15 and 18 mm become three bars of nearly the same height (Lesson 3). Use points.
+- **A line between groups that have no order.** It draws a trend from one species to the next, and there is none (Lesson 4).
+- **A pie.** People compare angles poorly, and lengths and positions well (Lesson 3).
+
+Now try it with three questions the chief did not ask. Nobody names the chart this time.
+
+```python exercise id=7.2 title="Questions only: choose the form"
+# Draw one panel for each question, in a chart form that answers it:
+#   A. How are flipper lengths spread within each species?
+#   B. Which species has the deepest bill on average?
+#   C. Do penguins with longer flippers weigh more?
+# Pass ax=axes[0], ax=axes[1] and ax=axes[2].
+# The check looks at the form of each panel, and at nothing else.
+fig, axes = plt.subplots(1, 3, figsize=(13, 4), layout="constrained")
+
+# A
+___
+
+# B
+___
+
+# C
+___
+```
+
+```python solution for=7.2
+fig, axes = plt.subplots(1, 3, figsize=(13, 4), layout="constrained")
+
+# A. How one measurement is spread: a distribution, one outline per species
+sns.histplot(data=penguins, x="flipper_length_mm", hue="species", palette=PENGUIN_COLORS,
+             element="step", fill=False, binwidth=3, ax=axes[0])
+axes[0].set(xlabel="Flipper length (mm)", ylabel="Penguins",
+            title="A. Gentoo flippers are the longest")
+axes[0].get_legend().set_title("Species")
+
+# B. A mean compared across groups, where zero means nothing: points, not bars,
+#    and no line from one species to the next
+sns.pointplot(data=penguins, x="species", y="bill_depth_mm", hue="species",
+              palette=PENGUIN_COLORS, linestyle="none", legend=False, ax=axes[1])
+axes[1].set(xlabel="", ylabel="Mean bill depth (mm), 95% CI",
+            title="B. Adelie and Chinstrap bills are the deepest")
+
+# C. Two measurements of the same penguin: a relationship, one point per bird
+sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g", hue="species",
+                palette=PENGUIN_COLORS, s=18, legend=False, ax=axes[2])
+axes[2].set(xlabel="Flipper length (mm)", ylabel="Body mass (g)",
+            title="C. Longer flippers, heavier penguins")
+sns.despine(fig=fig)
+```
+
+```python check for=7.2
+axes = chart_axes()
+assert len(axes) == 3, f"Draw three panels, one for each question, by passing ax=axes[0], ax=axes[1] and ax=axes[2]. I found {len(axes)} with a chart on it."
+spread = {"histogram", "density", "ecdf", "area", "box", "violin", "strip"}
+a, b, c = (chart_forms(ax) for ax in axes)
+for panel, forms in zip("ABC", (a, b, c)):
+    assert "pie" not in forms, f"Panel {panel}: a pie makes the reader compare angles. Choose a form that compares lengths or positions."
+
+assert "joined" not in a, "Panel A: a line from one species to the next draws a trend, and species have no order. The question asks how flipper lengths are spread: draw a distribution."
+assert "bars" not in a, "Panel A: one bar per species shows one number, a mean or a count. The question asks how the flipper lengths are spread, so show the whole distribution: a histogram, a density curve, an ECDF, or a box, violin or strip plot."
+if not a & spread:
+    assert "points" not in a, "Panel A: a point plot shows a mean and its interval, two numbers per species. The question asks how the flipper lengths are spread, so show the whole distribution: a histogram, a density curve, an ECDF, or a box, violin or strip plot."
+    assert not a & {"scatter", "line", "mesh"}, "Panel A: that form relates two measurements. This question is about one, flipper length: draw its distribution for each species."
+    assert False, "Panel A: I can't tell which form this is. For a question about spread I know a histogram, a density curve, an ECDF, and a box, violin or strip plot."
+
+assert "joined" not in b, "Panel B: a line from one species to the next draws a trend, and species have no order. Keep the points and drop the line: linestyle=\"none\" in sns.pointplot."
+assert "bars" not in b, "Panel B: bars start at zero, and a bill 0 mm deep means nothing. Drawn from zero, depths of 15 to 18 mm look nearly alike. Use points (sns.pointplot with linestyle=\"none\"), or show each species' spread with a box, violin or strip plot."
+if not b & (spread | {"points"}):
+    assert not b & {"scatter", "line", "mesh"}, "Panel B: that form relates two measurements. This question compares the species on one, bill depth: put species on one axis."
+    assert False, "Panel B: I can't tell which form this is. For a mean compared across groups I know a point plot, and a box, violin or strip plot."
+
+assert "bars" not in c, "Panel C: bars compare groups. This question relates two measurements of the same penguin, so give each an axis: a scatter plot, with a trend line if you like."
+if not c & {"scatter", "line", "mesh"}:
+    assert not c & {"histogram", "density", "ecdf", "area"}, "Panel C: that shows how one measurement is spread. This question relates two, flipper length and body mass, so give each an axis: a scatter plot, with a trend line if you like."
+    assert not c & {"box", "violin", "strip", "points", "joined"}, "Panel C: that compares groups. This question relates two measurements of the same penguin, so give each an axis: a scatter plot, with a trend line if you like."
+    assert False, "Panel C: I can't tell which form this is. For a relationship between two measurements I know a scatter plot, a trend line and a 2-D histogram."
+
+plain = {"histogram": "a histogram", "density": "density curves", "ecdf": "ECDFs", "area": "filled outlines",
+         "box": "a box plot", "violin": "a violin plot", "strip": "a strip plot", "points": "a point plot",
+         "scatter": "a scatter plot", "line": "a line", "mesh": "a 2-D histogram"}
+def named(forms):
+    return " with ".join(plain.get(form, form) for form in sorted(forms))
+print(f"Three questions, three forms that answer them. A: {named(a)}. B: {named(b)}. C: {named(c)}. I looked at the forms only. Whether the labels and titles do their job is for the pre-flight checklist in Step 4.")
+```
 
 ## Step 2: lay out the canvas
 
@@ -109,6 +198,121 @@ The design choices to notice:
     4. **Color:** Is color used only where it means something, consistently, and colorblind-safe?
     5. **Ink:** Is there anything I can delete, such as a redundant legend, a heavy border, or a gridline nobody needs?
     6. **Words:** Plain-English labels with units, on axes and legends alike, and titles that state findings.
+
+## Step 5: describe and deliver
+
+A figure is finished when someone else can use it without you. That takes three things: a file, a notebook that makes the file again, and a few words that say what the figure shows.
+
+**Save it for where it is going.**
+
+| Where the figure goes | Save it as | Why |
+|---|---|---|
+| A slide or a document | PNG, at `dpi=200` or more | Pixels, and enough of them to stay sharp at the size it is shown |
+| A printed report, a poster, anything that will be resized | SVG or PDF | A vector file stays sharp at any size |
+
+Here is panel A of the report as a chart of its own, saved both ways:
+
+```python run fig=07-deliver alt="Horizontal bars of penguins counted on three islands. Biscoe has the most, 124 Gentoos and 44 Adelies; Dream has 68 Chinstraps and 56 Adelies; Torgersen has 52 Adelies and no other species."
+fig, ax = plt.subplots(figsize=(6, 3.6), layout="constrained")
+sns.countplot(data=penguins, y="island", hue="species", palette=PENGUIN_COLORS,
+              hue_order=["Adelie", "Chinstrap", "Gentoo"],
+              order=["Biscoe", "Dream", "Torgersen"], ax=ax)
+ax.set(xlabel="Penguins counted", ylabel="",
+       title="Gentoos only on Biscoe, Chinstraps only on Dream")
+ax.get_legend().set_title("Species")
+sns.despine()
+
+fig.savefig("penguin-islands.png", dpi=200)   # for a slide or a document
+fig.savefig("penguin-islands.svg")            # vector: sharp at any size
+
+from PIL import Image                         # open the file that was just written
+with Image.open("penguin-islands.png") as saved:
+    print(saved.size, "pixels at", round(saved.info["dpi"][0]), "dots per inch")
+```
+
+`savefig` takes the format from the file name. The figure was made with `layout="constrained"`, so nothing is cut off. For a figure made without it, add `bbox_inches="tight"` (Lesson 6). The last three lines open the PNG and print what is in it: 1,200 by 720 pixels is 6 by 3.6 inches at 200 dots per inch.
+
+**Open the file and look at it.** A notebook shows the figure at screen size. The file is what the reader gets, so look at it at the size it will be shown. Can you read the smallest label?
+
+**Run the notebook from the top.** A notebook remembers every cell you ran, in the order you ran it, and that includes cells you have since changed or deleted. Before you hand it over, restart it and run every cell in order: *Kernel > Restart & Run All* in Jupyter, *Runtime > Restart session and run all* in Colab. If the figure still appears, someone else can make it too. This page runs each cell on its own, so do this one in the notebook.
+
+**Say what it shows.** Alt text is read aloud by a screen reader in place of the figure. A caption sits under the figure for everyone. Both state the finding, not the chart type. Two alt texts for the chart above:
+
+| | Alt text |
+|---|---|
+| Names the chart | "A bar chart of penguin counts by island and species." |
+| Describes it | "Horizontal bars of penguins counted on three islands. Biscoe has the most, 124 Gentoos and 44 Adelies; Dream has 68 Chinstraps and 56 Adelies; Torgersen has 52 Adelies and no other species." |
+
+The first is true and useless: a reader who cannot see the chart learns nothing from it. The second gives the finding and the numbers behind it, in two sentences.
+
+A caption is one sentence for a reader who can see the chart, and it carries any caveat that changes how the chart should be read: *"Gentoos were counted only on Biscoe and Chinstraps only on Dream; these are the 344 birds that were measured, not every bird on the islands."*
+
+```python exercise id=7.3 title="Hand over panel C"
+# The chief wants panel C on a slide of its own. The chart is drawn for you.
+fig, ax = plt.subplots(figsize=(6, 4), layout="constrained")
+sns.pointplot(data=penguins, x="species", y="body_mass_g", hue="sex", palette=SEX_COLORS,
+              dodge=0.35, linestyle="none", markers=["o", "s"], ax=ax)
+ax.yaxis.set_major_formatter(lambda v, pos: f"{v / 1000:.1f} kg")
+ax.set(xlabel="", ylabel="Mean body mass (95% CI)",
+       title="Males outweigh females in every species")
+ax.legend(title="", frameon=False, loc="upper left")
+sns.despine()
+
+# 1. Save it for a slide: a PNG named "penguin-sexes.png", at 200 dpi.
+# 2. Write alt text: one or two sentences that say what the chart shows.
+# 3. Write a caption: one sentence, with the caveat a reader needs.
+#    (Eleven penguins have no recorded sex, so they are not in this chart.)
+alt_text = ""
+caption = ""
+```
+
+```python solution for=7.3
+fig, ax = plt.subplots(figsize=(6, 4), layout="constrained")
+sns.pointplot(data=penguins, x="species", y="body_mass_g", hue="sex", palette=SEX_COLORS,
+              dodge=0.35, linestyle="none", markers=["o", "s"], ax=ax)
+ax.yaxis.set_major_formatter(lambda v, pos: f"{v / 1000:.1f} kg")
+ax.set(xlabel="", ylabel="Mean body mass (95% CI)",
+       title="Males outweigh females in every species")
+ax.legend(title="", frameon=False, loc="upper left")
+sns.despine()
+
+fig.savefig("penguin-sexes.png", dpi=200)
+
+alt_text = ("Mean body mass of female and male penguins in three species. Males are heavier "
+            "in every species: by about 0.7 kg in Adelies, 0.4 kg in Chinstraps and 0.8 kg "
+            "in Gentoos.")
+caption = ("Male penguins outweigh females in all three species; the 11 birds whose sex was "
+           "not recorded are left out.")
+print(alt_text)
+print(caption)
+```
+
+```python check for=7.3
+import os
+from PIL import Image
+others = sorted(os.listdir("."))
+assert os.path.exists("penguin-sexes.png"), ("I found " + ", ".join(others) + ", but the slide needs a file named penguin-sexes.png." if others else "No file was saved. After the chart, add fig.savefig('penguin-sexes.png', dpi=200).")
+with Image.open("penguin-sexes.png") as picture:
+    kind, dpi, (width, height) = picture.format, picture.info.get("dpi"), picture.size
+assert kind == "PNG", f"The file is named .png, but it holds a {kind} image. Leave format= out, and savefig takes the format from the name."
+shown = round(dpi[0]) if dpi else 0
+assert shown >= 200, f"The file was saved at {shown} dots per inch, which turns soft on a slide. Pass dpi=200 to savefig."
+title = chart_axes()[0].get_title()
+def squash(text):
+    return "".join(ch for ch in str(text).lower() if ch.isalnum())
+found_alt, found_caption = globals().get("alt_text"), globals().get("caption")
+assert isinstance(found_alt, str) and found_alt.strip(), "Write the alt text: fill alt_text with one or two sentences that say what the chart shows."
+assert squash(found_alt) != squash(title), "Your alt text repeats the title. Say more: which groups are compared, and what are the numbers behind the finding?"
+n_alt = len(found_alt.split())
+assert n_alt >= 12, f"Alt text of {n_alt} words says too little. Say what the chart shows: which groups are compared, and what the finding is."
+assert n_alt <= 60, f"Alt text is read aloud, and {n_alt} words is a long listen. Keep it to one or two sentences, 60 words at most."
+assert isinstance(found_caption, str) and found_caption.strip(), "Write the caption: fill caption with one sentence that states the finding and the caveat a reader needs."
+assert squash(found_caption) not in (squash(title), squash(found_alt)), "The caption repeats the title or the alt text. Give it a sentence of its own, with the caveat a reader needs."
+n_caption = len(found_caption.split())
+assert n_caption >= 8, f"A caption of {n_caption} words has no room for a finding and a caveat. Write one full sentence."
+assert n_caption <= 40, f"A caption of {n_caption} words is a paragraph. Keep it to one sentence, 40 words at most."
+print(f"Saved penguin-sexes.png: {width} by {height} pixels at {shown} dpi. Alt text of {n_alt} words and a caption of {n_caption}. I can check the file and count the words, but I can't tell whether they are true. Compare them with the solution, and read your alt text aloud to someone who can't see the chart.")
+```
 
 ## Your turn: the sex-differences report
 
@@ -206,3 +410,4 @@ print("A clean, comparable three-panel report. You're ready to brief the station
     - Tidy DataFrame in, column names to channels: `x`, `y`, `hue`, `col`, `row`.
     - Axes-level functions + `plt.subplots` for custom layouts. Figure-level functions for quick small multiples.
     - Honest scales, purposeful color, direct labels, plain words.
+    - Hand over three things: the file, the notebook that makes it again, and the words that say what it shows.

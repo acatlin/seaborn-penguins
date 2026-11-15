@@ -129,7 +129,7 @@ def test_every_lesson_goal_belongs_to_a_static_objective(joined):
     assert len(goals) == sum(len(p.goals) for p in COURSE.pages)
     taught = {i for i in STATIC if joined["summary"][i]["teach"]}
     assert set(goals) == taught, "every static objective that a page teaches should be some page's stated goal"
-    assert set(STATIC) - taught == {"S14"}, "the static objectives that no page teaches yet changed"
+    assert set(STATIC) == taught, "a static objective is no longer taught by any page"
 
 
 def test_each_existing_lesson_is_split_into_its_sixty_minutes():
@@ -143,7 +143,7 @@ def test_additions_are_counted_on_top_of_the_lessons(joined):
     a block of its own. Section 1's additions were planned at 65 minutes. Building one moves its
     minutes from the objective's 'to write' to 'additions built', so the two always add up to 65."""
     added = SPEC["added_minutes"]
-    assert len(added) == 3, "exercises 6.3, 6.4 and 7.2 are the additions that are built"
+    assert len(added) == 5, "exercises 6.3, 6.4 and 7.2, and Step 5 of Lesson 7 for S12 and for S14"
     for item in added:
         assert item["lesson"] in SPEC["lesson_minutes"] and item["objective"] in STATIC
         assert joined["summary"][item["objective"]]["roles"].get(item["lesson"]) == "T", (
@@ -154,12 +154,12 @@ def test_additions_are_counted_on_top_of_the_lessons(joined):
 
 
 def test_status_follows_from_the_evidence(joined):
-    """Twelve static objectives are covered, one is partial (S12: saving is not practiced), and one
-    (S14, the written description of a figure) is planned: assignments score it, but no page teaches
-    it. S09 is covered since exercise 7.2 and the short task 'Questions only'. If a new section,
-    exercise or question changes that on purpose, change this test and the instructor guide with it."""
+    """All fourteen static objectives are covered: S09 since exercise 7.2 and the short task
+    'Questions only', S12 and S14 since Step 5 of Lesson 7 and exercise 7.3 (PLAN.md, steps C and D).
+    If a change to a section, an exercise or a question takes one of them back to Partial, this test
+    says so: change it and the instructor guide only if that is meant."""
     status = {i: joined["summary"][i]["status"] for i in IDS}
-    assert {i: status[i] for i in STATIC if status[i] != bo.COVERED} == {"S12": bo.PARTIAL, "S14": bo.PLANNED}
+    assert {i: status[i] for i in STATIC if status[i] != bo.COVERED} == {}
     assert all(status[i] == bo.PLANNED for i in IDS if i not in STATIC)
 
 
@@ -173,8 +173,8 @@ def test_rule_one_waits_only_for_exercises_on_the_pages_that_teach_the_objective
     assert {i: summary[i]["decisive"] for i in STATIC} == {
         "S01": ["1.1", "1.2"], "S02": ["1.1", "1.2"], "S03": ["2.1", "2.2"], "S04": ["3.1", "3.2"],
         "S05": ["1.2", "4.2"], "S06": ["5.1", "5.2"], "S07": ["1.1", "3.1", "3.2", "6.1", "6.2"],
-        "S08": ["6.1", "6.2", "6.3"], "S09": ["7.2"], "S10": ["7.1"], "S11": ["6.1", "6.4"], "S12": [], "S13": ["4.1"],
-        "S14": []}
+        "S08": ["6.1", "6.2", "6.3"], "S09": ["7.2"], "S10": ["7.1"], "S11": ["6.1", "6.4"], "S12": ["7.3"],
+        "S13": ["4.1"], "S14": ["7.3"]}
     # One pair is known, and was decided (REVIEW.md, O10, and PLAN.md, question 10): S11 lists S09 as
     # a prerequisite, and S11 is first taught by the makeover in Lesson 6, one lesson before the page
     # that teaches S09 and holds its exercise. The map stays as it is, because a full critique does
@@ -198,7 +198,8 @@ def test_rule_one_waits_only_for_exercises_on_the_pages_that_teach_the_objective
     assert shown["S02"].splitlines() == ["Exercises for mastery: 1.1, 1.2",
                                          "Further practice: 2.1, 3.1, 3.2, 4.2, 5.1, 6.1, 6.2", "Quiz: L1 Q3"]
     assert shown["S09"].splitlines()[0] == "Exercises for mastery: 7.2"
-    assert shown["S12"].splitlines()[0] == "Exercises: none"
+    assert shown["S12"].splitlines()[0] == "Exercises for mastery: 7.3"
+    assert shown["I01"].splitlines()[0] == "Exercises: none" and shown["I02"] == "None yet"
     assert f"for S02, those are exercises {' and '.join(summary['S02']['decisive'])}." in GUIDE
 
 
@@ -310,7 +311,7 @@ def test_timing_sheet_adds_up(book, joined):
         assert sheet.cell(row=bo.T_SESSIONS, column=column[label]).value == pytest.approx(sessions), label
     counted = {status: sheet.cell(row=row, column=column["All sections"]).value
                for status, row in ((bo.COVERED, bo.T_COVERED), (bo.PARTIAL, bo.T_PARTIAL), (bo.PLANNED, bo.T_PLANNED))}
-    assert counted == {bo.COVERED: 12, bo.PARTIAL: 1, bo.PLANNED: 25}
+    assert counted == {bo.COVERED: 14, bo.PARTIAL: 0, bo.PLANNED: 24}
 
 
 def test_every_formula_has_its_result_stored_in_the_file(book):
@@ -411,7 +412,10 @@ def test_guide_timings_match_the_timing_sheet(joined):
     assert (f"of section 1's {_shown(static['lessons'])} hours, {_shown(static['existing'])} are the {WORDS[lessons]} "
             f"lessons ({lessons * 45 / 60:g} to {lessons * 75 / 60:g} at the ends of the 45-75 minute range). "
             f"Another {round(static['added'] * 60)} minutes are built on top of them") in GUIDE
-    assert f"The remaining {round(static['to_write'] * 60)} minutes are the additions" in GUIDE
+    if static["to_write"]:
+        assert f"The remaining {round(static['to_write'] * 60)} minutes are the additions" in GUIDE
+    else:
+        assert "Nothing of section 1's lessons is left to write" in GUIDE
     sessions = everything["taught"] * 60 / SPEC["timing"]["session_minutes"]
     assert (f"Of the {_shown(everything['total'])} hours, {_shown(everything['taught'])} are lessons, checks and "
             f"reassessment. That is about {round(sessions)} sessions of {SPEC['timing']['session_minutes']} minutes"

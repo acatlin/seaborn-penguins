@@ -5,7 +5,7 @@ objectives" section: the teaching, the exercises and the mastery checks that the
 objectives of section 1 still lack. It was worked out on 2026-11-15 against version 1.3 of the
 objectives map (`instructor/mastery_objectives.yaml`).
 
-**Steps A, B and C are built** (2026-11-15). Steps D and E are not. Nine of the ten questions under "Decide first" were answered
+**Steps A, B, C and D are built** (2026-11-15). Step E is not. Nine of the ten questions under "Decide first" were answered
 on 2026-11-15, each as recommended, and so were O11, O12 and O13 in `REVIEW.md`. The answer is
 written under each question. Question 3 was answered later the same day: an honor system for now.
 Two things that answer leaves open are listed under it, and step E waits for them.
@@ -22,23 +22,23 @@ How to use it:
 
 ## Where section 1 stands
 
-Twelve of the fourteen static objectives are Covered, one is Partial (S12) and one is Planned
-(S14). Five objectives had work waiting when this plan was written, and two still have:
+All fourteen static objectives are Covered. Five of them had work waiting when this plan was
+written, and none has now:
 
 | Objective | Status | What is missing | Minutes to write | Step |
 |---|---|---|---|---|
 | **S08** Polish a chart with matplotlib | Covered | Nothing since step A: exercise 6.3 checks `ax.annotate` and a tick formatter | built: 10 | A |
 | **S11** Critique and redesign a chart | Covered | Nothing since step B: exercise 6.4 asks for a critique before the page gives one | built: 10 | B |
 | **S09** Choose the chart form from the question | Covered | Nothing since step C: exercise 7.2 checks the form, and the short task "Questions only" scores the reasons | built: 20 | C |
-| **S12** Save a figure that can be reproduced | Partial | Saving is shown as code that is not run, and no page explains rerunning a notebook | 10 | D |
-| **S14** Describe what a figure shows | Planned | No page teaches it, though two rubric rows score it | 15 | D |
+| **S12** Save a figure that can be reproduced | Covered | Nothing since step D: Step 5 of Lesson 7 runs the code and explains the restart, and exercise 7.3 checks the saved file | built: 10 | D |
+| **S14** Describe what a figure shows | Covered | Nothing since step D: Step 5 of Lesson 7 teaches alt text and a caption, exercise 7.3 practices them, and a third rubric row scores them | built: 15 | D |
 
-The 65 minutes are the 1.1 hours of additions in the guide's Timings table: 40 are built, and 25
-are still to write. The other nine objectives need nothing here but their mastery checks
+The 65 minutes are the 1.1 hours of additions in the guide's Timings table. All 65 are built,
+and 45 of them fall in Lesson 7. The other nine objectives need nothing here but their mastery checks
 (step E). No mastery check exists yet for any objective.
 
-Today's counts: 16 exercises, 54 figures, 28 quiz questions, 25 exam questions, 30 lesson goals,
-and 22 rubric rows in 3 assignments and a short task.
+Today's counts: 17 exercises, 56 figures, 28 quiz questions, 25 exam questions, 32 lesson goals,
+and 23 rubric rows in 3 assignments and a short task.
 
 The work is about 58 to 73 hours of building and checking in all, most of it in step E, or 59 to
 75 with the hour or two that question 2 adds once. The hours given with each step are rough.
@@ -291,6 +291,50 @@ for one checked exercise.
 
 Step 2 of the guide. About 8 to 10 hours. Needs questions 2, 6, 7 and 8.
 
+**Built on 2026-11-15**, as planned, with these particulars:
+
+- **The runner first.** `runner.run_cell` runs every cell and its check in a temporary folder
+  and removes the folder afterwards, in the build and in the browser alike. The path of the
+  data is resolved before the folder changes. Two tests hold this: a cell that saves two files
+  leaves nothing behind, also when it ends in an error, and the data is found by a relative
+  path. The test helper that runs a lesson's cells in notebook order got a folder of its own too.
+- **The section** is Step 5 of Lesson 7, "Describe and deliver", after the pre-flight checklist:
+  a table of where a figure goes and how to save it, an example that is run (panel A of the
+  report as a chart of its own, saved as PNG and as SVG, and the PNG opened again to print
+  "(1200, 720) pixels at 200 dots per inch"), then looking at the file, restarting the notebook,
+  two alt texts for the same chart (one names it, one describes it) and a caption with a caveat.
+  The example is one more figure, `07-deliver`. Lesson 7 states two more goals.
+- **Exercise 7.3** hands over panel C: the chart is drawn in the starter, and the learner saves
+  it as `penguin-sexes.png` at 200 dpi and fills `alt_text` and `caption`. The check opens the
+  file and wants a PNG of that name at 200 dpi or more (it rounds: 200 reads back as 199.9994).
+  Alt text must have 12 to 60 words and may not repeat the title. The caption must have 8 to 40
+  words and may repeat neither. The message says that the check cannot tell whether the words
+  are true. A test puts 17 attempts through it: 13 that must each earn their hint, and 4 that
+  must pass.
+- **One new import for learners:** the example and the check open the saved file with Pillow
+  (`from PIL import Image`). Pillow comes with matplotlib, also in the browser.
+- **The rubric row** is "Alt text and caption", 10 points, the seventh and last row of
+  Assignment 3, so that A3 R1 to R6 keep their numbers. The two "Report figure" rows have 15
+  points each. Assignment 3's third task asks for the words, because a fifth task would have
+  been numbered "5." and tripped the test that guards the numbering. The model answer has a
+  sample of both.
+- **The map,** version 1.6: Step 5 teaches S12 and S14, exercise 7.3 is listed for both, and both
+  are Covered, so all fourteen are. Their 10 and 15 minutes are counted as built, and nothing of
+  section 1's lessons is left to write.
+- **Added to the guide, and not in the plan:** Lesson 7 now carries 45 of the 65 added minutes,
+  so its notes and the Timings paragraph say to plan the capstone as two sessions. And the
+  guide says that Covered describes the materials, not their depth: S12 and S14 have one
+  exercise each, whose check reads a file and counts words.
+- **Tried in Chrome,** headless as for step C, with Python 3.12.7 and matplotlib 3.8.4: the
+  example saves its PNG and its SVG and prints the same line as in the build, and the solution,
+  the starter and the 17 attempts at exercise 7.3 get the same verdict and message. The whole
+  site was run again: 17 exercises, 63 further attempts and 43 examples, with no difference from
+  the build. The scripts for this are in the repository now, as `tools/browser_check.py`.
+- **Still outside the page:** opening the file at the size it will be shown, and the restart.
+  Nothing checks either. S12 and S14 have no quiz or exam question: their checks are step E's.
+
+What the plan said:
+
 - **The section** (Lesson 7, Step 5, after the pre-flight checklist): save the report as a PNG
   at 200 dpi with nothing cut off, and as a vector file where it must stay sharp at any size;
   open the file and look at it; restart the notebook and run it top to bottom; then write the
@@ -351,7 +395,7 @@ objective as its pages teach it, and steps A to D change what five objectives' p
 1. The decisions: questions 1 to 10, and O11 to O13. Done on 2026-11-15. Question 3's answer (an
    honor system for now) leaves two things open: see the question.
 2. Step A, then step B. They are small, and they change Lesson 6 only. Both are built.
-3. Step C, then step D. They change Lesson 7, the assessment pack and the runner. Step C is built.
+3. Step C, then step D. They change Lesson 7, the assessment pack and the runner. Both are built.
 4. Step E, in stages, starting where the exam is thinnest.
 
 L24 and L25 in `REVIEW.md` (three exercise checks that passed what their brief rules out) were

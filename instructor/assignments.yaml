@@ -153,21 +153,22 @@ assignments:
     tasks:
       - "Derive bill_ratio = bill_length_mm / bill_depth_mm with pandas."
       - "Build a 2 x 2 report figure (plt.subplots + axes-level functions) with: (A) ECDFs of bill_ratio by species with reference lines at the two thresholds you would use to classify species; (B) box + strip of bill_ratio by species; (C) a scatter of bill ratio vs. body mass with only the misclassified penguins highlighted (everyone else gray); (D) a sorted horizontal bar chart of classification accuracy by species."
-      - "Use one figure-level legend (or direct labels), lettered panel titles that state findings, and a suptitle."
+      - "Use one figure-level legend (or direct labels), lettered panel titles that state findings, and a suptitle. Then write the report figure's alt text (one or two sentences) and a one-sentence caption with any caveat that changes how the figure should be read."
       - "Make over the intern's chart (provided below) and write a 200-word design rationale that names at least four of Few's principles you applied."
     intern_chart: |
       sns.set_theme(style="darkgrid")
       sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
                       hue="island", style="species", size="bill_depth_mm", palette="hsv")
     deliverables:
-      - "Notebook, final report PNG (200 dpi), makeover PNG, and design rationale."
+      - "Notebook, final report PNG (200 dpi) with its alt text and caption, makeover PNG, and design rationale."
     rubric:
       - ["Derived variable and classification logic", 20, "bill_ratio computed correctly; thresholds chosen from the ECDF and applied with pandas; accuracy computed per species."]
-      - ["Report figure - form", 20, "Each panel uses the right chart for its question; ECDF reference lines; highlight strategy in panel C; sorted bars from zero in D."]
-      - ["Report figure - design", 20, "Consistent dict palette, one legend or direct labels, lettered titles stating findings, constrained layout, despined."]
+      - ["Report figure - form", 15, "Each panel uses the right chart for its question; ECDF reference lines; highlight strategy in panel C; sorted bars from zero in D."]
+      - ["Report figure - design", 15, "Consistent dict palette, one legend or direct labels, lettered titles stating findings, constrained layout, despined."]
       - ["Makeover", 20, "Removes redundant encodings and the rainbow palette, adds units, direct labels or a single clean legend, and a finding-stating title."]
       - ["Design rationale", 15, "Names and correctly applies four or more principles (data-ink, highlight, direct labels, common baseline, honest scales, color meaning)."]
       - ["Reproducibility", 5, "Runs top to bottom; files exported with savefig at 200 dpi."]
+      - ["Alt text and caption", 10, "One or two accurate sentences say what the report shows, not which charts it holds; a one-sentence caption states the finding and a caveat that changes the reading."]
     solution:
       - title: "Derive the ratio and classify"
         code: |
@@ -239,6 +240,16 @@ assignments:
                        fontsize=15, fontweight="bold")
           sns.despine(fig=fig)
         notes: "Panel C uses the gray-context highlight from Lesson 6; panel D labels values directly inside zero-based, sorted bars, so no value axis lookup is needed."
+      - title: "Sample alt text and caption for the report"
+        text: >-
+          Alt text: Four panels on the bill ratio, bill length divided by bill
+          depth, of 342 Palmer penguins. The ratio rises from Adelie to
+          Chinstrap to Gentoo with little overlap, and two cut-offs, at 2.4 and
+          2.9, put 329 of the 342 birds in the right species. Caption: One bill
+          ratio identifies 96% of the penguins; the cut-offs were chosen and
+          tested on the same birds, so new birds may fare a little worse, and
+          the 2 penguins without bill measurements are left out.
+        notes: "Full credit for alt text that gives the finding with a number, and for a caption with a caveat that matters. 'Four charts about bill ratio' names the figure and earns about half. The row is at the end of the rubric so that the rows above it keep their numbers."
       - title: "The makeover"
         code: |
           fig, ax = plt.subplots(figsize=(7.5, 4.6))

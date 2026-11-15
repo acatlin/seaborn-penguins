@@ -4,7 +4,7 @@ Usage:  python tools/build_site.py            # writes docs/
         python tools/build_site.py --out DIR  # writes somewhere else (tests)
 
 Markdown pages may contain these fenced blocks (the "info string" after the
-backticks selects the behaviour):
+backticks selects the behavior):
 
     ```python setup                      code run before every cell on the page
     ```python run fig=NAME alt="..."     executed; code + figure (or output) shown
@@ -213,7 +213,8 @@ def render_quiz(block, slug, report, start_number):
         qid = f"{slug}-q{number}"
         items = "".join(
             f'<li><label><input type="radio" name="{qid}" value="{LETTERS[j]}"> '
-            f'<span class="opt-letter">{LETTERS[j]}.</span> {inline_md(opt)}</label></li>'
+            f'<span class="opt-letter">{LETTERS[j]}.</span> '
+            f'<span class="opt-text">{inline_md(opt)}</span></label></li>'
             for j, opt in enumerate(opts)
         )
         out.append(f"""

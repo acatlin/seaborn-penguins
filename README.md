@@ -18,7 +18,7 @@ A hands-on course that takes people who already know **Python and pandas** to ma
 | **Notebooks** | Student and solutions notebook for every lesson (`docs/notebooks/`), each with an *Open in Colab* link |
 | **Assessment pack (.docx)** | 25 multiple-choice questions with answers marked and explained, an answer key, and 3 assignments of increasing difficulty with rubrics and tested model solutions. Instructor and student editions. |
 | **Instructor guide** | Schedules, lesson-by-lesson talking points, common misconceptions, assessment mapping and troubleshooting ([on the site](https://acatlin.github.io/seaborn-penguins/instructor-guide.html) and as `.docx`) |
-| **Mastery objectives (.xlsx)** | 36 objectives for a three-section course taught for mastery (static, interactive, dashboards). Every page section, exercise, quiz question, exam question and rubric row of this site is mapped onto the first twelve, with a status, gaps, timings and next steps |
+| **Mastery objectives (.xlsx)** | 38 objectives for a three-section course taught for mastery (static, interactive, dashboards). Every page section, exercise, quiz question, exam question and rubric row of this site is mapped onto the first fourteen, with a status, gaps, timings and next steps |
 
 ## Repository layout
 
@@ -55,7 +55,7 @@ python -m http.server -d docs 8000  # preview at http://localhost:8000
 - The bin-width figure in Lesson 2 draws exactly the widths its panel titles name, and each of its panels labels its own y-axis.
 - Every exercise's **solution passes its checker**, and the **untouched starter does not**, so checks can't be vacuous. Exercise 2.1's near misses (bars, filled steps, a density curve, an ECDF, a missing axis label) must each earn a hint. No exercise that asks for plain-English axis labels accepts seaborn's raw column names, and none that asks for `PENGUIN_COLORS` accepts seaborn's default colors.
 - Every lesson's **solutions notebook executes** top to bottom in a real Jupyter kernel, and **no cell leaves the theme or any other global setting changed** for the cells after it, so notebooks draw what the site shows.
-- All internal links, anchors, images and scripts resolve, and no template or Markdown leaks into the HTML. Design callouts become blockquotes in the notebooks, and every quiz question is a labelled group for screen readers. The muted label color keeps at least 4.5:1 contrast on every background it sits on, in both themes.
+- All internal links, anchors, images and scripts resolve, and no template or Markdown leaks into the HTML. Design callouts become blockquotes in the notebooks, and every quiz question is a labeled group for screen readers. The muted label color keeps at least 4.5:1 contrast on every background it sits on, in both themes.
 - Every page, notebook, script, stylesheet and data file in `docs/` **matches what the sources produce**, every figure is present, and no leftover figures or notebooks remain, so a stale site can't be committed. (PNG bytes are not compared: they differ between the machine that builds `docs/` and the CI runner.)
 - Quiz and exam answers are **evenly distributed across A-D**. There are no runs of three identical answers, and the correct option is rarely the longest (36% or less).
 - The exam covers all 7 lessons. The rubrics total 100 and both editions state the scoring scale. The instructor edition marks exactly the right answers, and the student edition contains no answers or solutions.

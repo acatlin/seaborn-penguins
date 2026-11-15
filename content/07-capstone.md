@@ -186,7 +186,7 @@ print("A clean, comparable three-panel report. You're ready to brief the station
     - "That it clearly answers a question at a glance"
     - "That every panel uses a different chart type, for variety"
     - "That every data point is labeled with its value"
-    - "That the colors match the organisation's branding"
+    - "That the colors match the organization's branding"
   answer: A
   explain: "Form, color and polish all serve the question. If the question isn't clear, no styling will save the chart."
 ```

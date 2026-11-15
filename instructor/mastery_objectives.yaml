@@ -17,8 +17,8 @@
 meta:
   title: "Mastery objectives"
   course: "Python visualization tools"
-  version: "1.1"
-  date: "2026-11-14"
+  version: "1.2"
+  date: "2026-11-15"
 
 sections:
   - key: S
@@ -80,7 +80,7 @@ lesson_minutes:
 
 # ---------------------------------------------------------------- read-me text
 mastery_rule:
-  - "An objective is mastered when (1) every exercise listed for it passes its automatic check, and (2) the learner scores 80% or better on a mastery check for that objective."
+  - "An objective is mastered when (1) every exercise that checks it on the pages that teach it passes its automatic check, and (2) the learner scores 80% or better on a mastery check for that objective. The Objectives sheet names those exercises under 'Practice today'. An exercise on another page that also checks the objective is further practice, and mastery does not wait for it."
   - "A mastery check is five or more questions the learner has not seen with their answers, or a rubric-scored task at full credit on the rubric rows mapped to the objective. On the assessment pack's three-level scale, 'about half' means not yet."
   - "Not yet? The learner reworks the sections that teach the objective (Page detail sheet, filter on the objective), redoes its exercises from Reset, and takes a different check. There is no penalty for a second attempt."
   - "Mastered early? The learner moves to the next objective whose prerequisites are met, or starts the next assignment."
@@ -91,7 +91,7 @@ assumptions:
   - "Learners arrive with Python basics and pandas, the prerequisite stated on the Start here page. Those skills are not objectives here, which is why one rubric row (Assignment 2, 'Code quality') maps to none."
   - "The mastery standard is 80% on a check of five or more unseen questions, or full credit on the mapped rubric rows, with a second attempt on a different check."
   - "Section 2's tools are placeholders: Plotly, with Altair where linked selections matter. Its objectives are worded so that another library changes the 'Key tools' column, not the objective, except I04 and I07, whose criteria name Plotly's own functions. Section 3 uses Streamlit and is written in its terms (the rerun, session state, caching), so the alternative, Dash, would mean rewriting D02 to D09 and D11. The names in 'Key tools' were checked against the documentation of Plotly 7.1, Altair 6.3 and Streamlit 1.67."
-  - "An exercise counts as evidence for an objective only when its automatic check tests that objective. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its 'full credit' text describes."
+  - "An exercise counts as evidence for an objective only when its automatic check tests that objective. S01 is counted in Lesson 1's two exercises alone: later checks also look at which columns are plotted, but to recognize the chart, not to test the mapping. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its 'full credit' text describes."
   - "Status: Covered means the pages teach the objective, at least one checked exercise practices it, and at least one exam question or rubric row assesses it. Partial means it is taught but practice or assessment is missing. Planned means no page teaches it yet."
   - "The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson's 60-minute midpoint across its objectives. Sections 2 and 3 are planning figures to revise after a pilot."
 
@@ -142,9 +142,9 @@ objectives:
       - "Axis labels are plain English with units, not raw column names."
       - "The legend title is rewritten from the column name."
       - "The title states the finding instead of naming the axes."
-      - "Uses ax.set(...) and ax.get_legend().set_title(...) on an Axes, and g.set_axis_labels(...) and g.legend.set_title(...) on a grid."
+      - "Uses ax.set(...) and ax.get_legend().set_title(...) on an Axes."
     prerequisites: [S01]
-    tools: "matplotlib Axes: ax.set, ax.get_legend().set_title; seaborn grids: g.set_axis_labels, g.legend.set_title"
+    tools: "matplotlib Axes: ax.set, ax.get_legend().set_title"
     outcome: 5
     to_write: 0
     gap: "One exam question (Q4). The exercise checks measure a title's length or look for one word in it, so 'states the finding' is judged by the assignment rubrics alone."
@@ -414,10 +414,9 @@ objectives:
     criteria:
       - "Sets the starting ranges and the visible groups on purpose: the first view answers the question."
       - "Adds a range slider or range buttons on an ordered axis when zooming is the reader's task."
-      - "Panels that are compared zoom together."
       - "Removes toolbar buttons nobody needs and tells the reader how to get back to the first view."
     prerequisites: [I02]
-    tools: "Plotly: axis range=, rangeslider, rangeselector, matches=, legend click behavior, config= (mode bar)"
+    tools: "Plotly: axis range=, rangeslider, rangeselector, legend click behavior, config= (mode bar)"
     outcome: null
     to_write: 40
     gap: "Not written yet."
@@ -453,7 +452,7 @@ objectives:
       - "Zooming one panel zooms the panels it is compared with."
       - "One legend, and the same colors and category order in every panel."
     prerequisites: [I02, S06, S10]
-    tools: "Plotly Express facets; plotly.subplots.make_subplots (shared_xaxes=, shared_yaxes=); for_each_annotation"
+    tools: "Plotly Express facets; plotly.subplots.make_subplots (shared_xaxes=, shared_yaxes=); axis matches=; for_each_annotation"
     outcome: null
     to_write: 45
     gap: "Not written yet."
@@ -793,7 +792,7 @@ page_map:
     - [who-this-is-for, ~, O, "The prerequisites the course assumes: Python basics and pandas."]
     - [the-lessons, ~, O, "Navigation."]
     - [meet-the-data-palmer-penguins, S01, I, "The columns and their types: the raw material for every mapping."]
-    - [three-ways-to-follow-along, S12, I, "Browser, Colab or a local install, and plt.show() in a script."]
+    - [three-ways-to-follow-along, ~, O, "How to run the code: in the browser, in Colab or on your own machine."]
     - [the-design-thread, S09, I, "'Start from the question, and choose the chart form that answers it.'"]
     - [the-design-thread, S11, I, "The principles every later critique uses."]
 
@@ -827,7 +826,7 @@ page_map:
     - [make-the-ranking-obvious-sort-and-turn-sideways, S11, I, "The truncated-bar 'DON'T' chart is a two-minute critique (see the Lesson 3 notes in the instructor guide)."]
     - [beyond-the-mean-boxes-violins-and-strips, S04, T]
     - [point-plots-compare-when-zero-isnt-meaningful, S04, T]
-    - [point-plots-compare-when-zero-isnt-meaningful, S07, R, "SEX_COLORS: a second fixed palette, so sex never borrows the species colors."]
+    - [point-plots-compare-when-zero-isnt-meaningful, S07, T, "SEX_COLORS: a second fixed palette, so sex never borrows the species colors, and marker shapes that carry the distinction without color."]
     - [point-plots-compare-when-zero-isnt-meaningful, S09, I, "Bars or points? Decided by whether zero means anything. Callout: no pies."]
     - ["*", S01, R, "Categories go on x or y, and hue splits or colors them."]
     - ["*", S02, R, "Every finished chart relabels its axes and its legend."]
@@ -852,6 +851,7 @@ page_map:
     - [one-panel-per-island, S06, T]
     - [rows-and-columns, S06, T]
     - [categorical-grids-with-catplot, S06, T]
+    - [categorical-grids-with-catplot, S08, I, "The first time the pages say why a legend goes: the x-axis already names each sex, so legend=False drops one that would only repeat it."]
     - [shared-axes-keep-them-usually, S06, T]
     - [wrapping-a-long-row, S06, T]
     - [custom-panels-with-facetgrid, S06, T]
@@ -890,16 +890,17 @@ page_map:
 # or a mapping with 'objectives' and a 'note'.
 evidence:
   # In-page exercises. An objective is listed only when the exercise's check tests it.
+  # S01 is listed for Lesson 1's exercises alone (see the fifth assumption).
   exercises:
     "1.1": [S01, S02, S07]
-    "1.2": [S05, S02]
+    "1.2": {objectives: [S05, S01, S02], note: "S01: the learner adds hue=, and the check requires it."}
     "2.1": [S03, S02, S07]
     "2.2": {objectives: [S03, S07, S08], note: "The check sees the reference line but not the printed share."}
     "3.1": [S04, S02, S07]
-    "3.2": [S04, S02, S07]
+    "3.2": {objectives: [S04, S02, S07, S08], note: "S08: the check requires legend=False, since the axis already names the species."}
     "4.1": {objectives: [S05, S07], note: "S07: the check requires the diverging palette."}
     "4.2": [S05, S02, S07]
-    "5.1": [S06, S02, S07]
+    "5.1": {objectives: [S06, S02, S07, S08], note: "S08: the check requires legend=False, since the panel titles already name the species."}
     "5.2": [S06]
     "6.1": {objectives: [S11, S02, S07, S08], note: "The brief lists the fixes, so this practices the rebuild, not the critique."}
     "6.2": [S07, S02, S08]
@@ -979,8 +980,8 @@ evidence:
     "2.5": {objectives: [S12], note: "A written verdict that cites panels and notes uncertainty: the 'words' half of S12, caveats included."}
     "2.6": {objectives: [], note: "Python fluency is a course prerequisite, not a visualization objective."}
     "3.1": {objectives: [S03], note: "Reading thresholds off the ECDF is S03. The pandas work is a course prerequisite."}
-    "3.2": {objectives: [S04, S03, S07], note: "The task names each panel's chart, so this row is about building the forms, not choosing them."}
+    "3.2": {objectives: [S04, S03, S07, S08], note: "The task names each panel's chart, so this row is about building the forms, not choosing them. S08: the reference lines on the ECDF."}
     "3.3": [S10, S02, S07, S08]
-    "3.4": [S11]
+    "3.4": [S11, S02, S07, S08]
     "3.5": [S11]
     "3.6": [S12]

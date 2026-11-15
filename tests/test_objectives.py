@@ -140,6 +140,25 @@ def test_status_follows_from_the_evidence(joined):
     assert all(status[i] == bo.PLANNED for i in IDS if i not in STATIC)
 
 
+def test_evidence_shows_the_code_an_exam_question_is_about(joined):
+    """A stem such as 'What is the main problem with this chart?' says nothing without its chart."""
+    shown = {item: text for item, _kind, _where, text, *_rest in joined["evidence"]}
+    with_code = [(number, q["code"].strip()) for number, q in enumerate(COURSE.exam, 1) if q.get("code")]
+    assert with_code, "no exam question has a code block any more: this test can go"
+    for number, code in with_code:
+        assert code in shown[f"Exam Q{number}"], f"Exam Q{number} is listed without its code"
+
+
+def test_section_three_is_written_for_streamlit():
+    """Section 3 uses Streamlit. The alternative framework is named once, in the assumption about
+    tools (which the guide repeats word for word), and nowhere else in the objectives or the guide."""
+    source = bo.SOURCE.read_text(encoding="utf-8")
+    assert len(re.findall(r"\bDash\b", source)) <= 1, "mastery_objectives.yaml names Dash more than once"
+    assert len(re.findall(r"\bDash\b", GUIDE)) <= 1, "the instructor guide names Dash more than once"
+    apps = [o for o in OBJECTIVES if o["id"].startswith("D") and o["tools"].startswith(("Streamlit", "pytest"))]
+    assert len(apps) >= 9, "the dashboard objectives should name Streamlit's own tools"
+
+
 # ---------------------------------------------------------------- the workbook
 
 def test_workbook_has_its_sheets_and_every_objective(book):

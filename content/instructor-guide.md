@@ -169,20 +169,20 @@ The eight teaching pages map onto all twelve static objectives. Each of the 30 l
 
 | Objective | Taught in | Evidence in today's materials | Status |
 |---|---|---|---|
-| **S01** Map columns to visual channels | Lesson 1 | 1 exercise, 2 quiz questions, 2 exam questions, 1 rubric row | Covered |
-| **S02** Label and title in plain language | Lesson 1 | 9 exercises, 1 quiz question, 1 exam question, 2 rubric rows | Covered |
+| **S01** Map columns to visual channels | Lesson 1 | 2 exercises, 2 quiz questions, 2 exam questions, 1 rubric row | Covered |
+| **S02** Label and title in plain language | Lesson 1 | 9 exercises, 1 quiz question, 1 exam question, 3 rubric rows | Covered |
 | **S03** Show and compare distributions | Lesson 2 | 2 exercises, 4 quiz questions, 4 exam questions, 3 rubric rows | Covered |
 | **S04** Compare categories honestly | Lesson 3 | 2 exercises, 3 quiz questions, 4 exam questions, 5 rubric rows | Covered |
 | **S05** Show relationships and check for hidden groups | Lessons 1, 4 | 3 exercises, 4 quiz questions, 4 exam questions, 1 rubric row | Covered |
 | **S06** Build small multiples | Lesson 5 | 2 exercises, 4 quiz questions, 3 exam questions, 2 rubric rows | Covered |
-| **S07** Use color with purpose | Lessons 1, 6 | 10 exercises, 2 quiz questions, 3 exam questions, 5 rubric rows | Covered |
-| **S08** Polish a chart with matplotlib | Lesson 6 | 3 exercises, 1 quiz question, 2 exam questions, 1 rubric row | Covered |
+| **S07** Use color with purpose | Lessons 1, 3, 6 | 10 exercises, 2 quiz questions, 3 exam questions, 6 rubric rows | Covered |
+| **S08** Polish a chart with matplotlib | Lesson 6 | 5 exercises, 1 quiz question, 2 exam questions, 3 rubric rows | Covered |
 | **S09** Choose the chart form from the question | Lesson 7 | no exercise, 2 quiz questions, no exam question, no rubric row | Partial |
 | **S10** Compose a multi-panel figure | Lessons 6, 7 | 1 exercise, 3 quiz questions, 2 exam questions, 2 rubric rows | Covered |
 | **S11** Critique and redesign a chart | Lessons 6, 7 | 1 exercise, 2 quiz questions, no exam question, 2 rubric rows | Covered |
 | **S12** Deliver a figure that stands on its own | Lesson 6 | no exercise, no quiz question, no exam question, 4 rubric rows | Partial |
 
-An exercise is counted for an objective only when its automatic check tests that objective, which is why S02 (labels) and S07 (color) count so many. **Covered** means the pages teach the objective, at least one exercise checks it, and at least one exam question or rubric row assesses it. **Partial** means it is taught, but practice or assessment is missing:
+An exercise is counted for an objective only when its automatic check tests that objective, which is why S02 (labels) and S07 (color) count so many. Mastery waits only for the exercises on the pages that teach the objective (rule 1 under Deciding mastery): for S02, those are exercises 1.1 and 1.2. **Covered** means the pages teach the objective, at least one exercise checks it, and at least one exam question or rubric row assesses it. **Partial** means it is taught, but practice or assessment is missing:
 
 - **S09** is taught in Lesson 7, Step 1, and assessed nowhere. Every assignment names its chart types, so no learner has to choose a form and defend the choice.
 - **S12:** saving a figure is shown in Lesson 6 as code that is not run, and no exercise practices it. Assignments 1 and 2 ask for a written reading of the charts, but no page teaches how to write one, or how to write alt text. The assignments also require a notebook that runs top to bottom, which no page explains.
@@ -208,7 +208,7 @@ The 24 objectives of sections 2 and 3 are **Planned**: no page teaches them yet.
 
 ### Deciding mastery
 
-1. An objective is mastered when (1) every exercise listed for it passes its automatic check, and (2) the learner scores 80% or better on a mastery check for that objective.
+1. An objective is mastered when (1) every exercise that checks it on the pages that teach it passes its automatic check, and (2) the learner scores 80% or better on a mastery check for that objective. The Objectives sheet names those exercises under 'Practice today'. An exercise on another page that also checks the objective is further practice, and mastery does not wait for it.
 2. A mastery check is five or more questions the learner has not seen with their answers, or a rubric-scored task at full credit on the rubric rows mapped to the objective. On the assessment pack's three-level scale, 'about half' means not yet.
 3. Not yet? The learner reworks the sections that teach the objective (Page detail sheet, filter on the objective), redoes its exercises from Reset, and takes a different check. There is no penalty for a second attempt.
 4. Mastered early? The learner moves to the next objective whose prerequisites are met, or starts the next assignment.
@@ -224,7 +224,7 @@ The objectives rest on seven assumptions. Each is yours to change in `instructor
 - Learners arrive with Python basics and pandas, the prerequisite stated on the Start here page. Those skills are not objectives here, which is why one rubric row (Assignment 2, 'Code quality') maps to none.
 - The mastery standard is 80% on a check of five or more unseen questions, or full credit on the mapped rubric rows, with a second attempt on a different check.
 - Section 2's tools are placeholders: Plotly, with Altair where linked selections matter. Its objectives are worded so that another library changes the 'Key tools' column, not the objective, except I04 and I07, whose criteria name Plotly's own functions. Section 3 uses Streamlit and is written in its terms (the rerun, session state, caching), so the alternative, Dash, would mean rewriting D02 to D09 and D11. The names in 'Key tools' were checked against the documentation of Plotly 7.1, Altair 6.3 and Streamlit 1.67.
-- An exercise counts as evidence for an objective only when its automatic check tests that objective. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its 'full credit' text describes.
+- An exercise counts as evidence for an objective only when its automatic check tests that objective. S01 is counted in Lesson 1's two exercises alone: later checks also look at which columns are plotted, but to recognize the chart, not to test the mapping. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its 'full credit' text describes.
 - Status: Covered means the pages teach the objective, at least one checked exercise practices it, and at least one exam question or rubric row assesses it. Partial means it is taught but practice or assessment is missing. Planned means no page teaches it yet.
 - The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson's 60-minute midpoint across its objectives. Sections 2 and 3 are planning figures to revise after a pilot.
 

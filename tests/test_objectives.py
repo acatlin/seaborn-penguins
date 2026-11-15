@@ -140,6 +140,33 @@ def test_status_follows_from_the_evidence(joined):
     assert all(status[i] == bo.PLANNED for i in IDS if i not in STATIC)
 
 
+def test_rule_one_waits_only_for_exercises_on_the_pages_that_teach_the_objective(joined, book):
+    """Rule 1 used to read 'every exercise listed for it', and could not be followed: S02 waited
+    for an exercise in Lesson 6, while Lessons 2 to 6 teach objectives that need S02 first. It now
+    counts the exercises on the pages that teach the objective. If a change to the page map or to
+    the evidence map moves an exercise in or out on purpose, change this test and the guide."""
+    summary = joined["summary"]
+    assert "on the pages that teach it" in SPEC["mastery_rule"][0]
+    assert {i: summary[i]["decisive"] for i in STATIC} == {
+        "S01": ["1.1", "1.2"], "S02": ["1.1", "1.2"], "S03": ["2.1", "2.2"], "S04": ["3.1", "3.2"],
+        "S05": ["1.2", "4.1", "4.2"], "S06": ["5.1", "5.2"], "S07": ["1.1", "3.1", "3.2", "6.1", "6.2"],
+        "S08": ["6.1", "6.2"], "S09": [], "S10": ["7.1"], "S11": ["6.1"], "S12": []}
+    order = [p.slug for p in COURSE.pages]
+    page_of = {key: order.index(info["page"].slug) for key, info in COURSE.exercises.items()}
+    for o in OBJECTIVES:
+        teaching = [n for n, slug in enumerate(order) if summary[o["id"]]["roles"].get(slug) == "T"]
+        for needed in (o["prerequisites"] if teaching else []):
+            late = [key for key in summary[needed]["decisive"] if page_of[key] > teaching[0]]
+            assert not late, f"{o['id']} needs {needed} first, but mastery of {needed} waits for exercise {late}"
+    sheet = book["values"]["Objectives"]
+    shown = {sheet.cell(row=r, column=bo.OBJ["id"]).value: sheet.cell(row=r, column=bo.OBJ["practice"]).value
+             for r in range(bo.OBJ_FIRST, sheet.max_row + 1)}
+    assert shown["S02"].splitlines() == ["Exercises for mastery: 1.1, 1.2",
+                                         "Further practice: 2.1, 3.1, 3.2, 4.2, 5.1, 6.1, 6.2", "Quiz: L1 Q3"]
+    assert shown["S09"].splitlines()[0] == "Exercises: none"
+    assert f"for S02, those are exercises {' and '.join(summary['S02']['decisive'])}." in GUIDE
+
+
 def test_evidence_shows_the_code_an_exam_question_is_about(joined):
     """A stem such as 'What is the main problem with this chart?' says nothing without its chart."""
     shown = {item: text for item, _kind, _where, text, *_rest in joined["evidence"]}

@@ -376,8 +376,10 @@ def assemble(spec, course):
                         roles[slug] = entry[2]
         taught = [f"{ROLES[code]}: " + _page_list([p for p in course.pages if roles.get(p.slug) == code])
                   for code in "TIR" if code in roles.values()]
-        ex_main = [k for k, (objs, _) in exercises.items() if objs[0] == oid]
-        ex_also = [k for k, (objs, _) in exercises.items() if oid in objs[1:]]
+        # Rule 1 of the mastery rule counts only the exercises on the pages that teach the objective.
+        listed = [k for k, (objs, _) in exercises.items() if oid in objs]
+        decisive = [k for k in listed if roles.get(course.exercises[k]["page"].slug) == "T"]
+        further = [k for k in listed if k not in decisive]
         quiz_by_lesson = {}
         for key, (objs, _) in quiz.items():
             if objs == [oid]:
@@ -391,11 +393,11 @@ def assemble(spec, course):
             return "A{} R{}".format(*key.split("."))
 
         practice = []
-        if ex_main:
-            practice.append("Exercises: " + ", ".join(ex_main))
-        if ex_also:
-            practice.append(("Also checked in: " if ex_main else "Checked in exercises: ") + ", ".join(ex_also))
-        if not (ex_main or ex_also):
+        if listed:
+            practice.append("Exercises for mastery: " + (", ".join(decisive) or "none"))
+        if further:
+            practice.append("Further practice: " + ", ".join(further))
+        if not listed:
             practice.append("Exercises: none")
         quizzes = "; ".join(f"L{lesson} {_runs(qs, 'Q')}" for lesson, qs in sorted(quiz_by_lesson.items()))
         practice.append("Quiz: " + (quizzes or "none"))
@@ -409,7 +411,7 @@ def assemble(spec, course):
         counts = {
             "goals": sum(1 for row in detail if row[4] == oid and row[3] == GOAL),
             "teach": teach,
-            "exercises": len(ex_main) + len(ex_also),
+            "exercises": len(listed),
             "quiz": sum(len(qs) for qs in quiz_by_lesson.values()),
             "exam": len(exam_hits),
             "rubric": len(rub_main) + len(rub_also),
@@ -422,7 +424,7 @@ def assemble(spec, course):
             status = PARTIAL
         written = bool(roles) or any(counts.values())
         summary[oid] = {
-            **counts, "status": status, "roles": roles,
+            **counts, "status": status, "roles": roles, "decisive": decisive,
             "existing": sum(split.get(oid, 0) for split in spec["lesson_minutes"].values()),
             "taught": "\n".join(taught) if taught else "Not written yet",
             "practice": "\n".join(practice) if written else "None yet",
@@ -690,7 +692,8 @@ OBJECTIVE_COLUMNS = [
     ("taught", "Where it is taught", 24,
      "Pages by role. This is the corrective reading; the Page detail sheet lists the sections."),
     ("practice", "Practice today", 27,
-     "Exercises whose automatic check tests the objective, and the quiz questions on it."),
+     "Exercises whose automatic check tests the objective: first those on the pages that teach it, which "
+     "decide mastery (rule 1 above), then those on other pages. Last, the quiz questions on it."),
     ("check", "Mastery check today", 24,
      "Exam questions and rubric rows mapped to the objective. The Evidence sheet explains the codes."),
     ("gap", "Gap today", 40, "What today's materials lack for this objective. Empty means nothing specific."),

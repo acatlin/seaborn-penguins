@@ -16,8 +16,8 @@ How to use it:
 - A step changes the lesson, the map, the guide and the tests together. The build and `pytest`
   fail until the map and the course agree, and several tests pin today's numbers on purpose
   (see "Places that hold a number").
-- When a step is built, say so here in the same pull request, and move its minutes in the map
-  from "to write" to the lesson.
+- When a step is built, say so here in the same pull request, and take its minutes out of
+  "Minutes: to write" in the map. Question 2 decides where they go.
 
 ## Where section 1 stands
 
@@ -53,7 +53,9 @@ hours given with each step are rough.
    midpoint, and a test enforces the sum.
    Recommendation: leave each lesson at 60 and count the additions as a block of their own: 65
    minutes, about one more session. The alternative lets Lessons 6 and 7 grow to 80 and 105
-   minutes, past the guide's 45-75. Needed for steps A to D.
+   minutes, past the guide's 45-75. Either way, the map, the builder and the Timing sheet have
+   no place yet for minutes that were added to a lesson. The first step that is built has to
+   make one: about 1 to 2 hours, once, on top of that step's own. Needed for steps A to D.
 3. **How does a learner take a check?** On paper or in Word, or in a learning management
    system, and which one? No recommendation: it depends on where the course runs. The answer
    sets the format that the builder writes, and it may settle O12. Needed for step E.

@@ -191,6 +191,12 @@ print((chinstraps["bill_length_mm"] > 45).mean().round(2))
 ```python check for=2.2
 ax = chart_axes()[0]
 assert {"Adelie", "Chinstrap", "Gentoo"} <= set(legend_labels(ax)), "Draw one ECDF per species with hue='species'."
+import numpy as np
+def climbs_from_0_to_1(line):
+    y = np.asarray(line.get_ydata(), dtype=float)
+    return len(y) > 2 and np.isfinite(y).all() and abs(y.min()) < 1e-9 and abs(y.max() - 1) < 1e-9 and (np.diff(y) >= 0).all()
+curves = [line for line in ax.lines if climbs_from_0_to_1(line)]
+assert len(curves) >= 3, "Draw an ECDF with sns.ecdfplot(...): one line per species that climbs from 0 to 1. A histogram or a density curve can't show 'what share is at or below 45 mm?'."
 assert near_color(PENGUIN_COLORS["Chinstrap"], colors_used(ax)), "Use palette=PENGUIN_COLORS so the Chinstrap line is purple."
 xs = [line.get_xdata() for line in ax.lines]
 assert any(len(set(x)) == 1 and abs(x[0] - 45) < 0.01 for x in xs), "Add a vertical line at 45 with ax.axvline(45)."

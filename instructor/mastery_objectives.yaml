@@ -19,7 +19,7 @@
 meta:
   title: "Mastery objectives"
   course: "Python visualization tools"
-  version: "1.3"
+  version: "1.4"
   date: "2026-11-15"
 
 sections:
@@ -69,6 +69,9 @@ timing:
   to_write_basis: >-
     Learner minutes that do not exist as pages yet. In section 1 these are the additions
     named in the 'Next step' column of the Objectives sheet.
+  added_basis: >-
+    Learner minutes of what was added to a lesson after it was timed. Each lesson stays at
+    its 60-minute midpoint, and an addition is counted here from the day it is built.
 
 # How each existing lesson's 60 minutes divide across the objectives (section 1 only).
 lesson_minutes:
@@ -80,22 +83,29 @@ lesson_minutes:
   06-polish: {S07: 15, S08: 15, S10: 10, S11: 15, S12: 5}
   07-capstone: {S09: 10, S10: 35, S11: 15}
 
+# Additions that are built (PLAN.md, question 2). A lesson keeps its 60 minutes above. What is
+# added to it later is listed here, in a block of its own, and its minutes leave the
+# objective's to_write. tests/test_objectives.py holds the two together at 65 minutes.
+added_minutes:
+  - {lesson: 06-polish, objective: S08, minutes: 10, what: "Exercise 6.3: annotate a point and format the tick labels."}
+  - {lesson: 06-polish, objective: S11, minutes: 10, what: "Exercise 6.4: write down three problems with the 'before' chart of the makeover."}
+
 # ---------------------------------------------------------------- read-me text
 mastery_rule:
-  - "An objective is mastered when (1) every exercise that checks it on the pages that teach it passes its automatic check, and (2) the learner scores 80% or better on a mastery check for that objective. The Objectives sheet names those exercises under 'Practice today'. An exercise on another page that also checks the objective is further practice, and mastery does not wait for it."
-  - "A mastery check is five or more questions the learner has not seen with their answers, or a rubric-scored task at full credit on the rubric rows mapped to the objective. On the assessment pack's three-level scale, 'about half' means not yet."
+  - "An objective is mastered when (1) every exercise that checks it on the pages that teach it passes its automatic check, shown to the instructor or handed in as the lesson's notebook with its outputs, and (2) the learner scores 80% or better on a mastery check for that objective. The Objectives sheet names those exercises under 'Practice today'. An exercise on another page that also checks the objective is further practice, and mastery does not wait for it."
+  - "A mastery check is five questions the learner has not seen with their answers, or a rubric-scored task at full credit on the rubric rows mapped to the objective. On the assessment pack's three-level scale, 'about half' means not yet."
   - "Not yet? The learner reworks the sections that teach the objective (Page detail sheet, filter on the objective), redoes its exercises from Reset, and takes a different check. There is no penalty for a second attempt."
   - "Mastered early? The learner moves to the next objective whose prerequisites are met, or starts the next assignment."
-  - "With today's materials: the exam has at most four questions per objective and its answer key is public, so use the exercises and rubric rows to decide mastery and the exam questions to find what to rework."
+  - "With today's materials: no mastery check is written yet. Until one is, a learner moves on from an objective when its exercises under rule 1 pass, and the rubric rows of the next assignment confirm the objective or send the learner back to it. The exam has at most four questions per objective and its answer key is public, so use its questions to find what to rework, not to decide mastery."
 
 assumptions:
   - "The larger course has three sections: static visualization (this site, fourteen objectives), interactive charts (twelve) and dashboards (twelve). This site is section 1 in full."
   - "Learners arrive with Python basics and pandas, the prerequisite stated on the Start here page. Those skills are not objectives here, which is why one rubric row (Assignment 2, 'Code quality') maps to none."
-  - "The mastery standard is 80% on a check of five or more unseen questions, or full credit on the mapped rubric rows, with a second attempt on a different check."
+  - "The mastery standard is 80% on a check of five unseen questions, which is four of the five, or full credit on the mapped rubric rows, with a second attempt on a different check."
   - "Section 2 uses Plotly. Its objectives are worded so that another library would change the 'Key tools' column, not the objective, except I04 and I07, whose criteria name Plotly's own functions. Plotly links two views only inside a scatter matrix or through a notebook widget, so linking two separate charts (I08) is finished in section 3 (D07). Altair, the alternative that was weighed, links them in a few lines. Section 3 uses Streamlit and is written in its terms (the rerun, session state, caching), so the alternative, Dash, would mean rewriting D02 to D09 and D11. The names in 'Key tools' were checked against the documentation of Plotly 7.1 and Streamlit 1.67."
   - "An exercise counts as evidence for an objective only when its automatic check tests that objective. S01 is counted in Lesson 1's two exercises alone: later checks also look at which columns are plotted, but to recognize the chart, not to test the mapping. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its 'full credit' text describes."
   - "Status: Covered means the pages teach the objective, at least one checked exercise practices it, and at least one exam question or rubric row assesses it. Partial means it is taught but practice or assessment is missing. Planned means no page teaches it yet."
-  - "The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson's 60-minute midpoint across its objectives. Sections 2 and 3 are planning figures to revise after a pilot."
+  - "The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson's 60-minute midpoint across its objectives, and counts what was added to a lesson later on top of it, in a block of its own. Sections 2 and 3 are planning figures to revise after a pilot."
 
 strands:
   Question: "Decide what to show, and whether to show it at all."
@@ -258,9 +268,9 @@ objectives:
     prerequisites: [S02]
     tools: "seaborn: set_theme, axes_style, despine; matplotlib: ax.text, ax.annotate, ax.axvline, ax.axhline, axis.set_major_formatter"
     outcome: 5
-    to_write: 10
-    gap: "No exercise checks ax.annotate or a tick formatter. Both are taught in the makeover, and only exam Q23 asks about annotate. ax.axhline is named in Lesson 6's takeaways but never shown."
-    next_step: "Add an exercise: annotate the heaviest penguin and show the mass axis in kilograms."
+    to_write: 0
+    gap: "ax.axhline is named in Lesson 6's takeaways but never shown."
+    next_step: ""
 
   - id: S09
     name: "Choose the chart form from the question"
@@ -313,9 +323,9 @@ objectives:
     prerequisites: [S07, S08, S09]
     tools: "The pre-flight checklist in Lesson 7 and the table 'Stephen Few's checklist, applied' in Lesson 6"
     outcome: 6
-    to_write: 10
-    gap: "Exercise 6.1 lists the fixes for the learner, so the first critique in the learner's own words comes in Assignment 3. No exam question."
-    next_step: "Before the makeover, have learners write down three problems with the 'before' chart (the Lesson 6 notes already do this aloud), or add a peer review against the pre-flight checklist. S09, a prerequisite, is taught in Lesson 7, after the makeover, so S11's mastery check belongs after Lesson 7."
+    to_write: 0
+    gap: "Exercise 6.4 asks for a critique in the learner's own words, but its check can only count the statements, and exercise 6.1 lists the fixes for the learner. The first critique that anyone judges comes in Assignment 3. No exam question."
+    next_step: "S09, a prerequisite, is taught in Lesson 7, after the makeover, so S11's mastery check belongs after Lesson 7. A peer review against the pre-flight checklist would give the critique of exercise 6.4 a reader."
 
   - id: S12
     name: "Save a figure that can be reproduced"
@@ -332,7 +342,7 @@ objectives:
     outcome: 5
     to_write: 10
     gap: "Saving is shown in Lesson 6 as code that is not run, and no exercise practices it. No page mentions restarting the notebook and running it top to bottom: that appears only as a deliverable of the assignments."
-    next_step: "Add a short 'Describe and deliver' section to Lesson 6 or 7, shared with S14: save a figure, open the file and check it, then restart the notebook and run it top to bottom."
+    next_step: "Add a short 'Describe and deliver' section to Lesson 7, as Step 5, shared with S14: save a figure, open the file and check it, then restart the notebook and run it top to bottom."
 
   # S13 and S14 were split off S05 and S12 in version 1.3 (REVIEW.md, O8).
   - id: S13
@@ -367,7 +377,7 @@ objectives:
     outcome: 5
     to_write: 15
     gap: "No page teaches this. Assignments 1 and 2 ask for a written reading of the charts and score it, and the instructor guide suggests alt text, but no page shows how to write either. Lesson 4 asks once for 'a caveat in the caption'."
-    next_step: "Add a short 'Describe and deliver' section to Lesson 6 or 7, shared with S12: write the figure's alt text and a one-sentence caption. Make alt text a rubric row."
+    next_step: "Add a short 'Describe and deliver' section to Lesson 7, as Step 5, shared with S12: write the figure's alt text and a one-sentence caption. Make alt text a rubric row."
 
   - id: I01
     name: "Decide when interaction earns its place"
@@ -934,13 +944,15 @@ evidence:
     "2.1": [S03, S02, S07]
     "2.2": {objectives: [S03, S07, S08], note: "The check sees the reference line but not the printed share."}
     "3.1": [S04, S02, S07]
-    "3.2": {objectives: [S04, S02, S07, S08], note: "S08: the check requires that no legend is drawn. Seaborn 0.13 leaves it out by itself when hue repeats the x column, so this assert passes without legend=False."}
+    "3.2": {objectives: [S04, S02, S07], note: "Not listed for S08: the check requires that no legend is drawn, but seaborn 0.13 leaves it out by itself when hue repeats the x column, so that assert passes without legend=False (REVIEW.md, O11)."}
     "4.1": {objectives: [S13, S07], note: "S07: the check requires the diverging palette."}
     "4.2": [S05, S02, S07]
     "5.1": {objectives: [S06, S02, S07, S08], note: "S08: the check requires legend=False, since the panel titles already name the species."}
     "5.2": [S06]
     "6.1": {objectives: [S11, S02, S07, S08], note: "The brief lists the fixes, so this practices the rebuild, not the critique."}
     "6.2": [S07, S02, S08]
+    "6.3": {objectives: [S08], note: "The check wants ax.annotate with an arrow at the lightest bird, and kilograms on the mass axis. The starter supplies the colors and the labels, so S02 and S07 are not tested."}
+    "6.4": {objectives: [S11], note: "A critique in words, before the page gives its own. The check counts three different statements and says which kinds of fault it recognized. It cannot judge them: rubric row A3 R5 does."}
     "7.1": {objectives: [S10], note: "The chart type is the learner's choice, but the check does not judge it (S09)."}
 
   # Lesson quiz questions, "lesson.question": exactly one objective each.

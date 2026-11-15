@@ -36,6 +36,7 @@ from openpyxl import Workbook
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.pagebreak import Break
 from openpyxl.worksheet.page import PageMargins
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
@@ -215,6 +216,18 @@ def validate(spec, course):
         if slug not in slugs:
             problems.append(f"lesson_minutes: no page '{slug}'")
         problems += [f"lesson_minutes {slug}: unknown objective {o}" for o in split if o not in known]
+
+    for n, added in enumerate(spec.get("added_minutes") or [], 1):
+        where = f"added_minutes, entry {n}"
+        if set(added) != {"lesson", "objective", "minutes", "what"}:
+            problems.append(f"{where}: give lesson, objective, minutes and what")
+            continue
+        if added["lesson"] not in spec["lesson_minutes"]:
+            problems.append(f"{where}: no lesson '{added['lesson']}'")
+        if added["objective"] not in known:
+            problems.append(f"{where}: unknown objective {added['objective']}")
+        if not isinstance(added["minutes"], int) or added["minutes"] <= 0:
+            problems.append(f"{where}: minutes must be a whole number above zero")
 
     for page in course.pages:
         goals = spec["lesson_goals"].get(page.slug, [])
@@ -426,6 +439,7 @@ def assemble(spec, course):
         summary[oid] = {
             **counts, "status": status, "roles": roles, "decisive": decisive,
             "existing": sum(split.get(oid, 0) for split in spec["lesson_minutes"].values()),
+            "added": sum(a["minutes"] for a in spec.get("added_minutes") or [] if a["objective"] == oid),
             "taught": "\n".join(taught) if taught else "Not written yet",
             "practice": "\n".join(practice) if written else "None yet",
             "check": "\n".join(check) if written else "None yet",
@@ -700,9 +714,12 @@ OBJECTIVE_COLUMNS = [
     ("next_step", "Next step", 44, "What to add or decide."),
     ("existing", "Minutes: existing pages", 12,
      "Learner minutes in the existing lessons, summed from the table at the foot of the Timing sheet."),
+    ("added", "Minutes: additions built", 12,
+     "Learner minutes of what was added to a lesson after it was timed, such as a new exercise. They are "
+     "counted on top of the lesson's 60 minutes, summed from the second table at the foot of the Timing sheet."),
     ("to_write", "Minutes: to write", 12,
      "Learner minutes that the next step would add. An estimate, and an input you can change."),
-    ("total", "Minutes: total", 12, "Existing plus to write."),
+    ("total", "Minutes: total", 12, "Existing, plus additions built, plus to write."),
     ("outcome", "Guide outcome", 9, "The learning outcome (1-6) in the instructor guide that the objective refines."),
 ]
 OBJ = {key: i for i, (key, *_rest) in enumerate(OBJECTIVE_COLUMNS, 1)}
@@ -723,9 +740,9 @@ MAP_COUNTS = ("Lesson goals", "Teaching sections", "Exercises", "Quiz questions"
 T_LABEL, T_FIRST, T_ALL, T_BASIS = 1, 2, 5, 6     # columns of the Timing sheet (one per section from T_FIRST)
 T_INPUTS, T_CHECK, T_PROJECT, T_ALLOW, T_SESSION = 4, 5, 6, 7, 8
 T_RESULTS = 10
-(T_COUNT, T_COVERED, T_PARTIAL, T_PLANNED, T_EXISTING, T_TO_WRITE, T_CHECK_H, T_PROJECT_H, T_ALLOW_H,
- T_TOTAL, T_TAUGHT, T_SESSIONS) = range(11, 23)
-T_SPLIT = 26  # header row of the table that splits each lesson's minutes; data from T_SPLIT + 1
+(T_COUNT, T_COVERED, T_PARTIAL, T_PLANNED, T_EXISTING, T_ADDED, T_TO_WRITE, T_CHECK_H, T_PROJECT_H, T_ALLOW_H,
+ T_TOTAL, T_TAUGHT, T_SESSIONS) = range(11, 24)
+T_SPLIT = 27  # header row of the table that splits each lesson's minutes; data from T_SPLIT + 1
 
 
 def fill_page_detail(grid, joined_up):
@@ -826,13 +843,14 @@ def fill_page_map(grid, spec, course, joined_up, detail, evidence):
     for_print(ws, f"{MAP_HEADER}:{MAP_HEADER}")
 
 
-def fill_objectives(grid, spec, joined_up, page_map, timing):
+def fill_objectives(grid, spec, joined_up, page_map, timing, added_rows):
     ws = grid.ws
     header_row(grid, 1, [header for _, header, _, _ in OBJECTIVE_COLUMNS])
     section_label = {s["key"]: s["label"] for s in spec["sections"]}
     split_rows = sum(len(split) for split in spec["lesson_minutes"].values())
     split_obj = timing.col(2, T_SPLIT + 1, T_SPLIT + split_rows)
     split_min = timing.col(3, T_SPLIT + 1, T_SPLIT + split_rows)
+    added_obj, added_min = timing.col(2, *added_rows), timing.col(3, *added_rows)
     for i, o in enumerate(spec["objectives"]):
         row, info = OBJ_FIRST + i, joined_up["summary"][o["id"]]
         text = {
@@ -848,8 +866,11 @@ def fill_objectives(grid, spec, joined_up, page_map, timing):
         grid.put(row, OBJ["status"], page_map.ref(MAP_FIRST + i, MAP_STATUS, here=grid), border=BOX)
         grid.put(row, OBJ["existing"], sumifs(grid, split_min, (split_obj, grid.ref(row, OBJ["id"], lock="col"))),
                  border=BOX, align=CENTER)
+        grid.put(row, OBJ["added"], sumifs(grid, added_min, (added_obj, grid.ref(row, OBJ["id"], lock="col"))),
+                 border=BOX, align=CENTER)
         grid.put(row, OBJ["to_write"], o["to_write"], border=BOX, align=CENTER, fill=INPUT_FILL)
-        grid.put(row, OBJ["total"], plus(grid.ref(row, OBJ["existing"]), grid.ref(row, OBJ["to_write"])),
+        grid.put(row, OBJ["total"], plus(grid.ref(row, OBJ["existing"]), grid.ref(row, OBJ["added"]),
+                                         grid.ref(row, OBJ["to_write"])),
                  border=BOX, align=CENTER)
         grid.put(row, OBJ["outcome"], o.get("outcome"), border=BOX, align=CENTER)
     last = OBJ_FIRST + len(spec["objectives"]) - 1
@@ -864,7 +885,8 @@ def fill_objectives(grid, spec, joined_up, page_map, timing):
 
 
 def fill_timing_split(grid, spec, course):
-    """The table at the foot of the Timing sheet: how each existing lesson's minutes divide."""
+    """The tables at the foot of the Timing sheet: how each existing lesson's minutes divide, and what
+    was added to a lesson since. Returns the first and the last row of the additions."""
     grid.put(T_SPLIT - 2, T_LABEL, "Where the existing lesson time goes (section 1)", font=HEADING, border=UNDER,
              align=RUN_ON)
     grid.put(T_SPLIT - 1, T_LABEL, spec["timing"]["lesson_basis"], font=NOTE)
@@ -881,6 +903,30 @@ def fill_timing_split(grid, spec, course):
             grid.put(row, 3, minutes, border=BOX, align=CENTER, fill=INPUT_FILL)
     first, last = T_SPLIT + 1, row
     row += 2
+    # Printed, the two small tables below used to start at the foot of one page and end on the next.
+    grid.ws.row_breaks.append(Break(id=row - 1))
+    grid.put(row, T_LABEL, "Additions built on top of the lessons (section 1)", font=HEADING, border=UNDER,
+             align=RUN_ON)
+    row += 1
+    grid.put(row, T_LABEL, spec["timing"]["added_basis"], font=NOTE)
+    grid.ws.merge_cells(start_row=row, start_column=T_LABEL, end_row=row, end_column=T_BASIS)
+    grid.ws.row_dimensions[row].height = 28
+    row += 1
+    header_row(grid, row, ["Lesson", "Objective", "Minutes", "What was added"])
+    grid.ws.merge_cells(start_row=row, start_column=4, end_row=row, end_column=T_BASIS)
+    added_first = row + 1
+    for added in spec.get("added_minutes") or [{"lesson": None, "objective": None, "minutes": None,
+                                                 "what": "Nothing yet."}]:
+        row += 1
+        page = course.page(added["lesson"]) if added["lesson"] else None
+        grid.put(row, 1, f"{page.label} - {page.nav}" if page else None, border=BOX)
+        grid.put(row, 2, added["objective"], border=BOX, align=CENTER,
+                 fill=SECTION_FILL[added["objective"][0]] if added["objective"] else None)
+        grid.put(row, 3, added["minutes"], border=BOX, align=CENTER, fill=INPUT_FILL)
+        grid.put(row, 4, added["what"], border=BOX)
+        grid.ws.merge_cells(start_row=row, start_column=4, end_row=row, end_column=T_BASIS)
+    added_rows = (added_first, row)
+    row += 2
     grid.put(row, T_LABEL, "Check: every lesson's minutes add up to the midpoint", font=HEADING, border=UNDER,
              align=RUN_ON)
     row += 1
@@ -892,6 +938,7 @@ def fill_timing_split(grid, spec, course):
         this_lesson = (grid.col(1, first, last), grid.ref(row, 1, lock="col"))
         grid.put(row, 2, sumifs(grid, grid.col(3, first, last), this_lesson), border=BOX, align=CENTER)
         grid.put(row, 3, LESSON_MIDPOINT, border=BOX, align=CENTER)
+    return added_rows
 
 
 def fill_timing(grid, spec, objectives):
@@ -934,6 +981,9 @@ def fill_timing(grid, spec, objectives):
          lambda col: countifs(grid, (section_col, grid.ref(T_RESULTS, col, lock="row")))),
         (T_EXISTING, "Lesson time in the existing pages (hours)", "0.0",
          "Objectives sheet, 'Minutes: existing pages', divided by 60.", lambda col: lesson_hours("existing", col)),
+        (T_ADDED, "Additions built on top of the lessons (hours)", "0.0",
+         "Objectives sheet, 'Minutes: additions built', divided by 60. " + timing["added_basis"],
+         lambda col: lesson_hours("added", col)),
         (T_TO_WRITE, "Lesson time still to write (hours)", "0.0",
          "Objectives sheet, 'Minutes: to write', divided by 60. " + timing["to_write_basis"],
          lambda col: lesson_hours("to_write", col)),
@@ -941,13 +991,14 @@ def fill_timing(grid, spec, objectives):
          lambda col: over(grid.ref(T_CHECK, col), 60)),
         (T_PROJECT_H, "Project work (hours)", "0.0", "The input above.", lambda col: grid.ref(T_PROJECT, col)),
         (T_ALLOW_H, "Reassessment allowance (hours)", "0.0", "The allowance times the lesson and check hours.",
-         lambda col: times(grid.ref(T_ALLOW, col), plus(grid.ref(T_EXISTING, col), grid.ref(T_TO_WRITE, col),
-                                                        grid.ref(T_CHECK_H, col)))),
-        (T_TOTAL, "Total learner time (hours)", "0.0", "The five rows above, added.",
-         lambda col: plus(*(grid.ref(r, col) for r in (T_EXISTING, T_TO_WRITE, T_CHECK_H, T_PROJECT_H, T_ALLOW_H)))),
+         lambda col: times(grid.ref(T_ALLOW, col), plus(grid.ref(T_EXISTING, col), grid.ref(T_ADDED, col),
+                                                        grid.ref(T_TO_WRITE, col), grid.ref(T_CHECK_H, col)))),
+        (T_TOTAL, "Total learner time (hours)", "0.0", "The six rows above, added.",
+         lambda col: plus(*(grid.ref(r, col) for r in (T_EXISTING, T_ADDED, T_TO_WRITE, T_CHECK_H, T_PROJECT_H,
+                                                       T_ALLOW_H)))),
         (T_TAUGHT, "Of which taught and checked: lessons, check and allowance (hours)", "0.0",
          "The total without the project work, which is done outside class.",
-         lambda col: plus(*(grid.ref(r, col) for r in (T_EXISTING, T_TO_WRITE, T_CHECK_H, T_ALLOW_H)))),
+         lambda col: plus(*(grid.ref(r, col) for r in (T_EXISTING, T_ADDED, T_TO_WRITE, T_CHECK_H, T_ALLOW_H)))),
         (T_SESSIONS, "The same in sessions", "0.0", "Taught and checked hours times 60, divided by the session length.",
          lambda col: over(times(grid.ref(T_TAUGHT, col), 60), grid.ref(T_SESSION, T_FIRST, lock="both"))),
     ]
@@ -1117,9 +1168,9 @@ def build(spec=None, course=None):
     # Data first, then the sheets whose formulas read it.
     fill_page_detail(grids["Page detail"], joined_up)
     fill_evidence(grids["Evidence"], joined_up)
-    fill_timing_split(grids["Timing"], spec, course)
+    added_rows = fill_timing_split(grids["Timing"], spec, course)
     fill_page_map(grids["Page map"], spec, course, joined_up, grids["Page detail"], grids["Evidence"])
-    fill_objectives(grids["Objectives"], spec, joined_up, grids["Page map"], grids["Timing"])
+    fill_objectives(grids["Objectives"], spec, joined_up, grids["Page map"], grids["Timing"], added_rows)
     fill_timing(grids["Timing"], spec, grids["Objectives"])
     fill_read_me(grids["Read me"], spec, course)
 

@@ -145,12 +145,15 @@ sns.despine(fig=fig)
 fig = plt.gcf()
 axes = chart_axes()
 assert len(axes) == 3, f"I expected 3 panels, found {len(axes)}."
+assert type(fig.get_layout_engine()).__name__ == "ConstrainedLayoutEngine", "Create the figure with plt.subplots(1, 3, ..., layout=\"constrained\"), so titles, labels and the legend get their own room."
 assert all(len(ax.get_title()) >= 4 for ax in axes), "Give every panel a title."
 assert fig._suptitle is not None and len(fig._suptitle.get_text()) >= 15, "Add a fig.suptitle(...) that states the finding."
 ylabels = " ".join(ax.get_ylabel().lower() for ax in axes)
 for word in ["mass", "flipper", "bill"]:
     assert word in ylabels, f"I couldn't find a panel for {word} - check your y-axis labels."
 assert {"Female", "Male"} <= set(legend_labels()), "Split each panel by sex (hue='sex') and keep one legend."
+legends = len(fig.legends) + sum(ax.get_legend() is not None for ax in fig.axes)
+assert legends == 1, f"I found {legends} legends. Keep one: remove each panel's with ax.get_legend().remove(), then add one for the whole figure with fig.legend(...)."
 print("A clean, comparable three-panel report. You're ready to brief the station chief.")
 ```
 

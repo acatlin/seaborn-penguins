@@ -117,6 +117,53 @@ with sns.axes_style("darkgrid"):     # the busiest style, scoped to this one cha
                          hue="species", style="island", size="bill_depth_mm", palette="hsv")
 ```
 
+```python exercise id=6.4 title="Three things wrong with this chart"
+# Before you read on: what is wrong with the chart above?
+# Write three problems, each as a full sentence in your own words,
+# then press Run & check.
+problems = [
+    "",
+    "",
+    "",
+]
+for number, problem in enumerate(problems, 1):
+    print(number, problem)
+```
+
+```python solution for=6.4
+problems = [
+    "Color, marker shape and point size all encode something, and only color serves the question.",
+    "The rainbow palette is not the species colors used everywhere else, and it fails colorblind readers.",
+    "The legend covers part of the data, and the axes show raw column names under no title at all.",
+]
+for number, problem in enumerate(problems, 1):
+    print(number, problem)
+```
+
+```python check for=6.4
+found = globals().get("problems")
+assert isinstance(found, (list, tuple)), "Keep your statements in the list named problems."
+said = [" ".join(str(p).split()) for p in found if str(p).strip()]
+assert len(said) >= 3, f"Write three problems, one string each. I count {len(said)} so far."
+assert len({s.lower() for s in said}) == len(said), "Two of your statements are the same. Name three different problems."
+short = [s for s in said if len(s) < 20]
+assert not short, f"Say more than '{short[0]}': a full sentence that names what is wrong (20 characters or more)."
+words = " ".join(said).lower()
+kinds = {
+    "the encodings": ["encod", "shape", "marker", "size", "style", "channel", "island", "depth"],
+    "the colors": ["color", "colour", "rainbow", "palette", "hsv"],
+    "the legend": ["legend"],
+    "the labels": ["label", "column name", "raw column", "underscore", "unit", "axis", "axes"],
+    "the title": ["title", "headline", "finding", "message", "takeaway"],
+    "the background": ["grid", "background", "clutter"],
+}
+seen = [kind for kind, clues in kinds.items() if any(clue in words for clue in clues)]
+rest = [kind for kind in kinds if kind not in seen]
+print("Three problems, in your own words. I can count them but not judge them, so compare them with the page's own list, just below."
+      + (f" You wrote about {', '.join(seen)}." if seen else "")
+      + (f" Worth a second look: {', '.join(rest)}." if rest else ""))
+```
+
 Three encodings, a rainbow palette, a legend covering the data, and raw column names. It *contains* the data, but it doesn't *say* anything. Here's the same data made deliberate:
 
 ```python run fig=06-after alt="Clean scatter of flipper length versus body mass with species colored and labeled directly, the heaviest penguin annotated, kilogram tick labels and the title 'Gentoos are in a weight class of their own'."
@@ -200,6 +247,8 @@ assert abs(pts[:, 0].mean() - penguins["bill_length_mm"].mean()) < 0.5, "Keep bi
 assert near_color(PENGUIN_COLORS["Gentoo"], colors_used(ax)), "Swap the rainbow for palette=PENGUIN_COLORS."
 sizes = set().union(*[set(c.get_sizes()) for c in ax.collections])
 assert len(sizes) == 1, "Drop size= - point size shouldn't encode anything here."
+shapes = {path.vertices.tobytes() for c in ax.collections for path in c.get_paths()}
+assert len(shapes) == 1, "Drop style= - marker shape shouldn't encode anything here."
 assert ax.get_legend() is None, "Remove the legend with legend=False (direct labels are optional)."
 assert "mm" in ax.get_xlabel() and "mm" in ax.get_ylabel() and "_" not in ax.get_xlabel() + ax.get_ylabel(), "Use plain-English axis labels with units, e.g. 'Bill length (mm)'."
 assert len(ax.get_title()) >= 15, "Add a title that states a finding."
@@ -239,6 +288,56 @@ assert ax.get_legend() is None, "Turn the legend off with legend=False and label
 assert any("Chinstrap" in t.get_text() for t in ax.texts), "Add a direct label with ax.text(x, y, 'Chinstrap', ...)."
 assert "chinstrap" in ax.get_title().lower(), "Mention Chinstraps in the title."
 print("Spotlight on. Gray is doing the heavy lifting here.")
+```
+
+```python exercise id=6.3 title="Point at the lightest penguin"
+# The makeover pointed at the heaviest penguin. Point at the lightest one instead:
+#  - find its row with idxmin() (the makeover used idxmax())
+#  - label it with ax.annotate(...) and an arrow: arrowprops={"arrowstyle": "->"}
+#  - show body mass in kilograms ("3.0 kg", not "3000") with a tick formatter
+ax = sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
+                     hue="species", palette=PENGUIN_COLORS, s=22, alpha=0.75)
+ax.get_legend().set_title("Species")
+ax.set(xlabel="Flipper length (mm)", ylabel="Body mass",
+       title="The lightest penguin is a Chinstrap")
+sns.despine()
+```
+
+```python solution for=6.3
+ax = sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
+                     hue="species", palette=PENGUIN_COLORS, s=22, alpha=0.75)
+ax.get_legend().set_title("Species")
+ax.set(xlabel="Flipper length (mm)", ylabel="Body mass",
+       title="The lightest penguin is a Chinstrap")
+sns.despine()
+
+lightest = penguins.loc[penguins["body_mass_g"].idxmin()]
+ax.annotate("Lightest bird: a 2.7 kg Chinstrap",
+            xy=(lightest["flipper_length_mm"], lightest["body_mass_g"]),
+            xytext=(200, 2750), color="0.25", fontsize=9,
+            arrowprops={"arrowstyle": "->", "color": "0.4"})
+ax.yaxis.set_major_formatter(lambda value, pos: f"{value / 1000:.1f} kg")
+```
+
+```python check for=6.3
+ax = chart_axes()[0]
+pts = points(ax)
+assert abs(pts[:, 1].mean() - penguins["body_mass_g"].mean()) < 50, "Keep body_mass_g on y, in grams. A tick formatter changes the labels, not the data."
+from matplotlib.text import Annotation
+notes = [t for t in ax.texts if isinstance(t, Annotation)]
+assert notes, "Label the lightest penguin with ax.annotate(...). ax.text writes words, but it has no arrow to point with."
+arrows = [n for n in notes if n.arrow_patch is not None]
+assert arrows, "Give the annotation an arrow: arrowprops={'arrowstyle': '->'}."
+lightest = penguins.loc[penguins["body_mass_g"].idxmin()]
+on_target = [n for n in arrows if abs(n.xy[0] - lightest["flipper_length_mm"]) < 1 and abs(n.xy[1] - lightest["body_mass_g"]) < 25]
+assert on_target, "Point the arrow at the lightest penguin: xy=(its flipper length, its body mass). Find its row with penguins['body_mass_g'].idxmin()."
+assert any(n.get_text().strip() for n in on_target), "Give the annotation some words, e.g. 'Lightest bird: a 2.7 kg Chinstrap'."
+plt.gcf().canvas.draw()
+import re
+ticks = [t.get_text() for t in ax.get_yticklabels() if t.get_text()]
+assert ticks and not any(re.search(r"[0-9]{4}", s) for s in ticks), "The mass axis still shows grams. Add a tick formatter: ax.yaxis.set_major_formatter(lambda value, pos: f'{value / 1000:.1f} kg')."
+assert all("kg" in s for s in ticks) or "kg" in ax.get_ylabel(), "Say that the numbers are kilograms: put 'kg' in the tick labels, or in the y-axis label."
+print("One arrow, one sentence, and an axis in the units people think in.")
 ```
 
 ## Quick quiz

@@ -227,7 +227,7 @@ def test_no_cell_changes_global_style_for_later_cells(slug):
         assert not cell.changed, f"{slug}: cell starting {cell.first_line!r} changed {cell.changed}"
 
 
-# Charts that show seaborn's raw column names in a legend on purpose. Every other legend is relabelled.
+# Charts that show seaborn's raw column names in a legend on purpose. Every other legend is relabeled.
 RAW_LEGENDS_ON_PURPOSE = {
     "01-scatter-hue": "the bare first hue example; the next section relabels it",
     "01-scatter-style": "two legend variables, so the column names are headings inside the legend, not a title",
@@ -277,8 +277,8 @@ def test_exercise_2_1_only_accepts_step_outlines():
         assert result["error"] is None, result["error"]
         assert result["check_ok"] is False and hint in result["check_message"], (code, result["check_message"])
     outlines = f'ax = sns.histplot({by_species}, binwidth=3, element="step", fill=False)'
-    unlabelled = runner.run_cell(outlines, setup=setup, check=check)  # seaborn's own label is "flipper_length_mm"
-    assert unlabelled["check_ok"] is False and "plain English" in unlabelled["check_message"]
+    unlabeled = runner.run_cell(outlines, setup=setup, check=check)  # seaborn's own label is "flipper_length_mm"
+    assert unlabeled["check_ok"] is False and "plain English" in unlabeled["check_message"]
     result = runner.run_cell(outlines + label, setup=setup, check=check)
     assert result["check_ok"] is True, result["check_message"]
 
@@ -338,6 +338,134 @@ def test_exercises_reject_seaborn_default_colors(slug, ex_id):
     assert result["error"] is None, result["error"]
     assert result["check_ok"] is False, f"exercise {ex_id} accepts seaborn's default colors"
     assert "PENGUIN_COLORS" in result["check_message"], result["check_message"]
+
+
+# Solutions changed in one way that the exercise's brief rules out: (page, exercise, the text to
+# replace in the solution, its replacement, a word of the hint the checker has to give).
+RULED_OUT_BY_THE_BRIEF = [
+    ("02-distributions", "2.2", "sns.ecdfplot(data=", "sns.histplot(data=", "ecdfplot"),                               # bars
+    ("02-distributions", "2.2", "sns.ecdfplot(data=", 'sns.histplot(element="step", fill=False, data=', "ecdfplot"),  # outlines
+    ("02-distributions", "2.2", "sns.ecdfplot(data=", "sns.kdeplot(data=", "ecdfplot"),                                # density
+    ("06-polish", "6.1", "legend=False)", 'legend=False, style="island")', "style="),              # a shape for each island
+    ("07-capstone", "7.1", ', layout="constrained"', "", "constrained"),                                # no layout engine
+    ("07-capstone", "7.1", "    ax.get_legend().remove()", "    pass", "legends"),                      # a legend in every panel
+]
+
+
+@pytest.mark.parametrize("slug, ex_id, old, new, hint", RULED_OUT_BY_THE_BRIEF)
+def test_exercises_reject_what_their_brief_rules_out(slug, ex_id, old, new, hint):
+    """Exercise 2.2 asks for an ECDF and passed a histogram. Exercise 6.1 says to drop style= and
+    passed a chart that kept it. Exercise 7.1 asks for a constrained layout and one legend, and
+    tested neither."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / f"{slug}.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    solution = next(b.body for b in blocks if b.kind == "solution" and b.opts.get("for") == ex_id)
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == ex_id)
+    assert solution.count(old) == 1, f"exercise {ex_id}: expected {old!r} once in the solution"
+    result = runner.run_cell(solution.replace(old, new), setup=setup, check=check)
+    assert result["error"] is None, result["error"]
+    assert result["check_ok"] is False, f"exercise {ex_id} accepts a solution with {old!r} replaced by {new!r}"
+    assert hint in result["check_message"], result["check_message"]
+
+
+def exercise_6_3_attempts():
+    """Attempts at exercise 6.3 as {name: (code, a word of the hint it has to earn, or None if it
+    should pass)}. Each is the solution's chart with a different ending."""
+    import build_site
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / "06-polish.md").read_text(encoding="utf-8"))
+    solution = next(b.body for b in blocks if b.kind == "solution" and b.opts.get("for") == "6.3")
+    chart, rest = solution.split("lightest = ")
+    assert "ax.annotate(" in rest and "set_major_formatter" in rest
+    find = 'lightest = penguins.loc[penguins["body_mass_g"].idxmin()]\n'
+    spot = 'xy=(lightest["flipper_length_mm"], lightest["body_mass_g"]), xytext=(200, 2750)'
+    arrow = ', arrowprops={"arrowstyle": "->"})\n'
+    kilograms = 'ax.yaxis.set_major_formatter(lambda value, pos: f"{value / 1000:.1f} kg")\n'
+    good = chart + find + f'ax.annotate("Lightest bird", {spot}{arrow}'
+    return {
+        "words without an arrow (ax.text)": (chart + 'ax.text(200, 2750, "Lightest bird")\n' + kilograms, "ax.annotate"),
+        "an annotation without an arrow": (chart + find + f'ax.annotate("Lightest bird", {spot})\n' + kilograms,
+                                           "arrowprops"),
+        "the arrow points at the heaviest bird": (good.replace("idxmin", "idxmax") + kilograms, "idxmin"),
+        "an arrow without words": (good.replace('"Lightest bird"', '""') + kilograms, "some words"),
+        "no tick formatter": (good, "tick formatter"),
+        "kilograms without a unit": (good + 'ax.yaxis.set_major_formatter(lambda value, pos: f"{value / 1000:.1f}")\n',
+                                     "'kg'"),
+        "the data divided by 1000": (chart.replace('y="body_mass_g"', 'y=penguins["body_mass_g"] / 1000') + kilograms,
+                                     "in grams"),
+        "the unit on the axis label": (good + 'ax.yaxis.set_major_formatter(lambda value, pos: f"{value / 1000:.1f}")\n'
+                                       'ax.set(ylabel="Body mass (kg)")\n', None),
+        "a format string as the formatter": (good + "from matplotlib.ticker import FuncFormatter\n"
+                                             'ax.yaxis.set_major_formatter(FuncFormatter(lambda v, p: f"{v / 1000:g} kg"))\n',
+                                             None),
+    }
+
+
+def test_exercise_6_3_wants_an_arrow_at_the_lightest_bird_and_kilograms():
+    """Exercise 6.3 is the one that checks ax.annotate and a tick formatter. The lesson's own example
+    annotates the heaviest bird, so pasting its lines must not pass, and neither may ax.text."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / "06-polish.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == "6.3")
+    for name, (code, hint) in exercise_6_3_attempts().items():
+        result = runner.run_cell(code, setup=setup, check=check)
+        assert result["error"] is None, (name, result["error"])
+        if hint is None:
+            assert result["check_ok"] is True, (name, result["check_message"])
+        else:
+            assert result["check_ok"] is False and hint in result["check_message"], (name, result["check_message"])
+
+
+def exercise_6_4_attempts():
+    """Attempts at exercise 6.4 as {name: (code, a word of the hint it has to earn, or None if it
+    should pass)}."""
+    def listed(*statements):
+        return f"problems = {list(statements)!r}"
+
+    one = "There are far too many things going on at once here."
+    two = "I cannot tell what I am supposed to notice in it."
+    three = "Half of the picture is hidden behind a box of text."
+    return {
+        "two statements": (listed(one, two, ""), "I count 2"),
+        "the same statement twice": (listed(one, two, "  i cannot tell what I am   supposed to notice in it. "),
+                                     "are the same"),
+        "a statement of a few words": (listed(one, two, "bad colors"), "Say more than 'bad colors'"),
+        "one long string, not a list": (f"problems = {one + ' ' + two + ' ' + three!r}", "list named problems"),
+        "another name for the list": (f"faults = {[one, two, three]!r}", "list named problems"),
+        "three statements the check has no word for": (listed(one, two, three), None),
+        "three statements in a tuple": (f"problems = {(one, two, three)!r}", None),
+    }
+
+
+def test_exercise_6_4_counts_three_different_statements():
+    """Exercise 6.4 asks for a critique in words before the page gives its own. Its check is lenient
+    on purpose: it counts three different statements of some length, and says which kinds of fault it
+    recognized. It cannot judge them (rubric row A3 R5 does), and it must not pretend to."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / "06-polish.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    solution = next(b.body for b in blocks if b.kind == "solution" and b.opts.get("for") == "6.4")
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == "6.4")
+    for name, (code, hint) in exercise_6_4_attempts().items():
+        result = runner.run_cell(code, setup=setup, check=check)
+        assert result["error"] is None, (name, result["error"])
+        if hint is None:
+            assert result["check_ok"] is True, (name, result["check_message"])
+            assert "not judge them" in result["check_message"] and "You wrote about" not in result["check_message"]
+        else:
+            assert result["check_ok"] is False and hint in result["check_message"], (name, result["check_message"])
+    model = runner.run_cell(solution, setup=setup, check=check)
+    assert model["check_ok"] is True and not model["figures"]
+    for kind in ("the encodings", "the colors", "the legend", "the labels", "the title"):
+        assert kind in model["check_message"].split("Worth a second look")[0], (kind, model["check_message"])
 
 
 def test_bin_width_panels_draw_the_widths_they_name():

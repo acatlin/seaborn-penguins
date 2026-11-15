@@ -11,8 +11,8 @@ A hands-on course that takes people who already know **Python and pandas** to ma
 | | |
 |---|---|
 | **8 lesson pages** | Start here, plus 7 lessons: first plot, distributions, categories, relationships, small multiples, polish with matplotlib, and a capstone |
-| **52 rendered figures** | Every figure is produced by the exact code shown beside it |
-| **13 auto-graded exercises** | In-browser editor (Pyodide), **Run & check** with specific hints, and a hidden solution with its rendered chart |
+| **53 rendered figures** | Every figure is produced by the exact code shown beside it |
+| **15 auto-graded exercises** | In-browser editor (Pyodide), **Run & check** with specific hints, and a hidden solution with its rendered chart |
 | **28 quiz questions** | 4 per lesson, instant feedback with explanations, correct answers spread evenly across A-D |
 | **Design thread** | "Design principle" callouts based on Stephen Few and Edward Tufte in every lesson: data-ink, common baselines, sorting, purposeful color, direct labels, small multiples |
 | **Notebooks** | Student and solutions notebook for every lesson (`docs/notebooks/`), each with an *Open in Colab* link |
@@ -53,7 +53,7 @@ python -m http.server -d docs 8000  # preview at http://localhost:8000
 - Every example cell runs **without errors or warnings**, and every figure has alt text.
 - Legends are titled in **plain English**, not with seaborn's raw column names. The four deliberate exceptions are listed, with reasons, in the test.
 - The bin-width figure in Lesson 2 draws exactly the widths its panel titles name, and each of its panels labels its own y-axis.
-- Every exercise's **solution passes its checker**, and the **untouched starter does not**, so checks can't be vacuous. Exercise 2.1's near misses (bars, filled steps, a density curve, an ECDF, a missing axis label) must each earn a hint. No exercise that asks for plain-English axis labels accepts seaborn's raw column names, and none that asks for `PENGUIN_COLORS` accepts seaborn's default colors.
+- Every exercise's **solution passes its checker**, and the **untouched starter does not**, so checks can't be vacuous. Exercise 2.1's near misses (bars, filled steps, a density curve, an ECDF, a missing axis label) must each earn a hint, and so must what three other briefs rule out: a histogram or a density curve where exercise 2.2 asks for an ECDF, a marker shape kept in 6.1, and a figure without a constrained layout or with a legend in every panel in 7.1. Exercise 6.3 passes only an `ax.annotate` arrow at the lightest penguin and a mass axis in kilograms. Exercise 6.4, a critique in words, passes three different statements and neither fewer nor shorter ones. No exercise that asks for plain-English axis labels accepts seaborn's raw column names, and none that asks for `PENGUIN_COLORS` accepts seaborn's default colors.
 - Every lesson's **solutions notebook executes** top to bottom in a real Jupyter kernel, and **no cell leaves the theme or any other global setting changed** for the cells after it, so notebooks draw what the site shows.
 - All internal links, anchors, images and scripts resolve, and no template or Markdown leaks into the HTML. Design callouts become blockquotes in the notebooks, and every quiz question is a labeled group for screen readers. The muted label color keeps at least 4.5:1 contrast on every background it sits on, in both themes.
 - Every page, notebook, script, stylesheet and data file in `docs/` **matches what the sources produce**, every figure is present, and no leftover figures or notebooks remain, so a stale site can't be committed. (PNG bytes are not compared: they differ between the machine that builds `docs/` and the CI runner.)

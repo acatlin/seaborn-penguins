@@ -67,6 +67,46 @@ def test_figures_with_randomness_are_reproducible():
         assert first == second, code
 
 
+FORMS = {
+    'sns.histplot(data=penguins, x="body_mass_g", hue="species")': {"histogram"},
+    'sns.histplot(data=penguins, y="body_mass_g", bins=5)': {"histogram"},
+    'sns.histplot(data=penguins, x="body_mass_g", hue="species", element="step", fill=False)': {"histogram"},
+    'sns.histplot(data=penguins, x="body_mass_g", element="step")': {"area"},
+    'sns.kdeplot(data=penguins, x="body_mass_g", hue="species")': {"density"},
+    'sns.kdeplot(data=penguins, y="bill_depth_mm", cut=0)': {"density"},
+    'sns.kdeplot(data=penguins, x="body_mass_g", fill=True)': {"area"},
+    'ax = sns.ecdfplot(data=penguins, x="body_mass_g", hue="species")\nax.axvline(4500)': {"ecdf"},
+    'sns.boxplot(data=penguins, x="species", y="body_mass_g")': {"box"},
+    'sns.boxplot(data=penguins, y="species", x="body_mass_g", hue="sex", fill=False)': {"box"},
+    'sns.violinplot(data=penguins, x="species", y="body_mass_g")': {"violin"},
+    'sns.stripplot(data=penguins, x="species", y="body_mass_g")': {"strip"},
+    'sns.boxplot(data=penguins, x="species", y="body_mass_g")\n'
+    'sns.stripplot(data=penguins, x="species", y="body_mass_g")': {"box", "strip"},
+    'sns.barplot(data=penguins, x="species", y="body_mass_g")': {"bars"},
+    'sns.countplot(data=penguins, y="island", hue="species")': {"bars"},
+    'penguins.groupby("species")["body_mass_g"].mean().plot.bar()': {"bars"},
+    'sns.pointplot(data=penguins, x="species", y="body_mass_g")': {"points", "joined"},
+    'sns.pointplot(data=penguins, x="species", y="body_mass_g", hue="sex", linestyle="none")': {"points"},
+    'sns.pointplot(data=penguins, x="species", y="body_mass_g", hue="species", linestyle="none")': {"points"},
+    'sns.lineplot(data=penguins, x="species", y="body_mass_g")': {"joined"},
+    'sns.lineplot(data=penguins, x="flipper_length_mm", y="body_mass_g")': {"line"},
+    'sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g", hue="species")': {"scatter"},
+    'sns.regplot(data=penguins, x="flipper_length_mm", y="body_mass_g")': {"scatter", "line"},
+    'sns.histplot(data=penguins, x="flipper_length_mm", y="body_mass_g")': {"mesh"},
+    'sns.heatmap(penguins.select_dtypes("number").corr())': {"mesh"},
+    'plt.pie(penguins["species"].value_counts())': {"pie"},
+}
+
+
+def test_chart_forms_names_what_is_on_the_axes():
+    """Exercise 7.2 asks the learner to choose a chart form, so its check has to tell the forms
+    apart from the objects each one leaves on the Axes."""
+    for code, forms in FORMS.items():
+        result = runner.run_cell(code, setup=SETUP, check="print(sorted(chart_forms(plt.gca())))")
+        assert result["error"] is None and result["check_ok"], (code, result["error"], result["check_message"])
+        assert result["check_message"] == str(sorted(forms)), code
+
+
 def test_json_entry_point_encodes_figures():
     import json
 

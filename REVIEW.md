@@ -19,7 +19,8 @@ O10 were decided later that day and applied as version 1.3 of the map. The same 
 and the British spellings (L27), rechecked the first seven as applied, and wrote down four more
 Low findings (L23-L26) and three more questions (O11-O13) without acting on them. All seven were
 decided on 2026-11-15, as recommended, and applied in a fourth follow-up, with version 1.4 of the
-map. What comes next is planned in `PLAN.md`.
+map. What comes next is planned in `PLAN.md`. Steps A, B and C of that plan are built, and a
+recheck of steps A and B added three more Low findings (L28-L30).
 
 Severity scale:
 
@@ -54,6 +55,7 @@ Severity scale:
 | L22 | Low | Found while rechecking the objectives: five of the nine pages scroll sideways at phone width | Fixed in a third follow-up |
 | L23-L26 | Low | Found in the third follow-up: a gap inside some quiz options at desktop width, three exercise checks that pass what their brief rules out, a small table that breaks across two printed pages | Fixed in a fourth follow-up |
 | L27 | Low | Found in the third follow-up: British spellings in a course written in American English | Fixed in the third follow-up |
+| L28-L30 | Low | Found in a recheck of exercises 6.3 and 6.4: grams with a thousands comma passed as kilograms, an honest sentence of under 20 characters is turned away, kinds of fault are recognized from letters inside other words | L28 fixed; L29 and L30 left alone, see below |
 | O1-O7 | Decision | Questions about the mastery objectives map: a rule that cannot be followed as written, evidence that is tested but not listed, two page roles, overlapping criteria | Decided on 2026-11-15 as recommended, and applied |
 | O8-O10 | Decision | More questions about the map: two objectives that each hold several performances, section 2's library, an objective first taught before one of its prerequisites | Decided on 2026-11-15 (split, Plotly, as recommended) and applied in version 1.3 of the map |
 | O11-O13 | Decision | Questions from the second recheck: an exercise whose check cannot fail on an objective it is listed for, and two parts of the mastery rule that cannot be followed with today's materials | Decided on 2026-11-15 as recommended, and applied in version 1.4 of the map |
@@ -397,6 +399,24 @@ for these four is the cure the finding itself names):
   starts at the heading. (Since step A of `PLAN.md` the break stands one table higher, before
   "Additions built on top of the lessons", so the second page holds both small tables whole.)
 
+Found in a recheck of steps A and B of `PLAN.md`, on 2026-11-15. Each solution was changed in
+ways its test does not try (eight for exercise 6.3, ten for 6.4), and the check was run on each:
+
+- **L28. Exercise 6.3 passed grams as kilograms (fixed).** A formatter that writes the grams with
+  a thousands comma ("3,000") under an axis label that says "Body mass (kg)" passed, because the
+  check looked for four digits in a row. Fix: the check folds commas and spaces out of a tick
+  label first. The attempt is the tenth in the exercise's test.
+- **L29. Exercise 6.4 turns away an honest sentence of fewer than 20 characters (left alone).**
+  "There is no title." has 18 characters and "Too many encodings." has 19, and each is told to
+  "say more". The 20 characters are the plan's, and the message is a friendly one. Counting
+  words (three or more) would let both through and still stop "bad colors".
+- **L30. Exercise 6.4 recognizes kinds of fault from letters inside other words (left alone).**
+  "emphasize" holds "size" and "community" holds "unit", so a learner who wrote neither about
+  encodings nor about labels is told "You wrote about the encodings, the labels". And one
+  sentence written three times with different punctuation counts as three. Both touch the
+  message only, and the check says of itself that it counts and cannot judge. Matching whole
+  words, and comparing statements without their punctuation, would close both.
+
 Left alone, with reasons:
 
 - **L4. `pairplot` keeps raw axis labels.** The text frames it as an exploration tool, and
@@ -486,7 +506,8 @@ objectives", and `instructor/Seaborn_Mastery_Objectives.xlsx`). It found two mor
 the same kind, both left alone. Nothing assesses the choice of chart form: every assignment
 names its chart types, and no exam question or exercise check asks for the choice. And
 saving a figure is shown in Lesson 6 as code that is not run, with no exercise to practice
-it. The guide lists both, and what to add, under "Next steps".
+it. The guide lists both, and what to add, under "Next steps". (Since 2026-11-15 the first gap is
+closed: exercise 7.2 and the short task "Questions only" name no chart, `PLAN.md`, step C.)
 
 ## Recheck of the mastery objectives
 
@@ -634,7 +655,8 @@ later the same day and applied in version 1.3: each ends with the decision.
   taught.
   Decided on 2026-11-15, as recommended. The map is as it was. S11's "Next step" on the
   Objectives sheet and step 3 of the guide's "Next steps" now say that S11's mastery check
-  belongs after Lesson 7.
+  belongs after Lesson 7. Since step C of `PLAN.md` S09 has an exercise in Lesson 7, and the
+  rule-1 test names this pair as the one that was decided.
 
 ## Second recheck of the mastery objectives
 
@@ -769,5 +791,7 @@ exercises, a task, a new section in Lesson 7 and the mastery checks, with ten qu
 first. Nine of the ten were answered on 2026-11-15, as recommended, and the answers are written
 under each question there. Question 3 (how a learner takes a check) was answered later that day:
 an honor system for now. Steps A and B
-of the plan are built: exercise 6.3 for S08, and exercise 6.4 for S11. One of the ten follows from O10. An exercise for S09 in Lesson 7
-would make the rule-1 test fail, because S11 needs S09 and is first taught one lesson earlier.
+of the plan are built: exercise 6.3 for S08, and exercise 6.4 for S11. So is step C: exercise 7.2
+and the short task "Questions only" for S09, which is Covered now. One of the ten follows from
+O10. An exercise for S09 in Lesson 7 makes the rule-1 test fail as it was written, because S11
+needs S09 and is first taught one lesson earlier. Since step C the test names that pair.

@@ -98,7 +98,7 @@
 </tr>
 </tbody>
 </table>
-<p>Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 after Lesson 7.</p>
+<p>Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 after Lesson 7. The short task &ldquo;Questions only&rdquo; (about 30 minutes) fits between Lesson 7 and Assignment 3.</p>
 <h2 id="materials-in-the-repository">Materials in the repository</h2>
 <table>
 <thead>
@@ -127,12 +127,12 @@
 <tr>
 <td>Assessment pack</td>
 <td><code>instructor/Seaborn_Assessment_Pack_INSTRUCTOR.docx</code></td>
-<td>25 MCQs with answers marked and explained, an answer key, and 3 assignments with rubrics and model solutions.</td>
+<td>25 MCQs with answers marked and explained, an answer key, and 3 assignments and a short task with rubrics and model solutions.</td>
 </tr>
 <tr>
 <td>Student assessment pack</td>
 <td><code>instructor/Seaborn_Assessment_Pack_STUDENT.docx</code></td>
-<td>Same questions and assignments, no answers or solutions.</td>
+<td>Same questions, assignments and short task, no answers or solutions.</td>
 </tr>
 <tr>
 <td>This guide</td>
@@ -221,6 +221,7 @@
 <li><strong>Core idea:</strong> questions → forms → layout → polish → review.</li>
 <li><strong>Run it as a studio:</strong> learners plan the four panels on paper first (5 min), build them (35 min), then do peer review against the pre-flight checklist (15 min).</li>
 <li><strong>Common struggles:</strong> legends in every panel (show <code>fig.legend</code> with <code>loc="outside lower center"</code>), crowded titles (<code>layout="constrained"</code>), inconsistent species order (<code>hue_order</code>).</li>
+<li><strong>Exercise 7.2, &ldquo;questions only&rdquo;,</strong> sits in Step 1, before the report is built: three questions, and nobody names the chart. Its check knows the forms and nothing else. It accepts every honest form for a question (for the spread of flipper lengths: a histogram, a density curve, an ECDF, a box, violin or strip plot) and rejects the three that the page calls misleading: bars of a mean where zero means nothing, a line from one species to the next, and a pie. It cannot hear a reason, so ask two learners who chose different forms for the same question to defend them. Allow about 20 minutes on top of the lesson. The short task &ldquo;Questions only&rdquo; in the assessment pack is the graded version, with three new questions and a rubric that scores the reasons.</li>
 </ul>
 <h2 id="assessment">Assessment</h2>
 <h3 id="formative-in-page-quizzes-and-exercises">Formative: in-page quizzes and exercises</h3>
@@ -298,6 +299,13 @@
 <td>3-4 h</td>
 <td>Derived variable, multi-panel design, makeover, design rationale</td>
 </tr>
+<tr>
+<td>Short task</td>
+<td>Questions only</td>
+<td>Lesson 7</td>
+<td>~30 min</td>
+<td>Choosing the chart form for a question, and defending the choice</td>
+</tr>
 </tbody>
 </table>
 <p>Each has a 100-point rubric, and both editions of the pack state the three-level scale the rubrics assume (full credit, about half for a present-but-flawed element, zero for missing or wrong). Weight design and communication as heavily as code. The model solutions in the instructor edition were executed to produce the figures shown. <strong>Grading tips:</strong></p>
@@ -305,6 +313,7 @@
 <li>Accept any reasonable bin width, threshold or title that the learner <em>justifies</em>. The rubric rewards deliberate choices, not matching the model answer.</li>
 <li>Deduct for chart crimes even when the code is correct: truncated bars, rainbow palettes, unlabeled units, legends covering data.</li>
 <li>For Assignment 3, the design rationale is where you&rsquo;ll see whether the principles stuck. Look for principles applied to <em>specific</em> changes, not a list of buzzwords.</li>
+<li>The short task is the only graded work that names no chart type. Give full credit to any form that fits the question&rsquo;s job, whether or not it is the model answer&rsquo;s, and read the two sentences under each chart: the reason for the choice, and the form that was ruled out.</li>
 </ul>
 <h2 id="mastery-objectives">Mastery objectives</h2>
 <p>This site can serve as the first of three sections of a larger course on Python visualization tools: static visualization (this site), interactive charts, and dashboards. For that course, taught for mastery, the six learning outcomes at the top of this guide are split into objectives small enough to check one at a time: fourteen for this site and twelve for each of the two later sections, 38 in all. A learner moves on from an objective by showing mastery of it, and may try again after more practice, without penalty.</p>
@@ -319,7 +328,7 @@
 </ul>
 <p>The workbook is generated from <code>instructor/mastery_objectives.yaml</code>. Change that file, not the workbook, and run <code>python tools/build_materials.py</code>.</p>
 <h3 id="where-the-pages-fit">Where the pages fit</h3>
-<p>The eight teaching pages teach thirteen of the fourteen static objectives. Each of the 30 lesson goals (the &ldquo;By the end of this lesson you can&rdquo; bullets), the 15 exercises, the 28 quiz questions and the 25 exam questions has one of the fourteen as its objective, and so do 17 of the 18 rubric rows. The exception is &ldquo;Code quality&rdquo; in Assignment 2: Python fluency is a prerequisite of this course, not one of its objectives.</p>
+<p>The eight teaching pages teach thirteen of the fourteen static objectives. Each of the 30 lesson goals (the &ldquo;By the end of this lesson you can&rdquo; bullets), the 16 exercises, the 28 quiz questions and the 25 exam questions has one of the fourteen as its objective, and so do 21 of the 22 rubric rows. The exception is &ldquo;Code quality&rdquo; in Assignment 2: Python fluency is a prerequisite of this course, not one of its objectives.</p>
 <table>
 <thead>
 <tr>
@@ -339,7 +348,7 @@
 <tr>
 <td><strong>S02</strong> Label and title in plain language</td>
 <td>Lesson 1</td>
-<td>9 exercises, 1 quiz question, 1 exam question, 3 rubric rows</td>
+<td>9 exercises, 1 quiz question, 1 exam question, 4 rubric rows</td>
 <td>Covered</td>
 </tr>
 <tr>
@@ -381,8 +390,8 @@
 <tr>
 <td><strong>S09</strong> Choose the chart form from the question</td>
 <td>Lesson 7</td>
-<td>no exercise, 2 quiz questions, no exam question, no rubric row</td>
-<td>Partial</td>
+<td>1 exercise, 2 quiz questions, no exam question, 4 rubric rows</td>
+<td>Covered</td>
 </tr>
 <tr>
 <td><strong>S10</strong> Compose a multi-panel figure</td>
@@ -416,13 +425,10 @@
 </tr>
 </tbody>
 </table>
-<p>S13 and S14 are the halves that were split off S05 and S12. A code is never reused, so they are numbered last, although S13 is taught in Lesson 4. An exercise is counted for an objective only when its automatic check tests that objective, which is why S02 (labels) and S07 (color) count so many. Mastery waits only for the exercises on the pages that teach the objective (rule 1 under Deciding mastery): for S02, those are exercises 1.1 and 1.2. <strong>Covered</strong> means the pages teach the objective, at least one exercise checks it, and at least one exam question or rubric row assesses it. <strong>Partial</strong> means it is taught, but practice or assessment is missing:</p>
-<ul>
-<li><strong>S09</strong> is taught in Lesson 7, Step 1, and assessed nowhere. Every assignment names its chart types, so no learner has to choose a form and defend the choice.</li>
-<li><strong>S12:</strong> saving a figure is shown in Lesson 6 as code that is not run, and no exercise practices it. The assignments also require a notebook that runs top to bottom, which no page explains.</li>
-</ul>
+<p>S13 and S14 are the halves that were split off S05 and S12. A code is never reused, so they are numbered last, although S13 is taught in Lesson 4. An exercise is counted for an objective only when its automatic check tests that objective, which is why S02 (labels) and S07 (color) count so many. Mastery waits only for the exercises on the pages that teach the objective (rule 1 under Deciding mastery): for S02, those are exercises 1.1 and 1.2. <strong>Covered</strong> means the pages teach the objective, at least one exercise checks it, and at least one exam question or rubric row assesses it. <strong>Partial</strong> means it is taught, but practice or assessment is missing. In section 1 that is <strong>S12</strong>: saving a figure is shown in Lesson 6 as code that is not run, and no exercise practices it. The assignments also require a notebook that runs top to bottom, which no page explains.</p>
+<p>S09 was Partial until exercise 7.2 and the short task &ldquo;Questions only&rdquo; were added. The three assignments still name their chart types, so the short task is the one piece of graded work in which a learner chooses a form and defends the choice.</p>
 <p><strong>Planned</strong> means no page teaches the objective yet. In section 1 that is <strong>S14</strong>: Assignments 1 and 2 ask for a written reading of the charts and score it, but no page teaches how to write one, or how to write alt text.</p>
-<p>The exam has questions on ten of the fourteen objectives, and no more than four on any one. The other four (S09, S11, S12 and S14) are assessed through the assignments, or not at all.</p>
+<p>The exam has questions on ten of the fourteen objectives, and no more than four on any one. The other four (S09, S11, S12 and S14) are assessed through the assignments and the short task.</p>
 <p>The 24 objectives of sections 2 and 3 are <strong>Planned</strong> too. One page already points their way: &ldquo;Where to next?&rdquo; in Lesson 7 names the condition for an interactive chart, &ldquo;when readers need to hover, zoom or filter.&rdquo;</p>
 <table>
 <thead>
@@ -503,7 +509,7 @@
 <li>The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson&rsquo;s 60-minute midpoint across its objectives, and counts what was added to a lesson later on top of it, in a block of its own. Sections 2 and 3 are planning figures to revise after a pilot.</li>
 </ul>
 <h3 id="timings">Timings</h3>
-<p>Learner hours, from the Timing sheet. Section 1 rests on figures given in this guide: seven lessons of 45-75 minutes, counted at the 60-minute midpoint, the 35-minute exam and the three assignments. Everything else is a planning estimate.</p>
+<p>Learner hours, from the Timing sheet. Section 1 rests on figures given in this guide: seven lessons of 45-75 minutes, counted at the 60-minute midpoint, the 35-minute exam, the three assignments and the short task. Everything else is a planning estimate.</p>
 <table>
 <thead>
 <tr>
@@ -522,9 +528,9 @@
 <td>14</td>
 <td>8.1 h</td>
 <td>0.6 h</td>
-<td>6.5 h</td>
+<td>7.0 h</td>
 <td>1.3 h</td>
-<td>16.5 h</td>
+<td>17.0 h</td>
 </tr>
 <tr>
 <td>2 Interactive</td>
@@ -549,24 +555,24 @@
 <td>38</td>
 <td>29.5 h</td>
 <td>1.8 h</td>
-<td>21.5 h</td>
+<td>22.0 h</td>
 <td>4.7 h</td>
-<td>57.4 h</td>
+<td>57.9 h</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li><strong>Lessons:</strong> of section 1&rsquo;s 8.1 hours, 7.0 are the seven lessons (5.25 to 8.75 at the ends of the 45-75 minute range). Another 20 minutes are built on top of them and counted apart, so that each lesson stays at its 60-minute midpoint: exercises 6.3 and 6.4 in Lesson 6. The remaining 45 minutes are the additions in step 2 below. Together they come to about one more session. Sections 2 and 3 are still to be written. Section 3 is counted for Streamlit: a first app, a layout, the path from inputs to outputs and a deployment take less code in it than in a framework built on callbacks, so D02, D03, D04, D06 and D11 are 10 to 15 minutes shorter than first planned (11.4 hours, down from 12.5).</li>
+<li><strong>Lessons:</strong> of section 1&rsquo;s 8.1 hours, 7.0 are the seven lessons (5.25 to 8.75 at the ends of the 45-75 minute range). Another 40 minutes are built on top of them and counted apart, so that each lesson stays at its 60-minute midpoint: exercises 6.3 and 6.4 in Lesson 6, and exercise 7.2 in Lesson 7. The remaining 25 minutes are the additions in step 2 below. Together they come to about one more session. Sections 2 and 3 are still to be written. Section 3 is counted for Streamlit: a first app, a layout, the path from inputs to outputs and a deployment take less code in it than in a framework built on callbacks, so D02, D03, D04, D06 and D11 are 10 to 15 minutes shorter than first planned (11.4 hours, down from 12.5).</li>
 <li><strong>Check:</strong> one check of about 35 minutes at the end of each section. For section 1 this is the existing exam.</li>
-<li><strong>Projects:</strong> section 1&rsquo;s three assignments (about 1 hour, about 2 hours and 3-4 hours), and one or two projects for each later section.</li>
+<li><strong>Projects:</strong> section 1&rsquo;s three assignments (about 1 hour, about 2 hours and 3-4 hours) and its short task (about half an hour), and one or two projects for each later section.</li>
 <li><strong>Reassessment:</strong> an allowance of 15% of lesson and check time for correctives and second attempts.</li>
 </ul>
-<p>Of the 57.4 hours, 35.9 are lessons, checks and reassessment. That is about 29 sessions of 75 minutes: a 15-week term at two sessions a week has 30, which leaves one to spare. The 21.5 hours of project work are done outside class. In a shorter term, use the flipped format: learners work through the lessons before class, and class time goes to checks, correctives and projects.</p>
+<p>Of the 57.9 hours, 35.9 are lessons, checks and reassessment. That is about 29 sessions of 75 minutes: a 15-week term at two sessions a week has 30, which leaves one to spare. The 22.0 hours of project work are done outside class. In a shorter term, use the flipped format: learners work through the lessons before class, and class time goes to checks, correctives and projects.</p>
 <h3 id="next-steps">Next steps</h3>
 <ol>
 <li><strong>Settle the assumptions that are still yours to make:</strong> the mastery standard and the hours. The library for section 2 is settled: Plotly.</li>
-<li><strong>Finish section 1&rsquo;s three unfinished objectives.</strong> For S09, add a &ldquo;questions only&rdquo; task (three questions, and the learner picks and defends each chart form) and check questions of the &ldquo;which chart answers this?&rdquo; kind. For S12 and S14, add a short &ldquo;Describe and deliver&rdquo; section to Lesson 7, as Step 5 (save a figure, open the file and rerun the notebook for S12; write its alt text and a caption for S14) and make alt text a rubric row.</li>
-<li><strong>Build the mastery checks.</strong> The nine objectives that are shown by questions (S01 to S08, and S13) each need two forms of five questions, 90 questions in all. The other five (S09 to S12, and S14) are shown by a task, and each needs two. Questions, tasks and keys are kept out of the public repository, in a private companion to it. Start where today&rsquo;s exam is thinnest: S09, S11, S12 and S14 have no questions, S02 has one, and S01, S05, S08, S10 and S13 have two each. Give S11&rsquo;s check after Lesson 7, where its prerequisite S09 is taught.</li>
+<li><strong>Finish section 1&rsquo;s two unfinished objectives.</strong> S09 is finished: exercise 7.2 in Lesson 7 checks the choice of a chart form, and the short task &ldquo;Questions only&rdquo; scores the reasons for it. For S12 and S14, add a short &ldquo;Describe and deliver&rdquo; section to Lesson 7, as Step 5 (save a figure, open the file and rerun the notebook for S12; write its alt text and a caption for S14) and make alt text a rubric row.</li>
+<li><strong>Build the mastery checks.</strong> The nine objectives that are shown by questions (S01 to S08, and S13) each need two forms of five questions, 90 questions in all. The other five (S09 to S12, and S14) are shown by a task, and each needs two. Questions, tasks and keys are kept out of the public repository, in a private companion to it. S09&rsquo;s check is a second set of three questions for its task. Start where today&rsquo;s exam is thinnest: S09, S11, S12 and S14 have no questions, S02 has one, and S01, S05, S08, S10 and S13 have two each. Give S11&rsquo;s check after Lesson 7, where its prerequisite S09 is taught.</li>
 <li><strong>Two smaller additions, both built.</strong> Exercise 6.3 checks <code>ax.annotate</code> and a tick formatter (S08), and exercise 6.4 asks for a written critique before the Lesson 6 makeover (S11).</li>
 <li><strong>Draft section 2 from I01-I12.</strong> The grammar carries over: in Plotly Express, <code>hue=</code> becomes <code>color=</code> and <code>col=</code> becomes <code>facet_col=</code>. Two things to settle first: a second, larger dataset with an ordered variable (the animation and large-data objectives need one), and whether the in-browser exercise checker can inspect a Plotly figure, which is plain data, the way it inspects matplotlib objects now. Plotly links two views only inside a scatter matrix or through a notebook widget, so decide too whether learners practice linked views (I08) in a notebook or meet them in section 3.</li>
 <li><strong>Draft section 3 from D01-D12.</strong> Section 3 uses Streamlit, and a Streamlit app can run on a page like this one: stlite runs Streamlit in the browser on Pyodide, with no server, so the lessons can show live apps. It is a second runtime beside the site&rsquo;s own, though. It loads its own Pyodide and its own Streamlit build (about a minute the first time), the exercise checker cannot look inside it, and it leaves out <code>streamlit.testing</code>. Learners still run, test and deploy their apps outside the browser, so decide early how they hand them in and how the apps are tested.</li>

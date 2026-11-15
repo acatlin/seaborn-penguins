@@ -472,6 +472,92 @@ def test_exercise_6_4_counts_three_different_statements():
         assert kind in model["check_message"].split("Worth a second look")[0], (kind, model["check_message"])
 
 
+def exercise_7_2_attempts():
+    """Attempts at exercise 7.2 as {name: (code, the start of the hint it has to earn, or None if it
+    should pass)}. Each is three plain panels that pass, with one of them drawn in another form."""
+    head = 'fig, axes = plt.subplots(1, 3, figsize=(13, 4), layout="constrained")\n'
+    good = {
+        "A": 'sns.histplot(data=penguins, x="flipper_length_mm", hue="species", ax=axes[0])\n',
+        "B": 'sns.pointplot(data=penguins, x="species", y="bill_depth_mm", linestyle="none", ax=axes[1])\n',
+        "C": 'sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g", ax=axes[2])\n',
+    }
+
+    def figure(**panels):
+        return head + "".join({**good, **panels}.values())
+
+    flipper = 'data=penguins, x="flipper_length_mm", hue="species", ax=axes[0]'
+    groups_a = 'data=penguins, x="species", y="flipper_length_mm", ax=axes[0]'
+    groups_b = 'data=penguins, x="species", y="bill_depth_mm", ax=axes[1]'
+    pair_c = 'data=penguins, x="flipper_length_mm", y="body_mass_g", ax=axes[2]'
+    pie = 'axes[{}].pie(penguins["species"].value_counts())\n'
+    return {
+        # Panel A asks how one measurement is spread.
+        "A: one bar per species": (figure(A=f"sns.barplot({groups_a})\n"), "Panel A: one bar per species"),
+        "A: a mean and its interval": (figure(A=f'sns.pointplot({groups_a}, linestyle="none")\n'), "Panel A: a point plot"),
+        "A: a line across the species": (figure(A=f"sns.lineplot({groups_a})\n"), "Panel A: a line from one species"),
+        "A: a pie": (figure(A=pie.format(0)), "Panel A: a pie"),
+        "A: two measurements": (figure(A='sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g", '
+                                         "ax=axes[0])\n"), "Panel A: that form relates two measurements"),
+        "A: step outlines": (figure(A=f'sns.histplot({flipper}, element="step", fill=False)\n'), None),
+        "A: filled steps": (figure(A=f'sns.histplot({flipper}, element="step")\n'), None),
+        "A: density curves": (figure(A=f"sns.kdeplot({flipper})\n"), None),
+        "A: ECDFs": (figure(A=f"sns.ecdfplot({flipper})\n"), None),
+        "A: violins": (figure(A=f"sns.violinplot({groups_a})\n"), None),
+        "A: boxes with the points on top": (figure(A=f'sns.boxplot({groups_a}, color="#dddddd")\n'
+                                                     f"sns.stripplot({groups_a}, size=2)\n"), None),
+        # Panel B compares a mean across groups, and zero means nothing.
+        "B: bars from zero": (figure(B=f"sns.barplot({groups_b})\n"), "Panel B: bars start at zero"),
+        "B: bars drawn with matplotlib": (figure(B='means = penguins.groupby("species")["bill_depth_mm"].mean()\n'
+                                                   "axes[1].bar(means.index, means.values)\n"), "Panel B: bars start at zero"),
+        "B: points joined by a line": (figure(B=f"sns.pointplot({groups_b})\n"), "Panel B: a line from one species"),
+        "B: a line chart": (figure(B=f"sns.lineplot({groups_b})\n"), "Panel B: a line from one species"),
+        "B: a pie": (figure(B=pie.format(1)), "Panel B: a pie"),
+        "B: two measurements": (figure(B='sns.scatterplot(data=penguins, x="bill_length_mm", y="bill_depth_mm", '
+                                         "ax=axes[1])\n"), "Panel B: that form relates two measurements"),
+        "B: boxes": (figure(B=f"sns.boxplot({groups_b})\n"), None),
+        "B: a strip plot": (figure(B=f"sns.stripplot({groups_b})\n"), None),
+        "B: points for each sex, species on y": (figure(
+            B='sns.pointplot(data=penguins, y="species", x="bill_depth_mm", hue="sex", dodge=0.3, '
+              'linestyle="none", ax=axes[1])\n'), None),
+        # Panel C relates two measurements.
+        "C: bars": (figure(C='sns.barplot(data=penguins, x="species", y="body_mass_g", ax=axes[2])\n'),
+                    "Panel C: bars compare groups"),
+        "C: one measurement": (figure(C='sns.histplot(data=penguins, x="body_mass_g", ax=axes[2])\n'),
+                               "Panel C: that shows how one measurement is spread"),
+        "C: boxes by species": (figure(C='sns.boxplot(data=penguins, x="species", y="body_mass_g", ax=axes[2])\n'),
+                                "Panel C: that compares groups"),
+        "C: a pie": (figure(C=pie.format(2)), "Panel C: a pie"),
+        "C: a scatter with a trend line": (figure(C=f"sns.regplot({pair_c})\n"), None),
+        "C: a line chart over an ordered x": (figure(C=f"sns.lineplot({pair_c})\n"), None),
+        "C: a 2-D histogram": (figure(C=f"sns.histplot({pair_c})\n"), None),
+        # The panels themselves.
+        "two panels": (head + good["A"] + good["B"], "Draw three panels"),
+        "three charts on one panel": ("".join(good.values()).replace(", ax=axes[0]", "").replace(", ax=axes[1]", "")
+                                      .replace(", ax=axes[2]", ""), "Draw three panels"),
+    }
+
+
+def test_exercise_7_2_judges_the_form_and_nothing_else():
+    """Exercise 7.2 is the page's check of S09: three questions, and the learner chooses each form.
+    Its check accepts every honest form for a question and rejects the three that the lesson calls
+    misleading: bars of a mean where zero means nothing, a line between unordered groups, and a pie.
+    It does not look at labels, titles or colors."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / "07-capstone.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == "7.2")
+    for name, (code, hint) in exercise_7_2_attempts().items():
+        result = runner.run_cell(code, setup=setup, check=check)
+        assert result["error"] is None, (name, result["error"])
+        if hint is None:
+            assert result["check_ok"] is True, (name, result["check_message"])
+            assert "I looked at the forms only" in result["check_message"]
+        else:
+            assert result["check_ok"] is False and result["check_message"].startswith(hint), (name, result["check_message"])
+
+
 def test_bin_width_panels_draw_the_widths_they_name():
     """seaborn fits a whole number of bins to the data's range unless binrange= is given,
     so a panel titled "binwidth = 1000 g" used to draw 900 g bins. The panels don't share a

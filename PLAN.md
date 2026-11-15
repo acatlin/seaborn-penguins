@@ -5,7 +5,7 @@ objectives" section: the teaching, the exercises and the mastery checks that the
 objectives of section 1 still lack. It was worked out on 2026-11-15 against version 1.3 of the
 objectives map (`instructor/mastery_objectives.yaml`).
 
-**Steps A and B are built** (2026-11-15). Steps C, D and E are not. Nine of the ten questions under "Decide first" were answered
+**Steps A, B and C are built** (2026-11-15). Steps D and E are not. Nine of the ten questions under "Decide first" were answered
 on 2026-11-15, each as recommended, and so were O11, O12 and O13 in `REVIEW.md`. The answer is
 written under each question. Question 3 was answered later the same day: an honor system for now.
 Two things that answer leaves open are listed under it, and step E waits for them.
@@ -22,23 +22,23 @@ How to use it:
 
 ## Where section 1 stands
 
-Eleven of the fourteen static objectives are Covered, two are Partial (S09 and S12) and one is
-Planned (S14). Five objectives have work waiting:
+Twelve of the fourteen static objectives are Covered, one is Partial (S12) and one is Planned
+(S14). Five objectives had work waiting when this plan was written, and two still have:
 
 | Objective | Status | What is missing | Minutes to write | Step |
 |---|---|---|---|---|
 | **S08** Polish a chart with matplotlib | Covered | Nothing since step A: exercise 6.3 checks `ax.annotate` and a tick formatter | built: 10 | A |
 | **S11** Critique and redesign a chart | Covered | Nothing since step B: exercise 6.4 asks for a critique before the page gives one | built: 10 | B |
-| **S09** Choose the chart form from the question | Partial | Nothing assesses the choice: no exercise, no exam question, no rubric row | 20 | C |
+| **S09** Choose the chart form from the question | Covered | Nothing since step C: exercise 7.2 checks the form, and the short task "Questions only" scores the reasons | built: 20 | C |
 | **S12** Save a figure that can be reproduced | Partial | Saving is shown as code that is not run, and no page explains rerunning a notebook | 10 | D |
 | **S14** Describe what a figure shows | Planned | No page teaches it, though two rubric rows score it | 15 | D |
 
-The 65 minutes are the 1.1 hours of additions in the guide's Timings table: 20 are built, and 45
+The 65 minutes are the 1.1 hours of additions in the guide's Timings table: 40 are built, and 25
 are still to write. The other nine objectives need nothing here but their mastery checks
 (step E). No mastery check exists yet for any objective.
 
-Today's counts: 15 exercises, 53 figures, 28 quiz questions, 25 exam questions, 30 lesson goals,
-and 18 rubric rows in 3 assignments.
+Today's counts: 16 exercises, 54 figures, 28 quiz questions, 25 exam questions, 30 lesson goals,
+and 22 rubric rows in 3 assignments and a short task.
 
 The work is about 58 to 73 hours of building and checking in all, most of it in step E, or 59 to
 75 with the hour or two that question 2 adds once. The hours given with each step are rough.
@@ -219,6 +219,45 @@ What the plan said:
 
 Step 2 of the guide. About 7 to 8 hours. Needs questions 2, 6, 7 and 10.
 
+**Built on 2026-11-15**, as planned, with these particulars:
+
+- **On the page** it is exercise 7.2, in Step 1 of Lesson 7. It stands above 7.1 on the page
+  (question 6). Its three questions: how flipper lengths are spread within each species, which
+  species has the deepest bill on average, and whether penguins with longer flippers weigh more.
+  Three sentences above it name the three forms that mislead, with the lesson that showed each.
+- **The check judges the form and nothing else,** through a new helper for checks,
+  `chart_forms(ax)` in `tools/runner.py`, which the browser shares. It reads the objects that a
+  chart leaves on an Axes and names fourteen forms. For each question the check accepts every
+  honest form and rejects bars of a mean, a line from one species to the next and a pie, each
+  with a hint that says why. The fallback of the plan, naming the forms in a dictionary, was not
+  needed.
+- **What the helper cannot name:** a frequency polygon (`element="poly"`) reads as a line, so a
+  learner who draws one for a question about spread is told "I can't tell which form this is",
+  with the forms the check does know. Eight or more bars drawn by hand on a numeric axis read as
+  a histogram. Neither is taught in the course.
+- **Tests:** 29 attempts go through the check, of which 17 must each earn their hint and 12 are
+  other honest forms that must pass. The helper has a test of its own, on 26 charts.
+- **Tried in Chrome,** where matplotlib is 3.8.4: the solution, the starter and the 29 attempts
+  get the same verdict and the same message as in the build. It was a headless Chrome driven
+  over the DevTools protocol, because the Claude extension was not connected.
+- **The task** is "Short task - Questions only" in the assessment pack, after Assignment 3 in the
+  file and before it in time. It lives in a new list, `tasks`, in `instructor/assignments.yaml`,
+  and its rubric rows are T1 R1 to T1 R4 on the Evidence sheet, so the rows of the three
+  assignments keep their numbers. Three new questions, 100 points: the form fits the question
+  (45), a reason is given (20), a form is ruled out with a reason (20), the question and the
+  labels are on the chart (15). Its model answer is run by the build, like every other.
+- **One departure from the plan:** the fourth rubric row is mapped to S09 and to S02, not to S09
+  alone, because its full-credit text asks for plain labels with units as well.
+- **The map:** S09 is Covered. Its 20 minutes moved from "to write" to "additions built".
+  Section 1's project time is 7.0 hours with the half-hour task (it was 6.5), so the guide's
+  totals are 17.0 hours for section 1 and 57.9 in all. The map is version 1.5.
+- **The rule-1 test** names the pair S11 and S09 as the one that was decided (question 10), and
+  fails on any other.
+- **Left for step E:** the check questions of the "which chart answers this?" kind, and a second
+  set of three questions for the task.
+
+What the plan said:
+
 There are two pieces, because S09 is shown by a rubric task, and a status of Covered also asks
 for one checked exercise.
 
@@ -312,7 +351,7 @@ objective as its pages teach it, and steps A to D change what five objectives' p
 1. The decisions: questions 1 to 10, and O11 to O13. Done on 2026-11-15. Question 3's answer (an
    honor system for now) leaves two things open: see the question.
 2. Step A, then step B. They are small, and they change Lesson 6 only. Both are built.
-3. Step C, then step D. They change Lesson 7, the assessment pack and the runner.
+3. Step C, then step D. They change Lesson 7, the assessment pack and the runner. Step C is built.
 4. Step E, in stages, starting where the exam is thinnest.
 
 L24 and L25 in `REVIEW.md` (three exercise checks that passed what their brief rules out) were
@@ -331,7 +370,8 @@ places. The tests fail until they agree, which is the point:
   `page_map` and `evidence`, and each objective's `to_write`, `gap` and `next_step`.
 - `tests/test_objectives.py`: the statuses, the exercises that rule 1 counts, the exam's thin
   spots, and the 65 minutes of additions.
-- `tests/test_materials.py`: three assignments, each with a rubric that totals 100.
+- `tests/test_materials.py`: three assignments and one short task, each with a rubric that totals
+  100, and the count of model solutions and task lists in the Word pack.
 - `tests/test_site.py`: the lists of exercises that must reject raw column names and seaborn's
   default colors.
 

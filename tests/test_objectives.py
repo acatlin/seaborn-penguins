@@ -143,7 +143,7 @@ def test_additions_are_counted_on_top_of_the_lessons(joined):
     a block of its own. Section 1's additions were planned at 65 minutes. Building one moves its
     minutes from the objective's 'to write' to 'additions built', so the two always add up to 65."""
     added = SPEC["added_minutes"]
-    assert len(added) == 2, "exercises 6.3 and 6.4 are the additions that are built"
+    assert len(added) == 3, "exercises 6.3, 6.4 and 7.2 are the additions that are built"
     for item in added:
         assert item["lesson"] in SPEC["lesson_minutes"] and item["objective"] in STATIC
         assert joined["summary"][item["objective"]]["roles"].get(item["lesson"]) == "T", (
@@ -154,12 +154,12 @@ def test_additions_are_counted_on_top_of_the_lessons(joined):
 
 
 def test_status_follows_from_the_evidence(joined):
-    """Eleven static objectives are covered, two are partial, and one (S14, the written description
-    of a figure) is planned: assignments score it, but no page teaches it. If a new section, exercise
-    or question changes that on purpose, change this test and the instructor guide with it."""
+    """Twelve static objectives are covered, one is partial (S12: saving is not practiced), and one
+    (S14, the written description of a figure) is planned: assignments score it, but no page teaches
+    it. S09 is covered since exercise 7.2 and the short task 'Questions only'. If a new section,
+    exercise or question changes that on purpose, change this test and the instructor guide with it."""
     status = {i: joined["summary"][i]["status"] for i in IDS}
-    assert {i: status[i] for i in STATIC if status[i] != bo.COVERED} == {
-        "S09": bo.PARTIAL, "S12": bo.PARTIAL, "S14": bo.PLANNED}
+    assert {i: status[i] for i in STATIC if status[i] != bo.COVERED} == {"S12": bo.PARTIAL, "S14": bo.PLANNED}
     assert all(status[i] == bo.PLANNED for i in IDS if i not in STATIC)
 
 
@@ -173,20 +173,32 @@ def test_rule_one_waits_only_for_exercises_on_the_pages_that_teach_the_objective
     assert {i: summary[i]["decisive"] for i in STATIC} == {
         "S01": ["1.1", "1.2"], "S02": ["1.1", "1.2"], "S03": ["2.1", "2.2"], "S04": ["3.1", "3.2"],
         "S05": ["1.2", "4.2"], "S06": ["5.1", "5.2"], "S07": ["1.1", "3.1", "3.2", "6.1", "6.2"],
-        "S08": ["6.1", "6.2", "6.3"], "S09": [], "S10": ["7.1"], "S11": ["6.1", "6.4"], "S12": [], "S13": ["4.1"], "S14": []}
+        "S08": ["6.1", "6.2", "6.3"], "S09": ["7.2"], "S10": ["7.1"], "S11": ["6.1", "6.4"], "S12": [], "S13": ["4.1"],
+        "S14": []}
+    # One pair is known, and was decided (REVIEW.md, O10, and PLAN.md, question 10): S11 lists S09 as
+    # a prerequisite, and S11 is first taught by the makeover in Lesson 6, one lesson before the page
+    # that teaches S09 and holds its exercise. The map stays as it is, because a full critique does
+    # judge the chart's form. Nothing deadlocks: S09 needs nothing from S11, and S11's mastery check
+    # is given after Lesson 7. Any other pair is a mistake in the map.
+    decided = {("S11", "S09"): ["7.2"]}
     order = [p.slug for p in COURSE.pages]
     page_of = {key: order.index(info["page"].slug) for key, info in COURSE.exercises.items()}
+    found = {}
     for o in OBJECTIVES:
         teaching = [n for n, slug in enumerate(order) if summary[o["id"]]["roles"].get(slug) == "T"]
         for needed in (o["prerequisites"] if teaching else []):
             late = [key for key in summary[needed]["decisive"] if page_of[key] > teaching[0]]
-            assert not late, f"{o['id']} needs {needed} first, but mastery of {needed} waits for exercise {late}"
+            if late:
+                found[(o["id"], needed)] = late
+    assert found == decided, ("an objective needs another one first, but mastery of that one waits for an "
+                              f"exercise on a later page: {found}")
     sheet = book["values"]["Objectives"]
     shown = {sheet.cell(row=r, column=bo.OBJ["id"]).value: sheet.cell(row=r, column=bo.OBJ["practice"]).value
              for r in range(bo.OBJ_FIRST, sheet.max_row + 1)}
     assert shown["S02"].splitlines() == ["Exercises for mastery: 1.1, 1.2",
                                          "Further practice: 2.1, 3.1, 3.2, 4.2, 5.1, 6.1, 6.2", "Quiz: L1 Q3"]
-    assert shown["S09"].splitlines()[0] == "Exercises: none"
+    assert shown["S09"].splitlines()[0] == "Exercises for mastery: 7.2"
+    assert shown["S12"].splitlines()[0] == "Exercises: none"
     assert f"for S02, those are exercises {' and '.join(summary['S02']['decisive'])}." in GUIDE
 
 
@@ -298,7 +310,7 @@ def test_timing_sheet_adds_up(book, joined):
         assert sheet.cell(row=bo.T_SESSIONS, column=column[label]).value == pytest.approx(sessions), label
     counted = {status: sheet.cell(row=row, column=column["All sections"]).value
                for status, row in ((bo.COVERED, bo.T_COVERED), (bo.PARTIAL, bo.T_PARTIAL), (bo.PLANNED, bo.T_PLANNED))}
-    assert counted == {bo.COVERED: 11, bo.PARTIAL: 2, bo.PLANNED: 25}
+    assert counted == {bo.COVERED: 12, bo.PARTIAL: 1, bo.PLANNED: 25}
 
 
 def test_every_formula_has_its_result_stored_in_the_file(book):

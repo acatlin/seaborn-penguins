@@ -31,6 +31,93 @@ SEX_COLORS = {"Female": "#8c8c8c", "Male": "#333333"}
 
 Picking the chart *from the question* is the most important step in the whole course. If you can't name the question a panel answers, cut the panel.
 
+Choosing a form also means ruling others out. Three forms mislead, and you have met each of them:
+
+- **Bars for a mean when zero means nothing.** Bars start at zero, so three bill depths between 15 and 18 mm become three bars of nearly the same height (Lesson 3). Use points.
+- **A line between groups that have no order.** It draws a trend from one species to the next, and there is none (Lesson 4).
+- **A pie.** People compare angles poorly, and lengths and positions well (Lesson 3).
+
+Now try it with three questions the chief did not ask. Nobody names the chart this time.
+
+```python exercise id=7.2 title="Questions only: choose the form"
+# Draw one panel for each question, in a chart form that answers it:
+#   A. How are flipper lengths spread within each species?
+#   B. Which species has the deepest bill on average?
+#   C. Do penguins with longer flippers weigh more?
+# Pass ax=axes[0], ax=axes[1] and ax=axes[2].
+# The check looks at the form of each panel, and at nothing else.
+fig, axes = plt.subplots(1, 3, figsize=(13, 4), layout="constrained")
+
+# A
+___
+
+# B
+___
+
+# C
+___
+```
+
+```python solution for=7.2
+fig, axes = plt.subplots(1, 3, figsize=(13, 4), layout="constrained")
+
+# A. How one measurement is spread: a distribution, one outline per species
+sns.histplot(data=penguins, x="flipper_length_mm", hue="species", palette=PENGUIN_COLORS,
+             element="step", fill=False, binwidth=3, ax=axes[0])
+axes[0].set(xlabel="Flipper length (mm)", ylabel="Penguins",
+            title="A. Gentoo flippers are the longest")
+axes[0].get_legend().set_title("Species")
+
+# B. A mean compared across groups, where zero means nothing: points, not bars,
+#    and no line from one species to the next
+sns.pointplot(data=penguins, x="species", y="bill_depth_mm", hue="species",
+              palette=PENGUIN_COLORS, linestyle="none", legend=False, ax=axes[1])
+axes[1].set(xlabel="", ylabel="Mean bill depth (mm), 95% CI",
+            title="B. Adelie and Chinstrap bills are the deepest")
+
+# C. Two measurements of the same penguin: a relationship, one point per bird
+sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g", hue="species",
+                palette=PENGUIN_COLORS, s=18, legend=False, ax=axes[2])
+axes[2].set(xlabel="Flipper length (mm)", ylabel="Body mass (g)",
+            title="C. Longer flippers, heavier penguins")
+sns.despine(fig=fig)
+```
+
+```python check for=7.2
+axes = chart_axes()
+assert len(axes) == 3, f"Draw three panels, one for each question, by passing ax=axes[0], ax=axes[1] and ax=axes[2]. I found {len(axes)} with a chart on it."
+spread = {"histogram", "density", "ecdf", "area", "box", "violin", "strip"}
+a, b, c = (chart_forms(ax) for ax in axes)
+for panel, forms in zip("ABC", (a, b, c)):
+    assert "pie" not in forms, f"Panel {panel}: a pie makes the reader compare angles. Choose a form that compares lengths or positions."
+
+assert "joined" not in a, "Panel A: a line from one species to the next draws a trend, and species have no order. The question asks how flipper lengths are spread: draw a distribution."
+assert "bars" not in a, "Panel A: one bar per species shows one number, a mean or a count. The question asks how the flipper lengths are spread, so show the whole distribution: a histogram, a density curve, an ECDF, or a box, violin or strip plot."
+if not a & spread:
+    assert "points" not in a, "Panel A: a point plot shows a mean and its interval, two numbers per species. The question asks how the flipper lengths are spread, so show the whole distribution: a histogram, a density curve, an ECDF, or a box, violin or strip plot."
+    assert not a & {"scatter", "line", "mesh"}, "Panel A: that form relates two measurements. This question is about one, flipper length: draw its distribution for each species."
+    assert False, "Panel A: I can't tell which form this is. For a question about spread I know a histogram, a density curve, an ECDF, and a box, violin or strip plot."
+
+assert "joined" not in b, "Panel B: a line from one species to the next draws a trend, and species have no order. Keep the points and drop the line: linestyle=\"none\" in sns.pointplot."
+assert "bars" not in b, "Panel B: bars start at zero, and a bill 0 mm deep means nothing. Drawn from zero, depths of 15 to 18 mm look nearly alike. Use points (sns.pointplot with linestyle=\"none\"), or show each species' spread with a box, violin or strip plot."
+if not b & (spread | {"points"}):
+    assert not b & {"scatter", "line", "mesh"}, "Panel B: that form relates two measurements. This question compares the species on one, bill depth: put species on one axis."
+    assert False, "Panel B: I can't tell which form this is. For a mean compared across groups I know a point plot, and a box, violin or strip plot."
+
+assert "bars" not in c, "Panel C: bars compare groups. This question relates two measurements of the same penguin, so give each an axis: a scatter plot, with a trend line if you like."
+if not c & {"scatter", "line", "mesh"}:
+    assert not c & {"histogram", "density", "ecdf", "area"}, "Panel C: that shows how one measurement is spread. This question relates two, flipper length and body mass, so give each an axis: a scatter plot, with a trend line if you like."
+    assert not c & {"box", "violin", "strip", "points", "joined"}, "Panel C: that compares groups. This question relates two measurements of the same penguin, so give each an axis: a scatter plot, with a trend line if you like."
+    assert False, "Panel C: I can't tell which form this is. For a relationship between two measurements I know a scatter plot, a trend line and a 2-D histogram."
+
+plain = {"histogram": "a histogram", "density": "density curves", "ecdf": "ECDFs", "area": "filled outlines",
+         "box": "a box plot", "violin": "a violin plot", "strip": "a strip plot", "points": "a point plot",
+         "scatter": "a scatter plot", "line": "a line", "mesh": "a 2-D histogram"}
+def named(forms):
+    return " with ".join(plain.get(form, form) for form in sorted(forms))
+print(f"Three questions, three forms that answer them. A: {named(a)}. B: {named(b)}. C: {named(c)}. I looked at the forms only. Whether the labels and titles do their job is for the pre-flight checklist in Step 4.")
+```
+
 ## Step 2: lay out the canvas
 
 ```python run fig=07-canvas alt="An empty two-by-two grid of axes with panel letters A to D."

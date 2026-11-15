@@ -422,6 +422,52 @@ def test_exercise_6_3_wants_an_arrow_at_the_lightest_bird_and_kilograms():
             assert result["check_ok"] is False and hint in result["check_message"], (name, result["check_message"])
 
 
+def exercise_6_4_attempts():
+    """Attempts at exercise 6.4 as {name: (code, a word of the hint it has to earn, or None if it
+    should pass)}."""
+    def listed(*statements):
+        return f"problems = {list(statements)!r}"
+
+    one = "There are far too many things going on at once here."
+    two = "I cannot tell what I am supposed to notice in it."
+    three = "Half of the picture is hidden behind a box of text."
+    return {
+        "two statements": (listed(one, two, ""), "I count 2"),
+        "the same statement twice": (listed(one, two, "  i cannot tell what I am   supposed to notice in it. "),
+                                     "are the same"),
+        "a statement of a few words": (listed(one, two, "bad colors"), "Say more than 'bad colors'"),
+        "one long string, not a list": (f"problems = {one + ' ' + two + ' ' + three!r}", "list named problems"),
+        "another name for the list": (f"faults = {[one, two, three]!r}", "list named problems"),
+        "three statements the check has no word for": (listed(one, two, three), None),
+        "three statements in a tuple": (f"problems = {(one, two, three)!r}", None),
+    }
+
+
+def test_exercise_6_4_counts_three_different_statements():
+    """Exercise 6.4 asks for a critique in words before the page gives its own. Its check is lenient
+    on purpose: it counts three different statements of some length, and says which kinds of fault it
+    recognized. It cannot judge them (rubric row A3 R5 does), and it must not pretend to."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / "06-polish.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    solution = next(b.body for b in blocks if b.kind == "solution" and b.opts.get("for") == "6.4")
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == "6.4")
+    for name, (code, hint) in exercise_6_4_attempts().items():
+        result = runner.run_cell(code, setup=setup, check=check)
+        assert result["error"] is None, (name, result["error"])
+        if hint is None:
+            assert result["check_ok"] is True, (name, result["check_message"])
+            assert "not judge them" in result["check_message"] and "You wrote about" not in result["check_message"]
+        else:
+            assert result["check_ok"] is False and hint in result["check_message"], (name, result["check_message"])
+    model = runner.run_cell(solution, setup=setup, check=check)
+    assert model["check_ok"] is True and not model["figures"]
+    for kind in ("the encodings", "the colors", "the legend", "the labels", "the title"):
+        assert kind in model["check_message"].split("Worth a second look")[0], (kind, model["check_message"])
+
+
 def test_bin_width_panels_draw_the_widths_they_name():
     """seaborn fits a whole number of bins to the data's range unless binrange= is given,
     so a panel titled "binwidth = 1000 g" used to draw 900 g bins. The panels don't share a

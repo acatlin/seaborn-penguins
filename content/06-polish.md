@@ -117,6 +117,53 @@ with sns.axes_style("darkgrid"):     # the busiest style, scoped to this one cha
                          hue="species", style="island", size="bill_depth_mm", palette="hsv")
 ```
 
+```python exercise id=6.4 title="Three things wrong with this chart"
+# Before you read on: what is wrong with the chart above?
+# Write three problems, each as a full sentence in your own words,
+# then press Run & check.
+problems = [
+    "",
+    "",
+    "",
+]
+for number, problem in enumerate(problems, 1):
+    print(number, problem)
+```
+
+```python solution for=6.4
+problems = [
+    "Color, marker shape and point size all encode something, and only color serves the question.",
+    "The rainbow palette is not the species colors used everywhere else, and it fails colorblind readers.",
+    "The legend covers part of the data, and the axes show raw column names under no title at all.",
+]
+for number, problem in enumerate(problems, 1):
+    print(number, problem)
+```
+
+```python check for=6.4
+found = globals().get("problems")
+assert isinstance(found, (list, tuple)), "Keep your statements in the list named problems."
+said = [" ".join(str(p).split()) for p in found if str(p).strip()]
+assert len(said) >= 3, f"Write three problems, one string each. I count {len(said)} so far."
+assert len({s.lower() for s in said}) == len(said), "Two of your statements are the same. Name three different problems."
+short = [s for s in said if len(s) < 20]
+assert not short, f"Say more than '{short[0]}': a full sentence that names what is wrong (20 characters or more)."
+words = " ".join(said).lower()
+kinds = {
+    "the encodings": ["encod", "shape", "marker", "size", "style", "channel", "island", "depth"],
+    "the colors": ["color", "colour", "rainbow", "palette", "hsv"],
+    "the legend": ["legend"],
+    "the labels": ["label", "column name", "raw column", "underscore", "unit", "axis", "axes"],
+    "the title": ["title", "headline", "finding", "message", "takeaway"],
+    "the background": ["grid", "background", "clutter"],
+}
+seen = [kind for kind, clues in kinds.items() if any(clue in words for clue in clues)]
+rest = [kind for kind in kinds if kind not in seen]
+print("Three problems, in your own words. I can count them but not judge them, so compare them with the page's own list, just below."
+      + (f" You wrote about {', '.join(seen)}." if seen else "")
+      + (f" Worth a second look: {', '.join(rest)}." if rest else ""))
+```
+
 Three encodings, a rainbow palette, a legend covering the data, and raw column names. It *contains* the data, but it doesn't *say* anything. Here's the same data made deliberate:
 
 ```python run fig=06-after alt="Clean scatter of flipper length versus body mass with species colored and labeled directly, the heaviest penguin annotated, kilogram tick labels and the title 'Gentoos are in a weight class of their own'."

@@ -5,7 +5,7 @@ objectives" section: the teaching, the exercises and the mastery checks that the
 objectives of section 1 still lack. It was worked out on 2026-11-15 against version 1.3 of the
 objectives map (`instructor/mastery_objectives.yaml`).
 
-**Step A is built** (2026-11-15). Steps B to E are not. Nine of the ten questions under "Decide first" were answered
+**Steps A and B are built** (2026-11-15). Steps C, D and E are not. Nine of the ten questions under "Decide first" were answered
 on 2026-11-15, each as recommended, and so were O11, O12 and O13 in `REVIEW.md`. The answer is
 written under each question. Question 3 is open, and step E waits for it.
 
@@ -27,16 +27,16 @@ Planned (S14). Five objectives have work waiting:
 | Objective | Status | What is missing | Minutes to write | Step |
 |---|---|---|---|---|
 | **S08** Polish a chart with matplotlib | Covered | Nothing since step A: exercise 6.3 checks `ax.annotate` and a tick formatter | built: 10 | A |
-| **S11** Critique and redesign a chart | Covered | The learner is shown a critique before writing one | 10 | B |
+| **S11** Critique and redesign a chart | Covered | Nothing since step B: exercise 6.4 asks for a critique before the page gives one | built: 10 | B |
 | **S09** Choose the chart form from the question | Partial | Nothing assesses the choice: no exercise, no exam question, no rubric row | 20 | C |
 | **S12** Save a figure that can be reproduced | Partial | Saving is shown as code that is not run, and no page explains rerunning a notebook | 10 | D |
 | **S14** Describe what a figure shows | Planned | No page teaches it, though two rubric rows score it | 15 | D |
 
-The 65 minutes are the 1.1 hours of additions in the guide's Timings table: 10 are built, and 55
+The 65 minutes are the 1.1 hours of additions in the guide's Timings table: 20 are built, and 45
 are still to write. The other nine objectives need nothing here but their mastery checks
 (step E). No mastery check exists yet for any objective.
 
-Today's counts: 14 exercises, 53 figures, 28 quiz questions, 25 exam questions, 30 lesson goals,
+Today's counts: 15 exercises, 53 figures, 28 quiz questions, 25 exam questions, 30 lesson goals,
 and 18 rubric rows in 3 assignments.
 
 The work is about 58 to 73 hours of building and checking in all, most of it in step E, or 59 to
@@ -166,6 +166,27 @@ What the plan said:
 
 Step 4 of the guide. About 3 hours. Needs questions 2 and 6.
 
+**Built on 2026-11-15**, as planned, with these particulars:
+
+- It is exercise 6.4, between the "before" chart and the paragraph that names its faults. On
+  the page it comes before 6.1, and its number is the highest (question 6).
+- The check is the lenient one of the plan, with a sixth kind of fault, the background: the
+  "before" chart is drawn in the busiest style on purpose. A statement that the check has no
+  word for still passes, and the message says that the check counts and does not judge.
+- The starter prints the three statements, so that the page shows output and does not ask
+  "did you draw a chart?". The solution draws no figure, so the site still has 53.
+- **Settled while building: the page's own list stays in plain view,** right below the
+  exercise, as "Show a solution" is one click away. Nothing of the lesson's text was changed or
+  moved. Folding the list away is a judgment call that is left to the instructor: the Markdown
+  extension the build already loads can do it without a new fence, at the price of hiding one
+  sentence of the lesson behind a click.
+- The notebooks: the exercise is a cell in the middle of the lesson. Both notebooks still run
+  top to bottom, and the test that executes the solutions notebooks passes.
+- A test puts seven attempts through the check: five that must each earn their hint, and two
+  that must pass. Tried in Chrome: the same verdicts and messages as in the build.
+
+What the plan said:
+
 - **The learner** looks at the "before" chart in "The makeover" and writes down three things
   that are wrong with it, as three strings in a list, before reading the page's own list.
 - **Where:** Lesson 6, inside "The makeover", between the "before" chart and the paragraph that
@@ -280,7 +301,7 @@ objective as its pages teach it, and steps A to D change what five objectives' p
 ## Order
 
 1. The decisions: questions 1 to 10, and O11 to O13. Done on 2026-11-15, except question 3.
-2. Step A, then step B. They are small, and they change Lesson 6 only. Step A is built.
+2. Step A, then step B. They are small, and they change Lesson 6 only. Both are built.
 3. Step C, then step D. They change Lesson 7, the assessment pack and the runner.
 4. Step E, in stages, starting where the exam is thinnest.
 

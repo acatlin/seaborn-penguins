@@ -475,7 +475,8 @@ polish, capstone) is sound and each lesson fits 45-75 minutes. Lesson 4 is the d
 richest; the instructor guide's pacing notes already flag `pairplot`. Exercises ramp well
 from fill-in-the-blank to a free build, and every checker gives an actionable hint. The one
 gap is that no exercise asks learners to critique a chart in words before the assignments;
-the quizzes carry that load. The instructor guide is unusually concrete (live-coding order,
+the quizzes carry that load. (Since 2026-11-15 one does: exercise 6.4, `PLAN.md`, step B. Its
+check counts the statements and cannot judge them.) The instructor guide is unusually concrete (live-coding order,
 misconceptions, troubleshooting table) and needed only the corrections above.
 
 A later pass mapped the course onto twelve mastery objectives, fourteen since version 1.3 of the
@@ -762,6 +763,6 @@ in version 1.4 of the map. Each ends with what was done.
 **What comes next.** Steps 2 to 4 of the guide's "Next steps" are planned in `PLAN.md`: two
 exercises, a task, a new section in Lesson 7 and the mastery checks, with ten questions to answer
 first. Nine of the ten were answered on 2026-11-15, as recommended, and the answers are written
-under each question there. Question 3 (how a learner takes a check) is still open. Step A of
-the plan is built: exercise 6.3, for S08. One of the ten follows from O10. An exercise for S09 in Lesson 7
+under each question there. Question 3 (how a learner takes a check) is still open. Steps A and B
+of the plan are built: exercise 6.3 for S08, and exercise 6.4 for S11. One of the ten follows from O10. An exercise for S09 in Lesson 7
 would make the rule-1 test fail, because S11 needs S09 and is first taught one lesson earlier.

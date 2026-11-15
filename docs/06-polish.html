@@ -273,6 +273,49 @@ ax = sns.scatterplot(data=penguins, x=&quot;flipper_length_mm&quot;, y=&quot;bod
 </div>
 
 
+
+<div class="exercise" id="ex-6.3" data-exercise>
+  <div class="exercise-head"><span class="exercise-tag">Exercise 6.3</span>
+    <span class="exercise-title">Point at the lightest penguin</span></div>
+  <textarea class="cell-editor" rows="12" spellcheck="false" autocapitalize="off"
+    aria-label="Code editor for exercise 6.3"># The makeover pointed at the heaviest penguin. Point at the lightest one instead:
+#  - find its row with idxmin() (the makeover used idxmax())
+#  - label it with ax.annotate(...) and an arrow: arrowprops={&quot;arrowstyle&quot;: &quot;-&gt;&quot;}
+#  - show body mass in kilograms (&quot;3.0 kg&quot;, not &quot;3000&quot;) with a tick formatter
+ax = sns.scatterplot(data=penguins, x=&quot;flipper_length_mm&quot;, y=&quot;body_mass_g&quot;,
+                     hue=&quot;species&quot;, palette=PENGUIN_COLORS, s=22, alpha=0.75)
+ax.get_legend().set_title(&quot;Species&quot;)
+ax.set(xlabel=&quot;Flipper length (mm)&quot;, ylabel=&quot;Body mass&quot;,
+       title=&quot;The lightest penguin is a Chinstrap&quot;)
+sns.despine()</textarea>
+  <div class="cell-toolbar">
+    <button type="button" class="btn-primary" data-action="check">Run &amp; check</button>
+    <button type="button" class="btn-ghost" data-action="run">Run only</button>
+    <button type="button" class="btn-ghost" data-action="reset">Reset</button>
+  </div>
+  <div class="cell-live"></div>
+  <details class="solution"><summary>Show a solution</summary>
+    <div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">penguins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">,</span>
+                     <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;species&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="n">PENGUIN_COLORS</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_legend</span><span class="p">()</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Species&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Flipper length (mm)&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Body mass&quot;</span><span class="p">,</span>
+       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;The lightest penguin is a Chinstrap&quot;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+
+<span class="n">lightest</span> <span class="o">=</span> <span class="n">penguins</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">penguins</span><span class="p">[</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;Lightest bird: a 2.7 kg Chinstrap&quot;</span><span class="p">,</span>
+            <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">lightest</span><span class="p">[</span><span class="s2">&quot;flipper_length_mm&quot;</span><span class="p">],</span> <span class="n">lightest</span><span class="p">[</span><span class="s2">&quot;body_mass_g&quot;</span><span class="p">]),</span>
+            <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">2750</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;0.25&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span>
+            <span class="n">arrowprops</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;arrowstyle&quot;</span><span class="p">:</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;0.4&quot;</span><span class="p">})</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_major_formatter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">value</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> kg&quot;</span><span class="p">)</span>
+</pre></div>
+<figure class="cell-figure"><img src="img/sol-6.3.png" alt="Solution chart for exercise 6.3" loading="lazy"></figure>
+    <button type="button" class="btn-ghost" data-action="load-solution">Load solution into editor</button>
+  </details>
+  <script type="application/json" class="cell-data">{"starter": "# The makeover pointed at the heaviest penguin. Point at the lightest one instead:\n#  - find its row with idxmin() (the makeover used idxmax())\n#  - label it with ax.annotate(...) and an arrow: arrowprops={\"arrowstyle\": \"->\"}\n#  - show body mass in kilograms (\"3.0 kg\", not \"3000\") with a tick formatter\nax = sns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\",\n                     hue=\"species\", palette=PENGUIN_COLORS, s=22, alpha=0.75)\nax.get_legend().set_title(\"Species\")\nax.set(xlabel=\"Flipper length (mm)\", ylabel=\"Body mass\",\n       title=\"The lightest penguin is a Chinstrap\")\nsns.despine()", "solution": "ax = sns.scatterplot(data=penguins, x=\"flipper_length_mm\", y=\"body_mass_g\",\n                     hue=\"species\", palette=PENGUIN_COLORS, s=22, alpha=0.75)\nax.get_legend().set_title(\"Species\")\nax.set(xlabel=\"Flipper length (mm)\", ylabel=\"Body mass\",\n       title=\"The lightest penguin is a Chinstrap\")\nsns.despine()\n\nlightest = penguins.loc[penguins[\"body_mass_g\"].idxmin()]\nax.annotate(\"Lightest bird: a 2.7 kg Chinstrap\",\n            xy=(lightest[\"flipper_length_mm\"], lightest[\"body_mass_g\"]),\n            xytext=(200, 2750), color=\"0.25\", fontsize=9,\n            arrowprops={\"arrowstyle\": \"->\", \"color\": \"0.4\"})\nax.yaxis.set_major_formatter(lambda value, pos: f\"{value / 1000:.1f} kg\")", "check": "ax = chart_axes()[0]\npts = points(ax)\nassert abs(pts[:, 1].mean() - penguins[\"body_mass_g\"].mean()) < 50, \"Keep body_mass_g on y, in grams. A tick formatter changes the labels, not the data.\"\nfrom matplotlib.text import Annotation\nnotes = [t for t in ax.texts if isinstance(t, Annotation)]\nassert notes, \"Label the lightest penguin with ax.annotate(...). ax.text writes words, but it has no arrow to point with.\"\narrows = [n for n in notes if n.arrow_patch is not None]\nassert arrows, \"Give the annotation an arrow: arrowprops={'arrowstyle': '->'}.\"\nlightest = penguins.loc[penguins[\"body_mass_g\"].idxmin()]\non_target = [n for n in arrows if abs(n.xy[0] - lightest[\"flipper_length_mm\"]) < 1 and abs(n.xy[1] - lightest[\"body_mass_g\"]) < 25]\nassert on_target, \"Point the arrow at the lightest penguin: xy=(its flipper length, its body mass). Find its row with penguins['body_mass_g'].idxmin().\"\nassert any(n.get_text().strip() for n in on_target), \"Give the annotation some words, e.g. 'Lightest bird: a 2.7 kg Chinstrap'.\"\nplt.gcf().canvas.draw()\nimport re\nticks = [t.get_text() for t in ax.get_yticklabels() if t.get_text()]\nassert ticks and not any(re.search(r\"[0-9]{4}\", s) for s in ticks), \"The mass axis still shows grams. Add a tick formatter: ax.yaxis.set_major_formatter(lambda value, pos: f'{value / 1000:.1f} kg').\"\nassert all(\"kg\" in s for s in ticks) or \"kg\" in ax.get_ylabel(), \"Say that the numbers are kilograms: put 'kg' in the tick labels, or in the y-axis label.\"\nprint(\"One arrow, one sentence, and an axis in the units people think in.\")"}</script>
+</div>
+
+
 <h2 id="quick-quiz">Quick quiz</h2>
 <section class="quiz" aria-label="Quiz">
 <div class="quiz-q" data-answer="C" id="06-polish-q1" role="group" aria-labelledby="06-polish-q1-stem">

@@ -108,6 +108,7 @@ Assignment 1 fits after Lesson 3, Assignment 2 after Lesson 5, and Assignment 3 
 - **Palettes:** connect the categorical/sequential/diverging jobs back to the heatmap (Lesson 4) and species colors (Lesson 1).
 - **Misconceptions:** expecting `sns.set_theme()` to change an already-drawn chart. Forgetting `ax=` and drawing everything on the last subplot. Mixing up `ax.set_title` and `fig.suptitle`.
 - **Global state:** the "before" chart switches style inside `with sns.axes_style("darkgrid"):`, so nothing leaks into later cells. Exercise 6.1 deliberately leaves a bare `sns.set_theme(style="darkgrid")` in the starter, and its checker insists on the reset, because "someone changed the theme three cells ago" is a real-life bug worth meeting once.
+- **Exercise tips:** 6.3 asks for the two polish moves that the makeover shows and 6.1 and 6.2 do not practice: `ax.annotate` with an arrow, and a tick formatter. It points at the lightest penguin, where the makeover points at the heaviest, so the lesson's lines cannot be pasted in unchanged. `ax.text` does not pass: it has no arrow. Allow about 10 minutes on top of the lesson.
 
 ### Lesson 7 - Capstone
 
@@ -166,7 +167,7 @@ The workbook is generated from `instructor/mastery_objectives.yaml`. Change that
 
 ### Where the pages fit
 
-The eight teaching pages teach thirteen of the fourteen static objectives. Each of the 30 lesson goals (the "By the end of this lesson you can" bullets), the 13 exercises, the 28 quiz questions and the 25 exam questions has one of the fourteen as its objective, and so do 17 of the 18 rubric rows. The exception is "Code quality" in Assignment 2: Python fluency is a prerequisite of this course, not one of its objectives.
+The eight teaching pages teach thirteen of the fourteen static objectives. Each of the 30 lesson goals (the "By the end of this lesson you can" bullets), the 14 exercises, the 28 quiz questions and the 25 exam questions has one of the fourteen as its objective, and so do 17 of the 18 rubric rows. The exception is "Code quality" in Assignment 2: Python fluency is a prerequisite of this course, not one of its objectives.
 
 | Objective | Taught in | Evidence in today's materials | Status |
 |---|---|---|---|
@@ -177,7 +178,7 @@ The eight teaching pages teach thirteen of the fourteen static objectives. Each 
 | **S05** Show a trend and check for hidden groups | Lessons 1, 4 | 2 exercises, 3 quiz questions, 2 exam questions, no rubric row | Covered |
 | **S06** Build small multiples | Lesson 5 | 2 exercises, 4 quiz questions, 3 exam questions, 2 rubric rows | Covered |
 | **S07** Use color with purpose | Lessons 1, 3, 6 | 10 exercises, 2 quiz questions, 3 exam questions, 6 rubric rows | Covered |
-| **S08** Polish a chart with matplotlib | Lesson 6 | 4 exercises, 1 quiz question, 2 exam questions, 3 rubric rows | Covered |
+| **S08** Polish a chart with matplotlib | Lesson 6 | 5 exercises, 1 quiz question, 2 exam questions, 3 rubric rows | Covered |
 | **S09** Choose the chart form from the question | Lesson 7 | no exercise, 2 quiz questions, no exam question, no rubric row | Partial |
 | **S10** Compose a multi-panel figure | Lessons 6, 7 | 1 exercise, 3 quiz questions, 2 exam questions, 2 rubric rows | Covered |
 | **S11** Critique and redesign a chart | Lessons 6, 7 | 1 exercise, 2 quiz questions, no exam question, 2 rubric rows | Covered |
@@ -231,7 +232,7 @@ The objectives rest on seven assumptions. Each is yours to change in `instructor
 - Section 2 uses Plotly. Its objectives are worded so that another library would change the 'Key tools' column, not the objective, except I04 and I07, whose criteria name Plotly's own functions. Plotly links two views only inside a scatter matrix or through a notebook widget, so linking two separate charts (I08) is finished in section 3 (D07). Altair, the alternative that was weighed, links them in a few lines. Section 3 uses Streamlit and is written in its terms (the rerun, session state, caching), so the alternative, Dash, would mean rewriting D02 to D09 and D11. The names in 'Key tools' were checked against the documentation of Plotly 7.1 and Streamlit 1.67.
 - An exercise counts as evidence for an objective only when its automatic check tests that objective. S01 is counted in Lesson 1's two exercises alone: later checks also look at which columns are plotted, but to recognize the chart, not to test the mapping. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its 'full credit' text describes.
 - Status: Covered means the pages teach the objective, at least one checked exercise practices it, and at least one exam question or rubric row assesses it. Partial means it is taught but practice or assessment is missing. Planned means no page teaches it yet.
-- The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson's 60-minute midpoint across its objectives. Sections 2 and 3 are planning figures to revise after a pilot.
+- The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson's 60-minute midpoint across its objectives, and counts what was added to a lesson later on top of it, in a block of its own. Sections 2 and 3 are planning figures to revise after a pilot.
 
 ### Timings
 
@@ -244,7 +245,7 @@ Learner hours, from the Timing sheet. Section 1 rests on figures given in this g
 | 3 Dashboards | 12 | 11.4 h | 0.6 h | 9.0 h | 1.8 h | 22.8 h |
 | All sections | 38 | 29.5 h | 1.8 h | 21.5 h | 4.7 h | 57.4 h |
 
-- **Lessons:** of section 1's 8.1 hours, 7.0 exist as pages (5.25 to 8.75 at the ends of the 45-75 minute range). The other 1.1 hours are the additions in steps 2 and 4 below. Sections 2 and 3 are still to be written. Section 3 is counted for Streamlit: a first app, a layout, the path from inputs to outputs and a deployment take less code in it than in a framework built on callbacks, so D02, D03, D04, D06 and D11 are 10 to 15 minutes shorter than first planned (11.4 hours, down from 12.5).
+- **Lessons:** of section 1's 8.1 hours, 7.0 are the seven lessons (5.25 to 8.75 at the ends of the 45-75 minute range). Another 10 minutes are built on top of them and counted apart, so that each lesson stays at its 60-minute midpoint: exercise 6.3 in Lesson 6. The remaining 55 minutes are the additions in steps 2 and 4 below, about one more session in all. Sections 2 and 3 are still to be written. Section 3 is counted for Streamlit: a first app, a layout, the path from inputs to outputs and a deployment take less code in it than in a framework built on callbacks, so D02, D03, D04, D06 and D11 are 10 to 15 minutes shorter than first planned (11.4 hours, down from 12.5).
 - **Check:** one check of about 35 minutes at the end of each section. For section 1 this is the existing exam.
 - **Projects:** section 1's three assignments (about 1 hour, about 2 hours and 3-4 hours), and one or two projects for each later section.
 - **Reassessment:** an allowance of 15% of lesson and check time for correctives and second attempts.
@@ -256,7 +257,7 @@ Of the 57.4 hours, 35.9 are lessons, checks and reassessment. That is about 29 s
 1. **Settle the assumptions that are still yours to make:** the mastery standard and the hours. The library for section 2 is settled: Plotly.
 2. **Finish section 1's three unfinished objectives.** For S09, add a "questions only" task (three questions, and the learner picks and defends each chart form) and check questions of the "which chart answers this?" kind. For S12 and S14, add a short "Describe and deliver" section to Lesson 7, as Step 5 (save a figure, open the file and rerun the notebook for S12; write its alt text and a caption for S14) and make alt text a rubric row.
 3. **Build the mastery checks.** The nine objectives that are shown by questions (S01 to S08, and S13) each need two forms of five questions, 90 questions in all. The other five (S09 to S12, and S14) are shown by a task, and each needs two. Questions, tasks and keys are kept out of the public repository, in a private companion to it. Start where today's exam is thinnest: S09, S11, S12 and S14 have no questions, S02 has one, and S01, S05, S08, S10 and S13 have two each. Give S11's check after Lesson 7, where its prerequisite S09 is taught.
-4. **Make two smaller additions:** an exercise that checks `ax.annotate` and a tick formatter (S08), and a written critique before the Lesson 6 makeover (S11).
+4. **Make the second of two smaller additions:** a written critique before the Lesson 6 makeover (S11). The first is built: exercise 6.3 checks `ax.annotate` and a tick formatter (S08).
 5. **Draft section 2 from I01-I12.** The grammar carries over: in Plotly Express, `hue=` becomes `color=` and `col=` becomes `facet_col=`. Two things to settle first: a second, larger dataset with an ordered variable (the animation and large-data objectives need one), and whether the in-browser exercise checker can inspect a Plotly figure, which is plain data, the way it inspects matplotlib objects now. Plotly links two views only inside a scatter matrix or through a notebook widget, so decide too whether learners practice linked views (I08) in a notebook or meet them in section 3.
 6. **Draft section 3 from D01-D12.** Section 3 uses Streamlit, and a Streamlit app can run on a page like this one: stlite runs Streamlit in the browser on Pyodide, with no server, so the lessons can show live apps. It is a second runtime beside the site's own, though. It loads its own Pyodide and its own Streamlit build (about a minute the first time), the exercise checker cannot look inside it, and it leaves out `streamlit.testing`. Learners still run, test and deploy their apps outside the browser, so decide early how they hand them in and how the apps are tested.
 7. **Keep the map current.** After a change to a lesson, the exam or an assignment, update `instructor/mastery_objectives.yaml` and rebuild. The build and `pytest` fail until the map and the course agree.

@@ -138,6 +138,21 @@ def test_each_existing_lesson_is_split_into_its_sixty_minutes():
         assert sum(split.values()) == bo.LESSON_MIDPOINT, slug
 
 
+def test_additions_are_counted_on_top_of_the_lessons(joined):
+    """PLAN.md, question 2: a lesson stays at 60 minutes, and what is added to it later is counted in
+    a block of its own. Section 1's additions were planned at 65 minutes. Building one moves its
+    minutes from the objective's 'to write' to 'additions built', so the two always add up to 65."""
+    added = SPEC["added_minutes"]
+    assert added, "exercise 6.3 was the first addition"
+    for item in added:
+        assert item["lesson"] in SPEC["lesson_minutes"] and item["objective"] in STATIC
+        assert joined["summary"][item["objective"]]["roles"].get(item["lesson"]) == "T", (
+            f"{item['what']}: {item['lesson']} does not teach {item['objective']}")
+    built = sum(item["minutes"] for item in added)
+    assert built == sum(joined["summary"][i]["added"] for i in IDS)
+    assert built + sum(o["to_write"] for o in OBJECTIVES if o["id"] in STATIC) == 65
+
+
 def test_status_follows_from_the_evidence(joined):
     """Eleven static objectives are covered, two are partial, and one (S14, the written description
     of a figure) is planned: assignments score it, but no page teaches it. If a new section, exercise
@@ -158,7 +173,7 @@ def test_rule_one_waits_only_for_exercises_on_the_pages_that_teach_the_objective
     assert {i: summary[i]["decisive"] for i in STATIC} == {
         "S01": ["1.1", "1.2"], "S02": ["1.1", "1.2"], "S03": ["2.1", "2.2"], "S04": ["3.1", "3.2"],
         "S05": ["1.2", "4.2"], "S06": ["5.1", "5.2"], "S07": ["1.1", "3.1", "3.2", "6.1", "6.2"],
-        "S08": ["6.1", "6.2"], "S09": [], "S10": ["7.1"], "S11": ["6.1"], "S12": [], "S13": ["4.1"], "S14": []}
+        "S08": ["6.1", "6.2", "6.3"], "S09": [], "S10": ["7.1"], "S11": ["6.1"], "S12": [], "S13": ["4.1"], "S14": []}
     order = [p.slug for p in COURSE.pages]
     page_of = {key: order.index(info["page"].slug) for key, info in COURSE.exercises.items()}
     for o in OBJECTIVES:
@@ -242,7 +257,9 @@ def test_page_map_and_objectives_show_what_the_maps_say(book, joined):
         row, expected = bo.OBJ_FIRST + i, summary[o["id"]]
         assert sheet.cell(row=row, column=bo.OBJ["status"]).value == expected["status"]
         assert sheet.cell(row=row, column=bo.OBJ["existing"]).value == expected["existing"]
-        assert sheet.cell(row=row, column=bo.OBJ["total"]).value == expected["existing"] + o["to_write"]
+        assert sheet.cell(row=row, column=bo.OBJ["added"]).value == expected["added"]
+        assert sheet.cell(row=row, column=bo.OBJ["total"]).value == (
+            expected["existing"] + expected["added"] + o["to_write"])
 
 
 def hours_by_section(joined):
@@ -254,11 +271,12 @@ def hours_by_section(joined):
         row = {
             "objectives": len(mine),
             "existing": sum(joined["summary"][o["id"]]["existing"] for o in mine) / 60,
+            "added": sum(joined["summary"][o["id"]]["added"] for o in mine) / 60,
             "to_write": sum(o["to_write"] for o in mine) / 60,
             "check": timing["check_minutes"][key] / 60,
             "projects": timing["project_hours"][key],
         }
-        row["lessons"] = row["existing"] + row["to_write"]
+        row["lessons"] = row["existing"] + row["added"] + row["to_write"]
         row["allowance"] = timing["allowance"] * (row["lessons"] + row["check"])
         row["taught"] = row["lessons"] + row["check"] + row["allowance"]
         row["total"] = row["taught"] + row["projects"]
@@ -270,7 +288,8 @@ def hours_by_section(joined):
 def test_timing_sheet_adds_up(book, joined):
     sheet = book["values"]["Timing"]
     column = {sheet.cell(row=bo.T_RESULTS, column=c).value: c for c in range(bo.T_FIRST, bo.T_ALL + 1)}
-    rows = {"objectives": bo.T_COUNT, "existing": bo.T_EXISTING, "to_write": bo.T_TO_WRITE, "check": bo.T_CHECK_H,
+    rows = {"objectives": bo.T_COUNT, "existing": bo.T_EXISTING, "added": bo.T_ADDED, "to_write": bo.T_TO_WRITE,
+            "check": bo.T_CHECK_H,
             "projects": bo.T_PROJECT_H, "allowance": bo.T_ALLOW_H, "total": bo.T_TOTAL, "taught": bo.T_TAUGHT}
     for label, expected in hours_by_section(joined).items():
         for key, row in rows.items():
@@ -377,8 +396,10 @@ def test_guide_timings_match_the_timing_sheet(joined):
             f"{_shown(expected[key])} h" for key in ("lessons", "check", "projects", "allowance", "total")], label
     everything, static = hours["All sections"], hours["1 Static"]
     lessons = sum(1 for p in COURSE.pages if p.num != "0")
-    assert (f"of section 1's {_shown(static['lessons'])} hours, {_shown(static['existing'])} exist as pages "
-            f"({lessons * 45 / 60:g} to {lessons * 75 / 60:g} at the ends of the 45-75 minute range)") in GUIDE
+    assert (f"of section 1's {_shown(static['lessons'])} hours, {_shown(static['existing'])} are the {WORDS[lessons]} "
+            f"lessons ({lessons * 45 / 60:g} to {lessons * 75 / 60:g} at the ends of the 45-75 minute range). "
+            f"Another {round(static['added'] * 60)} minutes are built on top of them") in GUIDE
+    assert f"The remaining {round(static['to_write'] * 60)} minutes are the additions" in GUIDE
     sessions = everything["taught"] * 60 / SPEC["timing"]["session_minutes"]
     assert (f"Of the {_shown(everything['total'])} hours, {_shown(everything['taught'])} are lessons, checks and "
             f"reassessment. That is about {round(sessions)} sessions of {SPEC['timing']['session_minutes']} minutes"

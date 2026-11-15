@@ -88,6 +88,7 @@ lesson_minutes:
 # objective's to_write. tests/test_objectives.py holds the two together at 65 minutes.
 added_minutes:
   - {lesson: 06-polish, objective: S08, minutes: 10, what: "Exercise 6.3: annotate a point and format the tick labels."}
+  - {lesson: 06-polish, objective: S11, minutes: 10, what: "Exercise 6.4: write down three problems with the 'before' chart of the makeover."}
 
 # ---------------------------------------------------------------- read-me text
 mastery_rule:
@@ -322,9 +323,9 @@ objectives:
     prerequisites: [S07, S08, S09]
     tools: "The pre-flight checklist in Lesson 7 and the table 'Stephen Few's checklist, applied' in Lesson 6"
     outcome: 6
-    to_write: 10
-    gap: "Exercise 6.1 lists the fixes for the learner, so the first critique in the learner's own words comes in Assignment 3. No exam question."
-    next_step: "Before the makeover, have learners write down three problems with the 'before' chart (the Lesson 6 notes already do this aloud), or add a peer review against the pre-flight checklist. S09, a prerequisite, is taught in Lesson 7, after the makeover, so S11's mastery check belongs after Lesson 7."
+    to_write: 0
+    gap: "Exercise 6.4 asks for a critique in the learner's own words, but its check can only count the statements, and exercise 6.1 lists the fixes for the learner. The first critique that anyone judges comes in Assignment 3. No exam question."
+    next_step: "S09, a prerequisite, is taught in Lesson 7, after the makeover, so S11's mastery check belongs after Lesson 7. A peer review against the pre-flight checklist would give the critique of exercise 6.4 a reader."
 
   - id: S12
     name: "Save a figure that can be reproduced"
@@ -951,6 +952,7 @@ evidence:
     "6.1": {objectives: [S11, S02, S07, S08], note: "The brief lists the fixes, so this practices the rebuild, not the critique."}
     "6.2": [S07, S02, S08]
     "6.3": {objectives: [S08], note: "The check wants ax.annotate with an arrow at the lightest bird, and kilograms on the mass axis. The starter supplies the colors and the labels, so S02 and S07 are not tested."}
+    "6.4": {objectives: [S11], note: "A critique in words, before the page gives its own. The check counts three different statements and says which kinds of fault it recognized. It cannot judge them: rubric row A3 R5 does."}
     "7.1": {objectives: [S10], note: "The chart type is the learner's choice, but the check does not judge it (S09)."}
 
   # Lesson quiz questions, "lesson.question": exactly one objective each.

@@ -143,7 +143,7 @@ def test_additions_are_counted_on_top_of_the_lessons(joined):
     a block of its own. Section 1's additions were planned at 65 minutes. Building one moves its
     minutes from the objective's 'to write' to 'additions built', so the two always add up to 65."""
     added = SPEC["added_minutes"]
-    assert added, "exercise 6.3 was the first addition"
+    assert len(added) == 2, "exercises 6.3 and 6.4 are the additions that are built"
     for item in added:
         assert item["lesson"] in SPEC["lesson_minutes"] and item["objective"] in STATIC
         assert joined["summary"][item["objective"]]["roles"].get(item["lesson"]) == "T", (
@@ -173,7 +173,7 @@ def test_rule_one_waits_only_for_exercises_on_the_pages_that_teach_the_objective
     assert {i: summary[i]["decisive"] for i in STATIC} == {
         "S01": ["1.1", "1.2"], "S02": ["1.1", "1.2"], "S03": ["2.1", "2.2"], "S04": ["3.1", "3.2"],
         "S05": ["1.2", "4.2"], "S06": ["5.1", "5.2"], "S07": ["1.1", "3.1", "3.2", "6.1", "6.2"],
-        "S08": ["6.1", "6.2", "6.3"], "S09": [], "S10": ["7.1"], "S11": ["6.1"], "S12": [], "S13": ["4.1"], "S14": []}
+        "S08": ["6.1", "6.2", "6.3"], "S09": [], "S10": ["7.1"], "S11": ["6.1", "6.4"], "S12": [], "S13": ["4.1"], "S14": []}
     order = [p.slug for p in COURSE.pages]
     page_of = {key: order.index(info["page"].slug) for key, info in COURSE.exercises.items()}
     for o in OBJECTIVES:

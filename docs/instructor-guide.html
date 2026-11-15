@@ -405,7 +405,7 @@
 <p>An exercise is counted for an objective only when its automatic check tests that objective, which is why S02 (labels) and S07 (color) count so many. <strong>Covered</strong> means the pages teach the objective, at least one exercise checks it, and at least one exam question or rubric row assesses it. <strong>Partial</strong> means it is taught, but practice or assessment is missing:</p>
 <ul>
 <li><strong>S09</strong> is taught in Lesson 7, Step 1, and assessed nowhere. Every assignment names its chart types, so no learner has to choose a form and defend the choice.</li>
-<li><strong>S12:</strong> saving a figure is shown in Lesson 6 as code that is not run, and no exercise practices it. Assignments 1 and 2 ask for a written reading of the charts, but no page teaches how to write one, or how to write alt text.</li>
+<li><strong>S12:</strong> saving a figure is shown in Lesson 6 as code that is not run, and no exercise practices it. Assignments 1 and 2 ask for a written reading of the charts, but no page teaches how to write one, or how to write alt text. The assignments also require a notebook that runs top to bottom, which no page explains.</li>
 </ul>
 <p>The exam has questions on nine of the twelve objectives, and no more than four on any one. The other three (S09, S11 and S12) are assessed through the assignments, or not at all.</p>
 <p>The 24 objectives of sections 2 and 3 are <strong>Planned</strong>: no page teaches them yet. One page already points their way: &ldquo;Where to next?&rdquo; in Lesson 7 names the condition for an interactive chart, &ldquo;when readers need to hover, zoom or filter.&rdquo;</p>
@@ -431,15 +431,15 @@
 </tr>
 <tr>
 <td><strong>I04</strong> Edit the figure object</td>
-<td><strong>D04</strong> Show data with the right component</td>
+<td><strong>D04</strong> Show data with the right element</td>
 </tr>
 <tr>
 <td><strong>I05</strong> Set the first view and the navigation</td>
-<td><strong>D05</strong> Choose input controls and defaults</td>
+<td><strong>D05</strong> Choose input widgets and defaults</td>
 </tr>
 <tr>
 <td><strong>I06</strong> Add controls that switch, filter or animate</td>
-<td><strong>D06</strong> Wire inputs to outputs</td>
+<td><strong>D06</strong> Connect inputs to outputs through the rerun</td>
 </tr>
 <tr>
 <td><strong>I07</strong> Build interactive small multiples</td>
@@ -482,7 +482,7 @@
 <li>The larger course has three sections of twelve objectives: static visualization (this site), interactive charts and dashboards. This site is section 1 in full.</li>
 <li>Learners arrive with Python basics and pandas, the prerequisite stated on the Start here page. Those skills are not objectives here, which is why one rubric row (Assignment 2, &lsquo;Code quality&rsquo;) maps to none.</li>
 <li>The mastery standard is 80% on a check of five or more unseen questions, or full credit on the mapped rubric rows, with a second attempt on a different check.</li>
-<li>The tools for sections 2 and 3 are placeholders: Plotly, with Altair where linked selections matter, and Dash, with Streamlit as the lighter alternative. The objectives are worded so that another library changes the &lsquo;Key tools&rsquo; column, not the objective.</li>
+<li>Section 2&rsquo;s tools are placeholders: Plotly, with Altair where linked selections matter. Its objectives are worded so that another library changes the &lsquo;Key tools&rsquo; column, not the objective, except I04 and I07, whose criteria name Plotly&rsquo;s own functions. Section 3 uses Streamlit and is written in its terms (the rerun, session state, caching), so the alternative, Dash, would mean rewriting D02 to D09 and D11. The names in &lsquo;Key tools&rsquo; were checked against the documentation of Plotly 7.1, Altair 6.3 and Streamlit 1.67.</li>
 <li>An exercise counts as evidence for an objective only when its automatic check tests that objective. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its &lsquo;full credit&rsquo; text describes.</li>
 <li>Status: Covered means the pages teach the objective, at least one checked exercise practices it, and at least one exam question or rubric row assesses it. Partial means it is taught but practice or assessment is missing. Planned means no page teaches it yet.</li>
 <li>The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson&rsquo;s 60-minute midpoint across its objectives. Sections 2 and 3 are planning figures to revise after a pilot.</li>
@@ -523,38 +523,38 @@
 <tr>
 <td>3 Dashboards</td>
 <td>12</td>
-<td>12.5 h</td>
+<td>11.4 h</td>
 <td>0.6 h</td>
 <td>9.0 h</td>
-<td>2.0 h</td>
-<td>24.0 h</td>
+<td>1.8 h</td>
+<td>22.8 h</td>
 </tr>
 <tr>
 <td>All sections</td>
 <td>36</td>
-<td>30.6 h</td>
+<td>29.5 h</td>
 <td>1.8 h</td>
 <td>21.5 h</td>
-<td>4.9 h</td>
-<td>58.7 h</td>
+<td>4.7 h</td>
+<td>57.4 h</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li><strong>Lessons:</strong> of section 1&rsquo;s 8.1 hours, 7.0 exist as pages (5.25 to 8.75 at the ends of the 45-75 minute range). The other 1.1 hours are the additions in steps 2 and 4 below. Sections 2 and 3 are still to be written.</li>
+<li><strong>Lessons:</strong> of section 1&rsquo;s 8.1 hours, 7.0 exist as pages (5.25 to 8.75 at the ends of the 45-75 minute range). The other 1.1 hours are the additions in steps 2 and 4 below. Sections 2 and 3 are still to be written. Section 3 is counted for Streamlit: a first app, a layout, the path from inputs to outputs and a deployment take less code in it than in a framework built on callbacks, so D02, D03, D04, D06 and D11 are 10 to 15 minutes shorter than first planned (11.4 hours, down from 12.5).</li>
 <li><strong>Check:</strong> one check of about 35 minutes at the end of each section. For section 1 this is the existing exam.</li>
 <li><strong>Projects:</strong> section 1&rsquo;s three assignments (about 1 hour, about 2 hours and 3-4 hours), and one or two projects for each later section.</li>
 <li><strong>Reassessment:</strong> an allowance of 15% of lesson and check time for correctives and second attempts.</li>
 </ul>
-<p>Of the 58.7 hours, 37.2 are lessons, checks and reassessment. That is about 30 sessions of 75 minutes: a 15-week term at two sessions a week, with nothing to spare. The 21.5 hours of project work are done outside class. In a shorter term, use the flipped format: learners work through the lessons before class, and class time goes to checks, correctives and projects.</p>
+<p>Of the 57.4 hours, 35.9 are lessons, checks and reassessment. That is about 29 sessions of 75 minutes: a 15-week term at two sessions a week has 30, which leaves one to spare. The 21.5 hours of project work are done outside class. In a shorter term, use the flipped format: learners work through the lessons before class, and class time goes to checks, correctives and projects.</p>
 <h3 id="next-steps">Next steps</h3>
 <ol>
-<li><strong>Settle the assumptions that are yours to make:</strong> the mastery standard, the libraries for sections 2 and 3, and the hours.</li>
+<li><strong>Settle the assumptions that are yours to make:</strong> the mastery standard, the library for section 2, and the hours.</li>
 <li><strong>Finish section 1&rsquo;s two partial objectives.</strong> For S09, add a &ldquo;questions only&rdquo; task (three questions, and the learner picks and defends each chart form) and check questions of the &ldquo;which chart answers this?&rdquo; kind. For S12, add a short &ldquo;Describe and deliver&rdquo; section to Lesson 6 or 7 (save a figure, open the file, write its alt text) and make alt text a rubric row.</li>
 <li><strong>Build the mastery checks.</strong> Each objective needs five or more questions, in two forms, kept out of the public repository. Start where today&rsquo;s exam is thinnest: S09, S11 and S12 have no questions, S02 has one, and S01, S08 and S10 have two each.</li>
 <li><strong>Make two smaller additions:</strong> an exercise that checks <code>ax.annotate</code> and a tick formatter (S08), and a written critique before the Lesson 6 makeover (S11).</li>
 <li><strong>Draft section 2 from I01-I12.</strong> The grammar carries over: in Plotly Express, <code>hue=</code> becomes <code>color=</code> and <code>col=</code> becomes <code>facet_col=</code>. Two things to settle first: a second, larger dataset with an ordered variable (the animation and large-data objectives need one), and whether the in-browser exercise checker can inspect a Plotly figure, which is plain data, the way it inspects matplotlib objects now.</li>
-<li><strong>Draft section 3 from D01-D12.</strong> A dashboard needs a running server, so this site&rsquo;s in-browser Python does not carry over as it stands. Decide early how learners run and hand in their apps, and how the apps are tested.</li>
+<li><strong>Draft section 3 from D01-D12.</strong> Section 3 uses Streamlit, and a Streamlit app can run on a page like this one: stlite runs Streamlit in the browser on Pyodide, with no server, so the lessons can show live apps. It is a second runtime beside the site&rsquo;s own, though. It loads its own Pyodide and its own Streamlit build (about a minute the first time), the exercise checker cannot look inside it, and it leaves out <code>streamlit.testing</code>. Learners still run, test and deploy their apps outside the browser, so decide early how they hand them in and how the apps are tested.</li>
 <li><strong>Keep the map current.</strong> After a change to a lesson, the exam or an assignment, update <code>instructor/mastery_objectives.yaml</code> and rebuild. The build and <code>pytest</code> fail until the map and the course agree.</li>
 </ol>
 <h2 id="teaching-the-design-thread">Teaching the design thread</h2>

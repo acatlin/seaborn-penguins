@@ -111,7 +111,7 @@ def test_quiz_correct_option_is_not_usually_longest():
 
 
 def test_quiz_questions_are_labelled_for_assistive_tech(built_site):
-    """Each question is a labelled group, so screen readers announce the stem with its options."""
+    """Each question is a labeled group, so screen readers announce the stem with its options."""
     for slug in LESSONS:
         text = (built_site["out"] / f"{slug}.html").read_text(encoding="utf-8")
         ids = set(re.findall(r'\sid="([^"]+)"', text))
@@ -297,7 +297,7 @@ RAW_LABELS = {
 
 @pytest.mark.parametrize("slug, ex_id", sorted(RAW_LABELS))
 def test_exercises_reject_raw_column_names_as_axis_labels(slug, ex_id):
-    """`flipper_length_mm` contains "mm", so a unit check alone passes a chart nobody labelled."""
+    """`flipper_length_mm` contains "mm", so a unit check alone passes a chart nobody labeled."""
     import build_site
     import runner
 

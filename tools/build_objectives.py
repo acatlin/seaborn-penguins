@@ -971,6 +971,7 @@ def fill_timing(grid, spec, objectives):
 def fill_read_me(grid, spec, course):
     ws, meta = grid.ws, spec["meta"]
     site = course.pages[0].url.rsplit("/", 1)[0] + "/"
+    count = len(spec["objectives"])
     row = 1
     grid.put(row, 1, f"{meta['title']}: {meta['course']}", font=font(16, bold=True), align=RUN_ON)
     ws.row_dimensions[1].height = 30
@@ -987,7 +988,7 @@ def fill_read_me(grid, spec, course):
 
     row -= 1  # the first block sits right under the title
     block("About this workbook", [
-        ("What it is", "Thirty-six objectives for a course in three sections: static visualization, interactive "
+        ("What it is", f"{count} objectives for a course in three sections: static visualization, interactive "
                        "charts and dashboards. Section 1 is the Seaborn with Penguins site, and this workbook shows "
                        "which of its pages, exercises, quiz questions, exam questions and rubric rows serve which "
                        "objective. Sections 2 and 3 are not written yet: their objectives are here to plan from."),
@@ -997,7 +998,7 @@ def fill_read_me(grid, spec, course):
                                 "workbook are lost at the next build."),
     ])
     block("The sheets", [
-        ("Objectives", "The 36 objectives, one per row: what the learner can do, what mastery looks like, "
+        ("Objectives", f"The {count} objectives, one per row: what the learner can do, what mastery looks like, "
                        "prerequisites, where it is taught, practiced and checked today, the gap and the next step."),
         ("Page map", "Objectives down, pages across: which page teaches, introduces or reinforces which objective, "
                      "with a count of the evidence for each and the status that follows from it."),

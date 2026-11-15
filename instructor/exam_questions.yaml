@@ -98,7 +98,7 @@
   q: "A colleague's bar chart of mean body mass (3,700-5,100 g) has its y-axis starting at 3,500 g. Why is that a problem?"
   options:
     - "Matplotlib hides the error bars whenever the axis does not start at zero"
-    - "The confidence intervals are no longer centred on the tops of the bars"
+    - "The confidence intervals are no longer centered on the tops of the bars"
     - "Readers can no longer tell which species is the heaviest"
     - "Bar length no longer matches the value, exaggerating differences"
   answer: D

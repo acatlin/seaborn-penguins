@@ -353,8 +353,11 @@ def assemble(spec, course):
                          "Practice, instant feedback", note))
     for number, question in enumerate(course.exam, 1):
         objs, note = exam[str(number)]
+        stem = plain(question["q"])
+        if question.get("code"):  # "this chart" means nothing without the code it refers to
+            stem += "\n" + question["code"].strip()
         evidence.append((f"Exam Q{number}", EXAM_ITEM, f"Assessment pack, Part 1 (Lesson {question['lesson']})",
-                         plain(question["q"]), None, objs[0], [], 1, "Summative", note))
+                         stem, None, objs[0], [], 1, "Summative", note))
     for key, info in course.rubric.items():
         objs, note = rubric[key]
         a, r = key.split(".")
@@ -681,7 +684,8 @@ OBJECTIVE_COLUMNS = [
     ("shown_by", "Shown by", 15, "The kind of evidence that shows mastery (listed above)."),
     ("prerequisites", "Prerequisites", 13, "Objectives to master first."),
     ("tools", "Key tools", 40,
-     "The functions and arguments the objective uses. For sections 2 and 3 these are assumptions."),
+     "The functions and arguments the objective uses. Sections 2 and 3 are not written yet, so theirs are "
+     "plans: assumption A4 names the libraries and the versions the names were checked against."),
     ("status", "Status", 10, "Covered, Partial or Planned. Worked out on the Page map sheet from the two maps."),
     ("taught", "Where it is taught", 24,
      "Pages by role. This is the corrective reading; the Page detail sheet lists the sections."),

@@ -7,7 +7,8 @@ objectives map (`instructor/mastery_objectives.yaml`).
 
 **Steps A and B are built** (2026-11-15). Steps C, D and E are not. Nine of the ten questions under "Decide first" were answered
 on 2026-11-15, each as recommended, and so were O11, O12 and O13 in `REVIEW.md`. The answer is
-written under each question. Question 3 is open, and step E waits for it.
+written under each question. Question 3 was answered later the same day: an honor system for now.
+Two things that answer leaves open are listed under it, and step E waits for them.
 
 How to use it:
 
@@ -66,7 +67,13 @@ The work is about 58 to 73 hours of building and checking in all, most of it in 
 3. **How does a learner take a check?** On paper or in Word, or in a learning management
    system, and which one? No recommendation: it depends on where the course runs. The answer
    sets the format that the builder writes, and it may settle O12. Needed for step E.
-   **Not decided.** It needs an answer in the instructor's own words before step E.
+   Decided on 2026-11-15, in the instructor's words: "For now, let's make the mastery check honor
+   system; we'll later move this into web pages with a database back end." As read here: for now a
+   learner takes a check unsupervised and reports the result, and nobody proctors it. The answer
+   does not choose among the paths that were offered (Word or paper, a learning management
+   system, or both), and it leaves two things open that step E needs: where a learner gets a
+   check and its key, since question 1 keeps both out of this repository, and who scores it, the
+   learner or the instructor. The later move to web pages with a database is not planned here.
 4. **Is five the number of questions in a check, or the least? And do the five objectives that
    are shown by a task get questions as well?**
    Recommendation: five, in two forms, for the nine objectives that are shown by questions,
@@ -137,7 +144,9 @@ Step 4 of the guide. About 3 hours. Needs questions 2, 5 and 6.
   labels or the y-axis label must say "kg", and the data must stay in grams (a chart of
   `body_mass_g / 1000` is told that a formatter changes the labels, not the data).
 - A test puts nine attempts through the check: seven that must each earn their own hint, and
-  two other correct answers that must pass.
+  two other correct answers that must pass. (A tenth was added by a recheck later that day:
+  grams written with a thousands comma, "3,000", under an axis label that says kg. The check had
+  passed it, because it looked for four digits in a row.)
 - Tried in Chrome, where matplotlib is 3.8.4: the solution, the starter and the nine attempts
   get the same verdict and the same message as in the build.
 - O11 took exercise 3.2 off S08, so S08 counts five exercises, and rule 1 counts 6.1, 6.2 and 6.3.
@@ -300,7 +309,8 @@ objective as its pages teach it, and steps A to D change what five objectives' p
 
 ## Order
 
-1. The decisions: questions 1 to 10, and O11 to O13. Done on 2026-11-15, except question 3.
+1. The decisions: questions 1 to 10, and O11 to O13. Done on 2026-11-15. Question 3's answer (an
+   honor system for now) leaves two things open: see the question.
 2. Step A, then step B. They are small, and they change Lesson 6 only. Both are built.
 3. Step C, then step D. They change Lesson 7, the assessment pack and the runner.
 4. Step E, in stages, starting where the exam is thinnest.

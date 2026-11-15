@@ -392,6 +392,9 @@ def exercise_6_3_attempts():
         "the arrow points at the heaviest bird": (good.replace("idxmin", "idxmax") + kilograms, "idxmin"),
         "an arrow without words": (good.replace('"Lightest bird"', '""') + kilograms, "some words"),
         "no tick formatter": (good, "tick formatter"),
+        "grams with a thousands comma under a label that says kg": (
+            good + 'ax.yaxis.set_major_formatter(lambda value, pos: f"{value:,.0f}")\nax.set(ylabel="Body mass (kg)")\n',
+            "still shows grams"),
         "kilograms without a unit": (good + 'ax.yaxis.set_major_formatter(lambda value, pos: f"{value / 1000:.1f}")\n',
                                      "'kg'"),
         "the data divided by 1000": (chart.replace('y="body_mass_g"', 'y=penguins["body_mass_g"] / 1000') + kilograms,
@@ -406,7 +409,8 @@ def exercise_6_3_attempts():
 
 def test_exercise_6_3_wants_an_arrow_at_the_lightest_bird_and_kilograms():
     """Exercise 6.3 is the one that checks ax.annotate and a tick formatter. The lesson's own example
-    annotates the heaviest bird, so pasting its lines must not pass, and neither may ax.text."""
+    annotates the heaviest bird, so pasting its lines must not pass, and neither may ax.text. Grams
+    written with a thousands comma ("3,000") are still grams, whatever the axis label says."""
     import build_site
     import runner
 

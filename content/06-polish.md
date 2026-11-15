@@ -335,7 +335,7 @@ assert any(n.get_text().strip() for n in on_target), "Give the annotation some w
 plt.gcf().canvas.draw()
 import re
 ticks = [t.get_text() for t in ax.get_yticklabels() if t.get_text()]
-assert ticks and not any(re.search(r"[0-9]{4}", s) for s in ticks), "The mass axis still shows grams. Add a tick formatter: ax.yaxis.set_major_formatter(lambda value, pos: f'{value / 1000:.1f} kg')."
+assert ticks and not any(re.search(r"[0-9]{4}", s.replace(",", "").replace(" ", "")) for s in ticks), "The mass axis still shows grams. Add a tick formatter: ax.yaxis.set_major_formatter(lambda value, pos: f'{value / 1000:.1f} kg')."
 assert all("kg" in s for s in ticks) or "kg" in ax.get_ylabel(), "Say that the numbers are kilograms: put 'kg' in the tick labels, or in the y-axis label."
 print("One arrow, one sentence, and an axis in the units people think in.")
 ```

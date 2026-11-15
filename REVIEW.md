@@ -394,7 +394,8 @@ for these four is the cure the finding itself names):
   pages.** "Check: every lesson's minutes add up to the midpoint" had its heading and one row on
   the first page and six rows on the second. Fix: the builder puts a page break before the
   heading. Excel honors it although the sheet is fitted to one page wide: its second page now
-  starts at the heading.
+  starts at the heading. (Since step A of `PLAN.md` the break stands one table higher, before
+  "Additions built on top of the lessons", so the second page holds both small tables whole.)
 
 Left alone, with reasons:
 
@@ -743,7 +744,10 @@ in version 1.4 of the map. Each ends with what was done.
   outputs", in the YAML, on the Read me sheet and in the guide. One thing the wording leaves to
   the instructor: a notebook has no automatic check, so a notebook that is handed in shows the
   charts, and the instructor compares them with the solutions notebook. How a learner takes a
-  mastery check (`PLAN.md`, question 3) is still open, and may change this again.
+  mastery check (`PLAN.md`, question 3) was answered later on 2026-11-15: an honor system for
+  now, and web pages with a database later. Whether part 1 of rule 1 is then taken on the
+  learner's word as well was not said, so its wording stands. Recording a pass in the browser,
+  the other way out that this item names, is not decided either.
 - **O13. With today's materials, part 2 of rule 1 comes too late.** Part 2 needs a mastery check,
   and none exists yet. Rule 5 says to use "the exercises and rubric rows" meanwhile. The rubric
   rows come with the assignments, after Lessons 3, 5 and 7, which is later than the objectives
@@ -763,6 +767,7 @@ in version 1.4 of the map. Each ends with what was done.
 **What comes next.** Steps 2 to 4 of the guide's "Next steps" are planned in `PLAN.md`: two
 exercises, a task, a new section in Lesson 7 and the mastery checks, with ten questions to answer
 first. Nine of the ten were answered on 2026-11-15, as recommended, and the answers are written
-under each question there. Question 3 (how a learner takes a check) is still open. Steps A and B
+under each question there. Question 3 (how a learner takes a check) was answered later that day:
+an honor system for now. Steps A and B
 of the plan are built: exercise 6.3 for S08, and exercise 6.4 for S11. One of the ten follows from O10. An exercise for S09 in Lesson 7
 would make the rule-1 test fail, because S11 needs S09 and is first taught one lesson earlier.

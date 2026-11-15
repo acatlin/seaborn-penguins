@@ -19,7 +19,7 @@
 meta:
   title: "Mastery objectives"
   course: "Python visualization tools"
-  version: "1.5"
+  version: "1.6"
   date: "2026-11-15"
 
 sections:
@@ -91,6 +91,8 @@ added_minutes:
   - {lesson: 06-polish, objective: S08, minutes: 10, what: "Exercise 6.3: annotate a point and format the tick labels."}
   - {lesson: 06-polish, objective: S11, minutes: 10, what: "Exercise 6.4: write down three problems with the 'before' chart of the makeover."}
   - {lesson: 07-capstone, objective: S09, minutes: 20, what: "Exercise 7.2: three questions, and the learner chooses the chart form for each."}
+  - {lesson: 07-capstone, objective: S12, minutes: 10, what: "Step 5, 'Describe and deliver', and exercise 7.3: save a figure for its destination, open the file, rerun the notebook."}
+  - {lesson: 07-capstone, objective: S14, minutes: 15, what: "Step 5, 'Describe and deliver', and exercise 7.3: write a figure's alt text and a caption with its caveat."}
 
 # ---------------------------------------------------------------- read-me text
 mastery_rule:
@@ -342,9 +344,9 @@ objectives:
     prerequisites: [S02]
     tools: "matplotlib: fig.savefig (dpi=, bbox_inches=\"tight\"), g.savefig, PNG and SVG; Jupyter: restart and run all"
     outcome: 5
-    to_write: 10
-    gap: "Saving is shown in Lesson 6 as code that is not run, and no exercise practices it. No page mentions restarting the notebook and running it top to bottom: that appears only as a deliverable of the assignments."
-    next_step: "Add a short 'Describe and deliver' section to Lesson 7, as Step 5, shared with S14: save a figure, open the file and check it, then restart the notebook and run it top to bottom."
+    to_write: 0
+    gap: "Exercise 7.3 opens the file the learner saved and reads its format and resolution. Two things in Step 5 are done outside the page, and nothing checks them: looking at the file at the size it will be shown, and restarting the notebook to run it top to bottom, which only the assignments ask for. No exam question."
+    next_step: ""
 
   # S13 and S14 were split off S05 and S12 in version 1.3 (REVIEW.md, O8).
   - id: S13
@@ -377,9 +379,9 @@ objectives:
     prerequisites: [S02]
     tools: "No functions: a caption, alt text, a short written verdict"
     outcome: 5
-    to_write: 15
-    gap: "No page teaches this. Assignments 1 and 2 ask for a written reading of the charts and score it, and the instructor guide suggests alt text, but no page shows how to write either. Lesson 4 asks once for 'a caveat in the caption'."
-    next_step: "Add a short 'Describe and deliver' section to Lesson 7, as Step 5, shared with S12: write the figure's alt text and a one-sentence caption. Make alt text a rubric row."
+    to_write: 0
+    gap: "Exercise 7.3 counts the words of the alt text and the caption, and rejects a repeat of the title. Whether they are true, and whether the caveat matters, is judged by the rubric rows alone. Taught in Lesson 7, after Assignments 1 and 2 have already asked for a written reading. No exam question."
+    next_step: "Consider a sentence on reading a chart aloud in Lesson 3, before Assignment 1 asks for one."
 
   - id: I01
     name: "Decide when interaction earns its place"
@@ -824,7 +826,7 @@ lesson_goals:
   04-relationships: [S05, S05, S13, S13]
   05-small-multiples: [S06, S06, S06, S06]
   06-polish: [S08, S07, S10, S08, S12]
-  07-capstone: [S09, S10, S10, S11]
+  07-capstone: [S09, S10, S10, S11, S12, S14]
 
 # ---------------------------------------------------------------- page map
 # One entry per (page section, objective): [anchor, objective, role, note].
@@ -917,7 +919,7 @@ page_map:
     - [layouts-pltsubplots-ax, S10, T]
     - [the-makeover, S11, T]
     - [the-makeover, S08, T, "Direct labels, one annotation, a tick formatter and despine: steps 1-4 of the 'after' chart."]
-    - [saving-your-work, S12, T]
+    - [saving-your-work, S12, T, "The two savefig calls, shown but not run. Lesson 7, Step 5, runs them."]
     - ["*", S01, R, "The makeover removes channels that do not serve the question."]
     - ["*", S02, R, "Plain words and a title that makes the point, as step 4 of the makeover."]
 
@@ -930,6 +932,8 @@ page_map:
     - [step-3-fill-the-panels, S07, R, "One color story: species colors in A, B and D, two grays for sex in C."]
     - [step-3-fill-the-panels, S08, R, "Tick formatters and despine on a whole figure."]
     - [step-4-review-before-you-share, S11, T]
+    - [step-5-describe-and-deliver, S12, T, "A PNG for a slide and a vector file for print, a look at the saved file, and a restart-and-run-all."]
+    - [step-5-describe-and-deliver, S14, T, "Alt text that describes and alt text that only names, and a caption with its caveat."]
     - [where-to-next, I01, I, "Names the condition for section 2: 'when readers need to hover, zoom or filter'."]
     - ["*", S01, R, "Panel D is the Lesson 1 scatter."]
     - ["*", S02, R, "Panel titles state findings and carry letters."]
@@ -956,6 +960,7 @@ evidence:
     "6.3": {objectives: [S08], note: "The check wants ax.annotate with an arrow at the lightest bird, and kilograms on the mass axis. The starter supplies the colors and the labels, so S02 and S07 are not tested."}
     "6.4": {objectives: [S11], note: "A critique in words, before the page gives its own. The check counts three different statements and says which kinds of fault it recognized. It cannot judge them: rubric row A3 R5 does."}
     "7.1": {objectives: [S10], note: "The chart type is the learner's choice, but the check does not judge it (S09). Exercise 7.2 does."}
+    "7.3": {objectives: [S12, S14], note: "S12: the check opens the saved file and reads its format and its resolution. S14: it counts the words of the alt text and the caption and rejects a repeat of the title. It cannot tell whether the words are true: rubric rows A1 R5, A2 R5 and A3 R7 do."}
     "7.2": {objectives: [S09], note: "Three questions and no chart named. The check reads the form of each panel and nothing else: it accepts every honest form, and rejects bars of a mean where zero means nothing, a line between species and a pie. It cannot read a reason: the short task's rubric rows do."}
 
   # Lesson quiz questions, "lesson.question": exactly one objective each.
@@ -1038,6 +1043,7 @@ evidence:
     "3.4": [S11, S02, S07, S08]
     "3.5": [S11]
     "3.6": [S12]
+    "3.7": {objectives: [S14], note: "Alt text and a caption for the report. Added at the end of the rubric, so that A3 R1 to R6 keep their numbers."}
     # The short task 'Questions only' (PLAN.md, step C).
     "T1.1": [S09]
     "T1.2": [S09]

@@ -13,7 +13,9 @@ import ast
 import base64
 import contextlib
 import io
+import os
 import re
+import tempfile
 import traceback
 import warnings
 
@@ -27,6 +29,7 @@ import pandas as pd  # noqa: E402
 import seaborn as sns  # noqa: E402
 
 DATA_PATH = "penguins.csv"
+_data_file = None  # DATA_PATH as an absolute path, while a cell runs in its temporary folder
 RANDOM_SEED = 0
 _default_rng = np.random.default_rng
 
@@ -49,7 +52,7 @@ _original_load_dataset = sns.load_dataset
 def _load_dataset(name, *args, **kwargs):
     """Serve the bundled penguins CSV so lessons work offline and identically."""
     if name == "penguins":
-        return pd.read_csv(DATA_PATH)
+        return pd.read_csv(_data_file or DATA_PATH)
     return _original_load_dataset(name, *args, **kwargs)
 
 
@@ -292,7 +295,26 @@ def run_cell(code, setup="", check="", dpi=110, encode=False):
 
     Returns a dict with keys: stdout, figures (PNG bytes, or base64 strings if
     encode=True), warnings, error, check_ok, check_message.
+
+    The cell and its check run in a temporary folder, which is removed afterwards.
+    A cell that saves a file (fig.savefig("report.png")) therefore leaves nothing
+    behind, in the repository during a build or in the browser's file system,
+    and its check can open the file by the name the cell gave it.
     """
+    global _data_file
+    home = os.getcwd()
+    _data_file = os.path.abspath(DATA_PATH)  # the browser finds the data by a relative path
+    scratch = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+    os.chdir(scratch.name)
+    try:
+        return _run_cell(code, setup, check, dpi, encode)
+    finally:
+        os.chdir(home)
+        _data_file = None
+        scratch.cleanup()
+
+
+def _run_cell(code, setup, check, dpi, encode):
     plt.close("all")
     matplotlib.rcdefaults()
     np.random.seed(RANDOM_SEED)  # stripplot jitter and any np.random call in a cell

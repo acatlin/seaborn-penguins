@@ -180,6 +180,7 @@ def cells_in_notebook_order(slug):
     """
     import contextlib
     import io
+    import tempfile
     import warnings
 
     import matplotlib
@@ -196,7 +197,9 @@ def cells_in_notebook_order(slug):
     exec(compile(setup, "<setup>", "exec"), ns)
     baseline = dict(matplotlib.rcParams)
     cells = []
-    with warnings.catch_warnings():
+    # A cell may save a file (Lesson 7, Step 5), as a notebook would beside itself: give it a folder.
+    with warnings.catch_warnings(), tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as scratch, \
+            contextlib.chdir(scratch):
         for pattern in runner.LIBRARY_WARNINGS:  # same allowance as the runner itself
             warnings.filterwarnings("ignore", message=pattern)
         for block in blocks:
@@ -554,6 +557,70 @@ def test_exercise_7_2_judges_the_form_and_nothing_else():
         if hint is None:
             assert result["check_ok"] is True, (name, result["check_message"])
             assert "I looked at the forms only" in result["check_message"]
+        else:
+            assert result["check_ok"] is False and result["check_message"].startswith(hint), (name, result["check_message"])
+
+
+def exercise_7_3_attempts():
+    """Attempts at exercise 7.3 as {name: (code, the start of the hint it has to earn, or None if it
+    should pass)}. Each is the solution with its file or its words changed."""
+    import build_site
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / "07-capstone.md").read_text(encoding="utf-8"))
+    solution = next(b.body for b in blocks if b.kind == "solution" and b.opts.get("for") == "7.3")
+    save = 'fig.savefig("penguin-sexes.png", dpi=200)'
+    chart, words = solution.split(save)
+    assert "alt_text = " in words and "caption = " in words
+    title = "Males outweigh females in every species"
+    assert title in chart
+
+    def saved(line):
+        return chart + line + words
+
+    def worded(**new):
+        return solution + "".join(f"\n{name} = {text!r}" for name, text in new.items())
+
+    return {
+        "nothing saved": (saved(""), "No file was saved"),
+        "another file name": (saved('fig.savefig("panel-c.png", dpi=200)'), "I found panel-c.png"),
+        "the default resolution": (saved('fig.savefig("penguin-sexes.png")'), "The file was saved at 100 dots per inch"),
+        "150 dpi": (saved('fig.savefig("penguin-sexes.png", dpi=150)'), "The file was saved at 150 dots per inch"),
+        "only a vector file": (saved('fig.savefig("penguin-sexes.svg")'), "I found penguin-sexes.svg"),
+        "no alt text": (worded(alt_text=""), "Write the alt text"),
+        "the title as alt text": (worded(alt_text=title + "."), "Your alt text repeats the title"),
+        "alt text that only names the chart": (worded(alt_text="A point plot of body mass by species and sex."),
+                                               "Alt text of 10 words says too little"),
+        "alt text of a hundred words": (worded(alt_text=" ".join(["Males are heavier than females."] * 20)),
+                                        "Alt text is read aloud, and 100 words"),
+        "no caption": (worded(caption="   "), "Write the caption"),
+        "the alt text again as the caption": (solution + "\ncaption = alt_text", "The caption repeats"),
+        "a caption of three words": (worded(caption="Males weigh more."), "A caption of 3 words"),
+        "a caption of sixty words": (worded(caption=" ".join(["Males weigh more than females do."] * 10)),
+                                     "A caption of 60 words"),
+        "300 dpi": (saved('fig.savefig("penguin-sexes.png", dpi=300)'), None),
+        "trimmed with bbox_inches": (saved('fig.savefig("penguin-sexes.png", dpi=200, bbox_inches="tight")'), None),
+        "plt.savefig": (saved('plt.savefig("penguin-sexes.png", dpi=200)'), None),
+        "a PNG and a vector file": (saved(save + '\nfig.savefig("penguin-sexes.svg")'), None),
+    }
+
+
+def test_exercise_7_3_opens_the_saved_file_and_counts_the_words():
+    """Exercise 7.3 is the page's check of S12 and S14: save a figure for a slide, and write its alt
+    text and a caption. The check opens the file the cell saved and reads its format and resolution,
+    and it tests the shape of the words: long enough to say something, short enough to be read
+    aloud, and not a repeat of the title. It cannot tell whether they are true, and says so."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / "07-capstone.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == "7.3")
+    for name, (code, hint) in exercise_7_3_attempts().items():
+        result = runner.run_cell(code, setup=setup, check=check)
+        assert result["error"] is None, (name, result["error"])
+        if hint is None:
+            assert result["check_ok"] is True, (name, result["check_message"])
+            assert "I can't tell whether they are true" in result["check_message"]
         else:
             assert result["check_ok"] is False and result["check_message"].startswith(hint), (name, result["check_message"])
 

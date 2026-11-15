@@ -19,7 +19,7 @@ O10 were decided later that day and applied as version 1.3 of the map. The same 
 and the British spellings (L27), rechecked the first seven as applied, and wrote down four more
 Low findings (L23-L26) and three more questions (O11-O13) without acting on them. All seven were
 decided on 2026-11-15, as recommended, and applied in a fourth follow-up, with version 1.4 of the
-map. What comes next is planned in `PLAN.md`. Steps A, B and C of that plan are built, and a
+map. What comes next is planned in `PLAN.md`. Steps A to D of that plan are built, and a
 recheck of steps A and B added three more Low findings (L28-L30).
 
 Severity scale:
@@ -361,6 +361,10 @@ Fixed in a third follow-up pass:
   "neighbouring" and "organisation's" in three quiz items (Lessons 2, 3 and 7); "centred" in exam
   Q11; "neighbours" and "labelled" in the assignments; six in this file and three in code
   comments. All are American now. The answer statistics given under M4 and M5 are unchanged.
+  Two words were left as they are, and whether to change them is not decided: "afterwards" (in
+  Lesson 6, "How seaborn and matplotlib fit together", and in D05 of the objectives map) and
+  "backwards" (in H1 of this file). Both are standard in American English, where "afterward"
+  and "backward" are the more common forms.
 
 Fixed in a fourth follow-up pass, after each was decided on 2026-11-15 ("as recommended", which
 for these four is the cure the finding itself names):
@@ -507,7 +511,9 @@ the same kind, both left alone. Nothing assesses the choice of chart form: every
 names its chart types, and no exam question or exercise check asks for the choice. And
 saving a figure is shown in Lesson 6 as code that is not run, with no exercise to practice
 it. The guide lists both, and what to add, under "Next steps". (Since 2026-11-15 the first gap is
-closed: exercise 7.2 and the short task "Questions only" name no chart, `PLAN.md`, step C.)
+closed: exercise 7.2 and the short task "Questions only" name no chart, `PLAN.md`, step C. And
+the second since step D: Step 5 of Lesson 7 runs the code that saves a figure, and exercise 7.3
+checks the file.)
 
 ## Recheck of the mastery objectives
 
@@ -795,3 +801,9 @@ of the plan are built: exercise 6.3 for S08, and exercise 6.4 for S11. So is ste
 and the short task "Questions only" for S09, which is Covered now. One of the ten follows from
 O10. An exercise for S09 in Lesson 7 makes the rule-1 test fail as it was written, because S11
 needs S09 and is first taught one lesson earlier. Since step C the test names that pair.
+
+Step D is built as well: Step 5 of Lesson 7, "Describe and deliver", with exercise 7.3, for S12
+and S14, and a rubric row for alt text and a caption in Assignment 3. All fourteen static
+objectives are Covered, in version 1.6 of the map. What remains of the plan is step E, the
+mastery checks. It waits for two answers that question 3 left open: where a learner gets a check
+and its key, and who scores it. `HANDOFF.md` says how to pick the work up on another machine.

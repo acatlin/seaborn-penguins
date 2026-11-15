@@ -227,7 +227,7 @@ def test_no_cell_changes_global_style_for_later_cells(slug):
         assert not cell.changed, f"{slug}: cell starting {cell.first_line!r} changed {cell.changed}"
 
 
-# Charts that show seaborn's raw column names in a legend on purpose. Every other legend is relabelled.
+# Charts that show seaborn's raw column names in a legend on purpose. Every other legend is relabeled.
 RAW_LEGENDS_ON_PURPOSE = {
     "01-scatter-hue": "the bare first hue example; the next section relabels it",
     "01-scatter-style": "two legend variables, so the column names are headings inside the legend, not a title",
@@ -277,8 +277,8 @@ def test_exercise_2_1_only_accepts_step_outlines():
         assert result["error"] is None, result["error"]
         assert result["check_ok"] is False and hint in result["check_message"], (code, result["check_message"])
     outlines = f'ax = sns.histplot({by_species}, binwidth=3, element="step", fill=False)'
-    unlabelled = runner.run_cell(outlines, setup=setup, check=check)  # seaborn's own label is "flipper_length_mm"
-    assert unlabelled["check_ok"] is False and "plain English" in unlabelled["check_message"]
+    unlabeled = runner.run_cell(outlines, setup=setup, check=check)  # seaborn's own label is "flipper_length_mm"
+    assert unlabeled["check_ok"] is False and "plain English" in unlabeled["check_message"]
     result = runner.run_cell(outlines + label, setup=setup, check=check)
     assert result["check_ok"] is True, result["check_message"]
 
@@ -338,6 +338,37 @@ def test_exercises_reject_seaborn_default_colors(slug, ex_id):
     assert result["error"] is None, result["error"]
     assert result["check_ok"] is False, f"exercise {ex_id} accepts seaborn's default colors"
     assert "PENGUIN_COLORS" in result["check_message"], result["check_message"]
+
+
+# Solutions changed in one way that the exercise's brief rules out: (page, exercise, the text to
+# replace in the solution, its replacement, a word of the hint the checker has to give).
+RULED_OUT_BY_THE_BRIEF = [
+    ("02-distributions", "2.2", "sns.ecdfplot(data=", "sns.histplot(data=", "ecdfplot"),                               # bars
+    ("02-distributions", "2.2", "sns.ecdfplot(data=", 'sns.histplot(element="step", fill=False, data=', "ecdfplot"),  # outlines
+    ("02-distributions", "2.2", "sns.ecdfplot(data=", "sns.kdeplot(data=", "ecdfplot"),                                # density
+    ("06-polish", "6.1", "legend=False)", 'legend=False, style="island")', "style="),              # a shape for each island
+    ("07-capstone", "7.1", ', layout="constrained"', "", "constrained"),                                # no layout engine
+    ("07-capstone", "7.1", "    ax.get_legend().remove()", "    pass", "legends"),                      # a legend in every panel
+]
+
+
+@pytest.mark.parametrize("slug, ex_id, old, new, hint", RULED_OUT_BY_THE_BRIEF)
+def test_exercises_reject_what_their_brief_rules_out(slug, ex_id, old, new, hint):
+    """Exercise 2.2 asks for an ECDF and passed a histogram. Exercise 6.1 says to drop style= and
+    passed a chart that kept it. Exercise 7.1 asks for a constrained layout and one legend, and
+    tested neither."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / f"{slug}.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    solution = next(b.body for b in blocks if b.kind == "solution" and b.opts.get("for") == ex_id)
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == ex_id)
+    assert solution.count(old) == 1, f"exercise {ex_id}: expected {old!r} once in the solution"
+    result = runner.run_cell(solution.replace(old, new), setup=setup, check=check)
+    assert result["error"] is None, result["error"]
+    assert result["check_ok"] is False, f"exercise {ex_id} accepts a solution with {old!r} replaced by {new!r}"
+    assert hint in result["check_message"], result["check_message"]
 
 
 def test_bin_width_panels_draw_the_widths_they_name():

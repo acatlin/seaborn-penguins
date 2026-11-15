@@ -19,7 +19,7 @@
 meta:
   title: "Mastery objectives"
   course: "Python visualization tools"
-  version: "1.3"
+  version: "1.4"
   date: "2026-11-15"
 
 sections:
@@ -82,16 +82,16 @@ lesson_minutes:
 
 # ---------------------------------------------------------------- read-me text
 mastery_rule:
-  - "An objective is mastered when (1) every exercise that checks it on the pages that teach it passes its automatic check, and (2) the learner scores 80% or better on a mastery check for that objective. The Objectives sheet names those exercises under 'Practice today'. An exercise on another page that also checks the objective is further practice, and mastery does not wait for it."
-  - "A mastery check is five or more questions the learner has not seen with their answers, or a rubric-scored task at full credit on the rubric rows mapped to the objective. On the assessment pack's three-level scale, 'about half' means not yet."
+  - "An objective is mastered when (1) every exercise that checks it on the pages that teach it passes its automatic check, shown to the instructor or handed in as the lesson's notebook with its outputs, and (2) the learner scores 80% or better on a mastery check for that objective. The Objectives sheet names those exercises under 'Practice today'. An exercise on another page that also checks the objective is further practice, and mastery does not wait for it."
+  - "A mastery check is five questions the learner has not seen with their answers, or a rubric-scored task at full credit on the rubric rows mapped to the objective. On the assessment pack's three-level scale, 'about half' means not yet."
   - "Not yet? The learner reworks the sections that teach the objective (Page detail sheet, filter on the objective), redoes its exercises from Reset, and takes a different check. There is no penalty for a second attempt."
   - "Mastered early? The learner moves to the next objective whose prerequisites are met, or starts the next assignment."
-  - "With today's materials: the exam has at most four questions per objective and its answer key is public, so use the exercises and rubric rows to decide mastery and the exam questions to find what to rework."
+  - "With today's materials: no mastery check is written yet. Until one is, a learner moves on from an objective when its exercises under rule 1 pass, and the rubric rows of the next assignment confirm the objective or send the learner back to it. The exam has at most four questions per objective and its answer key is public, so use its questions to find what to rework, not to decide mastery."
 
 assumptions:
   - "The larger course has three sections: static visualization (this site, fourteen objectives), interactive charts (twelve) and dashboards (twelve). This site is section 1 in full."
   - "Learners arrive with Python basics and pandas, the prerequisite stated on the Start here page. Those skills are not objectives here, which is why one rubric row (Assignment 2, 'Code quality') maps to none."
-  - "The mastery standard is 80% on a check of five or more unseen questions, or full credit on the mapped rubric rows, with a second attempt on a different check."
+  - "The mastery standard is 80% on a check of five unseen questions, which is four of the five, or full credit on the mapped rubric rows, with a second attempt on a different check."
   - "Section 2 uses Plotly. Its objectives are worded so that another library would change the 'Key tools' column, not the objective, except I04 and I07, whose criteria name Plotly's own functions. Plotly links two views only inside a scatter matrix or through a notebook widget, so linking two separate charts (I08) is finished in section 3 (D07). Altair, the alternative that was weighed, links them in a few lines. Section 3 uses Streamlit and is written in its terms (the rerun, session state, caching), so the alternative, Dash, would mean rewriting D02 to D09 and D11. The names in 'Key tools' were checked against the documentation of Plotly 7.1 and Streamlit 1.67."
   - "An exercise counts as evidence for an objective only when its automatic check tests that objective. S01 is counted in Lesson 1's two exercises alone: later checks also look at which columns are plotted, but to recognize the chart, not to test the mapping. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its 'full credit' text describes."
   - "Status: Covered means the pages teach the objective, at least one checked exercise practices it, and at least one exam question or rubric row assesses it. Partial means it is taught but practice or assessment is missing. Planned means no page teaches it yet."
@@ -332,7 +332,7 @@ objectives:
     outcome: 5
     to_write: 10
     gap: "Saving is shown in Lesson 6 as code that is not run, and no exercise practices it. No page mentions restarting the notebook and running it top to bottom: that appears only as a deliverable of the assignments."
-    next_step: "Add a short 'Describe and deliver' section to Lesson 6 or 7, shared with S14: save a figure, open the file and check it, then restart the notebook and run it top to bottom."
+    next_step: "Add a short 'Describe and deliver' section to Lesson 7, as Step 5, shared with S14: save a figure, open the file and check it, then restart the notebook and run it top to bottom."
 
   # S13 and S14 were split off S05 and S12 in version 1.3 (REVIEW.md, O8).
   - id: S13
@@ -367,7 +367,7 @@ objectives:
     outcome: 5
     to_write: 15
     gap: "No page teaches this. Assignments 1 and 2 ask for a written reading of the charts and score it, and the instructor guide suggests alt text, but no page shows how to write either. Lesson 4 asks once for 'a caveat in the caption'."
-    next_step: "Add a short 'Describe and deliver' section to Lesson 6 or 7, shared with S12: write the figure's alt text and a one-sentence caption. Make alt text a rubric row."
+    next_step: "Add a short 'Describe and deliver' section to Lesson 7, as Step 5, shared with S12: write the figure's alt text and a one-sentence caption. Make alt text a rubric row."
 
   - id: I01
     name: "Decide when interaction earns its place"
@@ -934,7 +934,7 @@ evidence:
     "2.1": [S03, S02, S07]
     "2.2": {objectives: [S03, S07, S08], note: "The check sees the reference line but not the printed share."}
     "3.1": [S04, S02, S07]
-    "3.2": {objectives: [S04, S02, S07, S08], note: "S08: the check requires that no legend is drawn. Seaborn 0.13 leaves it out by itself when hue repeats the x column, so this assert passes without legend=False."}
+    "3.2": {objectives: [S04, S02, S07], note: "Not listed for S08: the check requires that no legend is drawn, but seaborn 0.13 leaves it out by itself when hue repeats the x column, so that assert passes without legend=False (REVIEW.md, O11)."}
     "4.1": {objectives: [S13, S07], note: "S07: the check requires the diverging palette."}
     "4.2": [S05, S02, S07]
     "5.1": {objectives: [S06, S02, S07, S08], note: "S08: the check requires legend=False, since the panel titles already name the species."}

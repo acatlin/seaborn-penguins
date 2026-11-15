@@ -64,13 +64,13 @@
 <p>By the end of the course learners can:</p>
 <ol>
 <li>Map DataFrame columns to visual channels (<code>x</code>, <code>y</code>, <code>hue</code>, <code>style</code>, <code>size</code>, <code>col</code>, <code>row</code>).</li>
-<li>Choose a chart form from the question: distribution, comparison or relationship (and recognise that most &ldquo;composition&rdquo; questions are better answered with sorted bars than with a pie).</li>
+<li>Choose a chart form from the question: distribution, comparison or relationship (and recognize that most &ldquo;composition&rdquo; questions are better answered with sorted bars than with a pie).</li>
 <li>Build histograms, KDEs, ECDFs, count/bar/box/violin/strip/point plots, scatter/regression/line plots, heatmaps and pair plots.</li>
 <li>Use figure-level functions for small multiples and <code>plt.subplots</code> + <code>ax=</code> for custom layouts.</li>
 <li>Finish charts with matplotlib: labels, titles, annotations, reference lines, tick formatting, and saving.</li>
 <li>Critique and improve charts using data-ink, consistent color, highlighting, direct labeling, and honest scales.</li>
 </ol>
-<p>For mastery-based teaching, these six outcomes are split into twelve objectives that can be checked one at a time. See <a href="#mastery-objectives">Mastery objectives</a>.</p>
+<p>For mastery-based teaching, these six outcomes are split into fourteen objectives that can be checked one at a time. See <a href="#mastery-objectives">Mastery objectives</a>.</p>
 <h2 id="suggested-schedules">Suggested schedules</h2>
 <table>
 <thead>
@@ -147,7 +147,7 @@
 <tr>
 <td>Mastery objectives workbook</td>
 <td><code>instructor/Seaborn_Mastery_Objectives.xlsx</code></td>
-<td>36 objectives for a three-section course, and the map from this site&rsquo;s pages, exercises and assessments onto the first twelve. See <a href="#mastery-objectives">Mastery objectives</a>.</td>
+<td>38 objectives for a three-section course, and the map from this site&rsquo;s pages, exercises and assessments onto the first fourteen. See <a href="#mastery-objectives">Mastery objectives</a>.</td>
 </tr>
 <tr>
 <td>Objectives source</td>
@@ -305,11 +305,11 @@
 <li>For Assignment 3, the design rationale is where you&rsquo;ll see whether the principles stuck. Look for principles applied to <em>specific</em> changes, not a list of buzzwords.</li>
 </ul>
 <h2 id="mastery-objectives">Mastery objectives</h2>
-<p>This site can serve as the first of three sections of a larger course on Python visualization tools: static visualization (this site), interactive charts, and dashboards. For that course, taught for mastery, the six learning outcomes at the top of this guide are split into objectives small enough to check one at a time: twelve per section, 36 in all. A learner moves on from an objective by showing mastery of it, and may try again after more practice, without penalty.</p>
+<p>This site can serve as the first of three sections of a larger course on Python visualization tools: static visualization (this site), interactive charts, and dashboards. For that course, taught for mastery, the six learning outcomes at the top of this guide are split into objectives small enough to check one at a time: fourteen for this site and twelve for each of the two later sections, 38 in all. A learner moves on from an objective by showing mastery of it, and may try again after more practice, without penalty.</p>
 <p>The objectives, and the map from this site&rsquo;s pages onto them, are in <code>instructor/Seaborn_Mastery_Objectives.xlsx</code>. The workbook has six sheets:</p>
 <ul>
 <li><strong>Read me:</strong> the mastery rule, the assumptions and a guide to the columns.</li>
-<li><strong>Objectives:</strong> all 36, one per row: what the learner can do, what mastery looks like, prerequisites, where it is taught, practiced and checked today, the gap and the next step.</li>
+<li><strong>Objectives:</strong> all 38, one per row: what the learner can do, what mastery looks like, prerequisites, where it is taught, practiced and checked today, the gap and the next step.</li>
 <li><strong>Page map:</strong> objectives down, pages across, with the evidence counted and a status for each objective.</li>
 <li><strong>Page detail:</strong> the same map section by section, with a link to each section. Filter on an objective to get the reading for a learner who has not mastered it yet.</li>
 <li><strong>Evidence:</strong> every exercise, quiz question, exam question and rubric row, with the objective it gives evidence for.</li>
@@ -317,7 +317,7 @@
 </ul>
 <p>The workbook is generated from <code>instructor/mastery_objectives.yaml</code>. Change that file, not the workbook, and run <code>python tools/build_materials.py</code>.</p>
 <h3 id="where-the-pages-fit">Where the pages fit</h3>
-<p>The eight teaching pages map onto all twelve static objectives. Each of the 30 lesson goals (the &ldquo;By the end of this lesson you can&rdquo; bullets), the 13 exercises, the 28 quiz questions and the 25 exam questions has one of the twelve as its objective, and so do 17 of the 18 rubric rows. The exception is &ldquo;Code quality&rdquo; in Assignment 2: Python fluency is a prerequisite of this course, not one of its objectives.</p>
+<p>The eight teaching pages teach thirteen of the fourteen static objectives. Each of the 30 lesson goals (the &ldquo;By the end of this lesson you can&rdquo; bullets), the 13 exercises, the 28 quiz questions and the 25 exam questions has one of the fourteen as its objective, and so do 17 of the 18 rubric rows. The exception is &ldquo;Code quality&rdquo; in Assignment 2: Python fluency is a prerequisite of this course, not one of its objectives.</p>
 <table>
 <thead>
 <tr>
@@ -353,9 +353,9 @@
 <td>Covered</td>
 </tr>
 <tr>
-<td><strong>S05</strong> Show relationships and check for hidden groups</td>
+<td><strong>S05</strong> Show a trend and check for hidden groups</td>
 <td>Lessons 1, 4</td>
-<td>3 exercises, 4 quiz questions, 4 exam questions, 1 rubric row</td>
+<td>2 exercises, 3 quiz questions, 2 exam questions, no rubric row</td>
 <td>Covered</td>
 </tr>
 <tr>
@@ -395,20 +395,33 @@
 <td>Covered</td>
 </tr>
 <tr>
-<td><strong>S12</strong> Deliver a figure that stands on its own</td>
+<td><strong>S12</strong> Save a figure that can be reproduced</td>
 <td>Lesson 6</td>
-<td>no exercise, no quiz question, no exam question, 4 rubric rows</td>
+<td>no exercise, no quiz question, no exam question, 2 rubric rows</td>
 <td>Partial</td>
+</tr>
+<tr>
+<td><strong>S13</strong> Show correlations among several variables</td>
+<td>Lesson 4</td>
+<td>1 exercise, 1 quiz question, 2 exam questions, 1 rubric row</td>
+<td>Covered</td>
+</tr>
+<tr>
+<td><strong>S14</strong> Describe what a figure shows</td>
+<td>No page yet</td>
+<td>no exercise, no quiz question, no exam question, 2 rubric rows</td>
+<td>Planned</td>
 </tr>
 </tbody>
 </table>
-<p>An exercise is counted for an objective only when its automatic check tests that objective, which is why S02 (labels) and S07 (color) count so many. Mastery waits only for the exercises on the pages that teach the objective (rule 1 under Deciding mastery): for S02, those are exercises 1.1 and 1.2. <strong>Covered</strong> means the pages teach the objective, at least one exercise checks it, and at least one exam question or rubric row assesses it. <strong>Partial</strong> means it is taught, but practice or assessment is missing:</p>
+<p>S13 and S14 are the halves that were split off S05 and S12. A code is never reused, so they are numbered last, although S13 is taught in Lesson 4. An exercise is counted for an objective only when its automatic check tests that objective, which is why S02 (labels) and S07 (color) count so many. Mastery waits only for the exercises on the pages that teach the objective (rule 1 under Deciding mastery): for S02, those are exercises 1.1 and 1.2. <strong>Covered</strong> means the pages teach the objective, at least one exercise checks it, and at least one exam question or rubric row assesses it. <strong>Partial</strong> means it is taught, but practice or assessment is missing:</p>
 <ul>
 <li><strong>S09</strong> is taught in Lesson 7, Step 1, and assessed nowhere. Every assignment names its chart types, so no learner has to choose a form and defend the choice.</li>
-<li><strong>S12:</strong> saving a figure is shown in Lesson 6 as code that is not run, and no exercise practices it. Assignments 1 and 2 ask for a written reading of the charts, but no page teaches how to write one, or how to write alt text. The assignments also require a notebook that runs top to bottom, which no page explains.</li>
+<li><strong>S12:</strong> saving a figure is shown in Lesson 6 as code that is not run, and no exercise practices it. The assignments also require a notebook that runs top to bottom, which no page explains.</li>
 </ul>
-<p>The exam has questions on nine of the twelve objectives, and no more than four on any one. The other three (S09, S11 and S12) are assessed through the assignments, or not at all.</p>
-<p>The 24 objectives of sections 2 and 3 are <strong>Planned</strong>: no page teaches them yet. One page already points their way: &ldquo;Where to next?&rdquo; in Lesson 7 names the condition for an interactive chart, &ldquo;when readers need to hover, zoom or filter.&rdquo;</p>
+<p><strong>Planned</strong> means no page teaches the objective yet. In section 1 that is <strong>S14</strong>: Assignments 1 and 2 ask for a written reading of the charts and score it, but no page teaches how to write one, or how to write alt text.</p>
+<p>The exam has questions on ten of the fourteen objectives, and no more than four on any one. The other four (S09, S11, S12 and S14) are assessed through the assignments, or not at all.</p>
+<p>The 24 objectives of sections 2 and 3 are <strong>Planned</strong> too. One page already points their way: &ldquo;Where to next?&rdquo; in Lesson 7 names the condition for an interactive chart, &ldquo;when readers need to hover, zoom or filter.&rdquo;</p>
 <table>
 <thead>
 <tr>
@@ -479,10 +492,10 @@
 <h3 id="assumptions">Assumptions</h3>
 <p>The objectives rest on seven assumptions. Each is yours to change in <code>instructor/mastery_objectives.yaml</code>.</p>
 <ul>
-<li>The larger course has three sections of twelve objectives: static visualization (this site), interactive charts and dashboards. This site is section 1 in full.</li>
+<li>The larger course has three sections: static visualization (this site, fourteen objectives), interactive charts (twelve) and dashboards (twelve). This site is section 1 in full.</li>
 <li>Learners arrive with Python basics and pandas, the prerequisite stated on the Start here page. Those skills are not objectives here, which is why one rubric row (Assignment 2, &lsquo;Code quality&rsquo;) maps to none.</li>
 <li>The mastery standard is 80% on a check of five or more unseen questions, or full credit on the mapped rubric rows, with a second attempt on a different check.</li>
-<li>Section 2&rsquo;s tools are placeholders: Plotly, with Altair where linked selections matter. Its objectives are worded so that another library changes the &lsquo;Key tools&rsquo; column, not the objective, except I04 and I07, whose criteria name Plotly&rsquo;s own functions. Section 3 uses Streamlit and is written in its terms (the rerun, session state, caching), so the alternative, Dash, would mean rewriting D02 to D09 and D11. The names in &lsquo;Key tools&rsquo; were checked against the documentation of Plotly 7.1, Altair 6.3 and Streamlit 1.67.</li>
+<li>Section 2 uses Plotly. Its objectives are worded so that another library would change the &lsquo;Key tools&rsquo; column, not the objective, except I04 and I07, whose criteria name Plotly&rsquo;s own functions. Plotly links two views only inside a scatter matrix or through a notebook widget, so linking two separate charts (I08) is finished in section 3 (D07). Altair, the alternative that was weighed, links them in a few lines. Section 3 uses Streamlit and is written in its terms (the rerun, session state, caching), so the alternative, Dash, would mean rewriting D02 to D09 and D11. The names in &lsquo;Key tools&rsquo; were checked against the documentation of Plotly 7.1 and Streamlit 1.67.</li>
 <li>An exercise counts as evidence for an objective only when its automatic check tests that objective. S01 is counted in Lesson 1&rsquo;s two exercises alone: later checks also look at which columns are plotted, but to recognize the chart, not to test the mapping. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its &lsquo;full credit&rsquo; text describes.</li>
 <li>Status: Covered means the pages teach the objective, at least one checked exercise practices it, and at least one exam question or rubric row assesses it. Partial means it is taught but practice or assessment is missing. Planned means no page teaches it yet.</li>
 <li>The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson&rsquo;s 60-minute midpoint across its objectives. Sections 2 and 3 are planning figures to revise after a pilot.</li>
@@ -504,7 +517,7 @@
 <tbody>
 <tr>
 <td>1 Static</td>
-<td>12</td>
+<td>14</td>
 <td>8.1 h</td>
 <td>0.6 h</td>
 <td>6.5 h</td>
@@ -531,7 +544,7 @@
 </tr>
 <tr>
 <td>All sections</td>
-<td>36</td>
+<td>38</td>
 <td>29.5 h</td>
 <td>1.8 h</td>
 <td>21.5 h</td>
@@ -549,11 +562,11 @@
 <p>Of the 57.4 hours, 35.9 are lessons, checks and reassessment. That is about 29 sessions of 75 minutes: a 15-week term at two sessions a week has 30, which leaves one to spare. The 21.5 hours of project work are done outside class. In a shorter term, use the flipped format: learners work through the lessons before class, and class time goes to checks, correctives and projects.</p>
 <h3 id="next-steps">Next steps</h3>
 <ol>
-<li><strong>Settle the assumptions that are yours to make:</strong> the mastery standard, the library for section 2, and the hours.</li>
-<li><strong>Finish section 1&rsquo;s two partial objectives.</strong> For S09, add a &ldquo;questions only&rdquo; task (three questions, and the learner picks and defends each chart form) and check questions of the &ldquo;which chart answers this?&rdquo; kind. For S12, add a short &ldquo;Describe and deliver&rdquo; section to Lesson 6 or 7 (save a figure, open the file, write its alt text) and make alt text a rubric row.</li>
-<li><strong>Build the mastery checks.</strong> Each objective needs five or more questions, in two forms, kept out of the public repository. Start where today&rsquo;s exam is thinnest: S09, S11 and S12 have no questions, S02 has one, and S01, S08 and S10 have two each.</li>
+<li><strong>Settle the assumptions that are still yours to make:</strong> the mastery standard and the hours. The library for section 2 is settled: Plotly.</li>
+<li><strong>Finish section 1&rsquo;s three unfinished objectives.</strong> For S09, add a &ldquo;questions only&rdquo; task (three questions, and the learner picks and defends each chart form) and check questions of the &ldquo;which chart answers this?&rdquo; kind. For S12 and S14, add a short &ldquo;Describe and deliver&rdquo; section to Lesson 6 or 7 (save a figure, open the file and rerun the notebook for S12; write its alt text and a caption for S14) and make alt text a rubric row.</li>
+<li><strong>Build the mastery checks.</strong> Each objective needs five or more questions, in two forms, kept out of the public repository. Start where today&rsquo;s exam is thinnest: S09, S11, S12 and S14 have no questions, S02 has one, and S01, S05, S08, S10 and S13 have two each. Give S11&rsquo;s check after Lesson 7, where its prerequisite S09 is taught.</li>
 <li><strong>Make two smaller additions:</strong> an exercise that checks <code>ax.annotate</code> and a tick formatter (S08), and a written critique before the Lesson 6 makeover (S11).</li>
-<li><strong>Draft section 2 from I01-I12.</strong> The grammar carries over: in Plotly Express, <code>hue=</code> becomes <code>color=</code> and <code>col=</code> becomes <code>facet_col=</code>. Two things to settle first: a second, larger dataset with an ordered variable (the animation and large-data objectives need one), and whether the in-browser exercise checker can inspect a Plotly figure, which is plain data, the way it inspects matplotlib objects now.</li>
+<li><strong>Draft section 2 from I01-I12.</strong> The grammar carries over: in Plotly Express, <code>hue=</code> becomes <code>color=</code> and <code>col=</code> becomes <code>facet_col=</code>. Two things to settle first: a second, larger dataset with an ordered variable (the animation and large-data objectives need one), and whether the in-browser exercise checker can inspect a Plotly figure, which is plain data, the way it inspects matplotlib objects now. Plotly links two views only inside a scatter matrix or through a notebook widget, so decide too whether learners practice linked views (I08) in a notebook or meet them in section 3.</li>
 <li><strong>Draft section 3 from D01-D12.</strong> Section 3 uses Streamlit, and a Streamlit app can run on a page like this one: stlite runs Streamlit in the browser on Pyodide, with no server, so the lessons can show live apps. It is a second runtime beside the site&rsquo;s own, though. It loads its own Pyodide and its own Streamlit build (about a minute the first time), the exercise checker cannot look inside it, and it leaves out <code>streamlit.testing</code>. Learners still run, test and deploy their apps outside the browser, so decide early how they hand them in and how the apps are tested.</li>
 <li><strong>Keep the map current.</strong> After a change to a lesson, the exam or an assignment, update <code>instructor/mastery_objectives.yaml</code> and rebuild. The build and <code>pytest</code> fail until the map and the course agree.</li>
 </ol>
@@ -569,7 +582,7 @@
 <ul>
 <li>The species palette was checked for distinguishability under protanopia, deuteranopia and tritanopia (minimum pairwise ΔE of about 16 in OKLab). Still, never rely on color alone: shape, position and direct labels carry identity too.</li>
 <li>The light gray in <code>SEX_COLORS</code> keeps at least 3:1 contrast against a white background, and every chart that uses it also varies the marker shape or names the sex on an axis.</li>
-<li>Every figure on the site has descriptive alt text, each quiz question is a labelled group for screen readers, and the in-browser editors are keyboard-accessible (Ctrl/Cmd + Enter runs, Esc then Tab leaves the editor).</li>
+<li>Every figure on the site has descriptive alt text, each quiz question is a labeled group for screen readers, and the in-browser editors are keyboard-accessible (Ctrl/Cmd + Enter runs, Esc then Tab leaves the editor).</li>
 <li>Ask learners to write alt text for their assignment charts. It&rsquo;s an excellent test of whether they know what the chart says.</li>
 </ul>
 <h2 id="troubleshooting">Troubleshooting</h2>

@@ -48,8 +48,11 @@ body {
 }
 a { color: var(--accent); }
 a:hover { text-decoration-thickness: 2px; }
-code { font-family: var(--mono); font-size: 0.88em; background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; }
+/* Inline code may break inside a long name or path, so that it never makes the page wider than a phone. */
+code { font-family: var(--mono); font-size: 0.88em; background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; overflow-wrap: break-word; }
 pre code { background: none; padding: 0; }
+/* A plain code block (a shell command) scrolls inside its own box, as the highlighted ones do. */
+:not(.highlight) > pre { overflow-x: auto; }
 img { max-width: 100%; height: auto; }
 .skip-link { position: absolute; left: -999px; }
 .skip-link:focus { left: 1rem; top: 1rem; z-index: 99; background: var(--surface); padding: 0.5rem 1rem; }
@@ -154,15 +157,19 @@ details.solution[open] summary { margin-bottom: 0.6rem; }
 details.solution > button { margin-top: 0.6rem; }
 
 /* ---------- quiz ---------- */
-.quiz { margin: 1.5rem 0; display: grid; gap: 1rem; }
+/* minmax(0, 1fr): the column may be narrower than its longest piece of code, which then breaks. */
+.quiz { margin: 1.5rem 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
 .quiz-q { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 1rem 1.1rem; }
 .quiz-stem { margin: 0 0 0.6rem; font-weight: 600; }
 .quiz-num { color: var(--ink-3); margin-right: 0.2rem; }
-.quiz-options { list-style: none; padding: 0; margin: 0 0 0.75rem; display: grid; gap: 0.35rem; }
+.quiz-options { list-style: none; padding: 0; margin: 0 0 0.75rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.35rem; }
 .quiz-options label { display: flex; gap: 0.5rem; align-items: baseline; padding: 0.35rem 0.6rem; border-radius: 6px; cursor: pointer; border: 1px solid transparent; }
 .quiz-options label:hover { background: var(--surface-2); }
 .quiz-options input { accent-color: var(--accent); }
 .opt-letter { font-weight: 600; color: var(--ink-3); }
+/* The text of an option. In a wide window its words and its inline code stay separate flex items, as
+   they always were. On a narrow screen (below) it becomes one item, so that it wraps like a sentence. */
+.opt-text { display: contents; }
 .quiz-options label.is-correct { border-color: var(--good); background: color-mix(in srgb, var(--good) 10%, var(--surface)); }
 .quiz-options label.is-wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 8%, var(--surface)); }
 .quiz-feedback { font-weight: 600; margin-top: 0.5rem; }
@@ -201,4 +208,5 @@ details.solution > button { margin-top: 0.6rem; }
   .content { padding: 1.25rem 16px 2rem; }
   article h1 { font-size: 1.7rem; }
   .pager { grid-template-columns: minmax(0, 1fr); }
+  .opt-text { display: block; min-width: 0; }
 }

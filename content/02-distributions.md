@@ -209,7 +209,7 @@ print("About 0.91 - read it off the plot: the purple line crosses 45 mm near 0.0
     - "Wide bins can merge separate peaks, hiding groups such as species"
     - "The y-axis switches from counts to densities, which changes the shape"
   answer: C
-  explain: "Bin width is a modelling choice. Too wide hides structure (two humps become one); too narrow shows noise. Try several."
+  explain: "Bin width is a modeling choice. Too wide hides structure (two humps become one); too narrow shows noise. Try several."
 - q: "With `hue=\"species\"`, `kdeplot` uses `common_norm=True` by default. What does that mean?"
   options:
     - "Together the curves integrate to 1, so small groups look short"

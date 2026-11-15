@@ -102,6 +102,8 @@ for ax, name in zip(axes, ["boxplot", "violinplot", "stripplot"]):
 - **Violin plot:** a mirrored KDE. It shows the shape, but carries the KDE's smoothing caveats.
 - **Strip plot:** every penguin as a dot, with no hiding. It gets crowded with big data.
 
+All three pass `legend=False`: the x-axis already names each species, so a legend would only repeat it.
+
 A strong default for modest data is a **box plot with the raw points on top**:
 
 ```python run fig=03-box-strip alt="Box plots of body mass by species with every individual penguin overlaid as a semi-transparent black dot."
@@ -225,7 +227,7 @@ print("Box for the summary, dots for the truth. Gentoo bills are clearly shallow
     - "The ranking can be read at a glance"
     - "Seaborn computes the group means faster when the bars are sorted"
     - "The longest category label ends up next to the axis, so nothing overlaps"
-    - "The error bars shrink, because neighbouring groups are compared in order"
+    - "The error bars shrink, because neighboring groups are compared in order"
   answer: A
   explain: "Unless the categories have a natural order (like months), sort by value so the comparison the reader wants is already done."
 ```

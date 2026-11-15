@@ -28,7 +28,7 @@ assignments:
     time: "About 1 hour"
     scenario: >-
       The Palmer Station newsletter wants three simple, correct charts for its
-      "Meet the neighbours" column. Readers are not scientists, so every chart
+      "Meet the neighbors" column. Readers are not scientists, so every chart
       must be readable without explanation.
     tasks:
       - "Chart 1 - Who lives where: a HORIZONTAL count chart of penguins per island, split by species with the course's PENGUIN_COLORS. Order islands from most to fewest penguins."
@@ -260,7 +260,7 @@ assignments:
           (Few: every encoding must earn its place; maximize data-ink). I replaced
           the rainbow palette with the course's fixed species colors so color means
           the same thing in every chart and stays distinguishable for colorblind
-          readers. I labelled the clusters directly instead of using a legend, so
+          readers. I labeled the clusters directly instead of using a legend, so
           readers never look away from the data. The title now states the finding,
           the y-axis reads in kilograms, and the despined axes remove ink that
           carries no data. In the report, panel C grays out the correct

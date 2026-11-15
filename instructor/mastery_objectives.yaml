@@ -6,10 +6,12 @@
 # page section, exercise, quiz question, exam question and rubric row named here exists,
 # and that none is left out.
 #
-# Three sections of twelve objectives each:
-#   S01-S12  static visualization   (this site: Start here and Lessons 1-7)
+# Three sections:
+#   S01-S14  static visualization   (this site: Start here and Lessons 1-7)
 #   I01-I12  interactive charts     (not written yet)
 #   D01-D12  dashboards             (not written yet)
+# S13 and S14 were split off S05 and S12 in version 1.3. A code is never reused, so they
+# follow S12 in the list, although S13 is taught in Lesson 4.
 #
 # An objective's status (Covered, Partial, Planned) is not stored here. The workbook
 # works it out from the page map and the evidence map below.
@@ -17,7 +19,7 @@
 meta:
   title: "Mastery objectives"
   course: "Python visualization tools"
-  version: "1.2"
+  version: "1.3"
   date: "2026-11-15"
 
 sections:
@@ -29,7 +31,7 @@ sections:
   - key: I
     label: "2 Interactive"
     title: "Interactive charts"
-    tools: "Assumed: Plotly (Altair where linked selections matter)."
+    tools: "Plotly."
     content: "Not written yet."
   - key: D
     label: "3 Dashboards"
@@ -58,7 +60,7 @@ timing:
     Section 1: the instructor guide gives 45-75 minutes per lesson. Each lesson is counted
     at the 60-minute midpoint and split across the objectives it serves (table below).
     Multiply by 0.75 or 1.25 for the ends of the range. Sections 2 and 3: planning
-    estimates of 30-120 minutes per objective, by analogy with section 1 (35 minutes per
+    estimates of 30-120 minutes per objective, by analogy with section 1 (30 minutes per
     objective on average), with more time where the tool brings a new mental model
     (figure objects, the rerun, session state) or the objective is a studio capstone.
     Section 3 is counted for Streamlit, in which a first app, a layout, the path from
@@ -73,7 +75,7 @@ lesson_minutes:
   01-first-plot: {S01: 30, S02: 15, S05: 15}
   02-distributions: {S03: 60}
   03-categories: {S04: 60}
-  04-relationships: {S05: 60}
+  04-relationships: {S05: 35, S13: 25}
   05-small-multiples: {S06: 60}
   06-polish: {S07: 15, S08: 15, S10: 10, S11: 15, S12: 5}
   07-capstone: {S09: 10, S10: 35, S11: 15}
@@ -87,10 +89,10 @@ mastery_rule:
   - "With today's materials: the exam has at most four questions per objective and its answer key is public, so use the exercises and rubric rows to decide mastery and the exam questions to find what to rework."
 
 assumptions:
-  - "The larger course has three sections of twelve objectives: static visualization (this site), interactive charts and dashboards. This site is section 1 in full."
+  - "The larger course has three sections: static visualization (this site, fourteen objectives), interactive charts (twelve) and dashboards (twelve). This site is section 1 in full."
   - "Learners arrive with Python basics and pandas, the prerequisite stated on the Start here page. Those skills are not objectives here, which is why one rubric row (Assignment 2, 'Code quality') maps to none."
   - "The mastery standard is 80% on a check of five or more unseen questions, or full credit on the mapped rubric rows, with a second attempt on a different check."
-  - "Section 2's tools are placeholders: Plotly, with Altair where linked selections matter. Its objectives are worded so that another library changes the 'Key tools' column, not the objective, except I04 and I07, whose criteria name Plotly's own functions. Section 3 uses Streamlit and is written in its terms (the rerun, session state, caching), so the alternative, Dash, would mean rewriting D02 to D09 and D11. The names in 'Key tools' were checked against the documentation of Plotly 7.1, Altair 6.3 and Streamlit 1.67."
+  - "Section 2 uses Plotly. Its objectives are worded so that another library would change the 'Key tools' column, not the objective, except I04 and I07, whose criteria name Plotly's own functions. Plotly links two views only inside a scatter matrix or through a notebook widget, so linking two separate charts (I08) is finished in section 3 (D07). Altair, the alternative that was weighed, links them in a few lines. Section 3 uses Streamlit and is written in its terms (the rerun, session state, caching), so the alternative, Dash, would mean rewriting D02 to D09 and D11. The names in 'Key tools' were checked against the documentation of Plotly 7.1 and Streamlit 1.67."
   - "An exercise counts as evidence for an objective only when its automatic check tests that objective. S01 is counted in Lesson 1's two exercises alone: later checks also look at which columns are plotted, but to recognize the chart, not to test the mapping. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its 'full credit' text describes."
   - "Status: Covered means the pages teach the objective, at least one checked exercise practices it, and at least one exam question or rubric row assesses it. Partial means it is taught but practice or assessment is missing. Planned means no page teaches it yet."
   - "The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson's 60-minute midpoint across its objectives. Sections 2 and 3 are planning figures to revise after a pilot."
@@ -187,23 +189,22 @@ objectives:
     next_step: ""
 
   - id: S05
-    name: "Show relationships and check for hidden groups"
+    name: "Show a trend and check for hidden groups"
     strand: Build
     bloom: Analyze
     shown_by: "Checked code + questions"
-    can: "Given two or more numeric variables, show how they move together with a fitted trend, a line chart or a correlation heatmap, and check whether a grouping variable changes the story."
+    can: "Given two numeric variables, show how they move together with a fitted trend, or with a line chart when x is ordered, and check whether a grouping variable changes the story."
     criteria:
+      - "Looks at the points before trusting a straight line: a fitted line is a model, not the data."
       - "Fits a trend overall and per group (regplot, lmplot with hue, or a groupby loop) and reports any reversal between the pooled and the within-group trend (Simpson's paradox)."
       - "Describes the shaded band as uncertainty about the line, not the spread of individuals."
       - "Connects points with a line only when x is ordered."
-      - "Draws a correlation heatmap on a diverging scale centered on zero, with limits fixed at -1 and 1 and the values printed."
-      - "Uses a pair plot to explore, not to present."
     prerequisites: [S01, S02]
-    tools: "seaborn: regplot, lmplot, lineplot, heatmap (cmap=\"vlag\", center=0, vmin=-1, vmax=1, annot=True, mask=), pairplot (corner=True)"
+    tools: "seaborn: scatterplot with hue=, regplot, lmplot, lineplot (errorbar=)"
     outcome: 3
     to_write: 0
-    gap: "The largest objective: all of Lesson 4 plus the bill paradox in Lesson 1."
-    next_step: "If mastery records show learners stalling here, split it in two: trends (regplot, lmplot, lineplot) and correlation (heatmap, pairplot)."
+    gap: "No rubric row: no assignment asks for a fitted trend or a line chart."
+    next_step: ""
 
   - id: S06
     name: "Build small multiples"
@@ -314,25 +315,59 @@ objectives:
     outcome: 6
     to_write: 10
     gap: "Exercise 6.1 lists the fixes for the learner, so the first critique in the learner's own words comes in Assignment 3. No exam question."
-    next_step: "Before the makeover, have learners write down three problems with the 'before' chart (the Lesson 6 notes already do this aloud), or add a peer review against the pre-flight checklist."
+    next_step: "Before the makeover, have learners write down three problems with the 'before' chart (the Lesson 6 notes already do this aloud), or add a peer review against the pre-flight checklist. S09, a prerequisite, is taught in Lesson 7, after the makeover, so S11's mastery check belongs after Lesson 7."
 
   - id: S12
-    name: "Deliver a figure that stands on its own"
+    name: "Save a figure that can be reproduced"
     strand: Deliver
     bloom: Apply
     shown_by: "Rubric task"
-    can: "Hand over a finished figure as files and words: saved at publication quality from a notebook that runs top to bottom, with a short plain-language statement of what it shows."
+    can: "Hand over a finished figure as files: saved at publication quality, in the format its destination needs, from a notebook that runs top to bottom."
     criteria:
-      - "Saves with fig.savefig (or g.savefig) as a PNG at 200 dpi or more and as a vector file, with nothing cut off (bbox_inches=\"tight\" or a constrained layout)."
+      - "Saves with fig.savefig (or g.savefig) as a PNG at 200 dpi or more, with nothing cut off (bbox_inches=\"tight\" or a constrained layout)."
+      - "Picks the format for the destination: a PNG for slides and documents, a vector file such as SVG where the figure must stay sharp at any size."
       - "A restart-and-run-all of the notebook reproduces every figure."
-      - "One or two accurate sentences (a caption or alt text) tell a general reader what the chart shows."
-      - "States caveats that change the reading, such as rows left out."
     prerequisites: [S02]
-    tools: "matplotlib: fig.savefig (dpi=, bbox_inches=\"tight\"), PNG and SVG; Jupyter: restart and run all"
+    tools: "matplotlib: fig.savefig (dpi=, bbox_inches=\"tight\"), g.savefig, PNG and SVG; Jupyter: restart and run all"
     outcome: 5
-    to_write: 25
-    gap: "Saving is shown in Lesson 6 as code that is not run, and no exercise practices it. No page mentions restarting the notebook and running it top to bottom: that appears only as a deliverable of the assignments. Assignments 1 and 2 ask for a written reading of the charts, and the instructor guide suggests alt text, but no page teaches how to write either."
-    next_step: "Add a short 'Describe and deliver' section to Lesson 6 or 7: save a figure, open the file, write its alt text. Make alt text a rubric row."
+    to_write: 10
+    gap: "Saving is shown in Lesson 6 as code that is not run, and no exercise practices it. No page mentions restarting the notebook and running it top to bottom: that appears only as a deliverable of the assignments."
+    next_step: "Add a short 'Describe and deliver' section to Lesson 6 or 7, shared with S14: save a figure, open the file and check it, then restart the notebook and run it top to bottom."
+
+  # S13 and S14 were split off S05 and S12 in version 1.3 (REVIEW.md, O8).
+  - id: S13
+    name: "Show correlations among several variables"
+    strand: Build
+    bloom: Apply
+    shown_by: "Checked code + questions"
+    can: "Given three or more numeric variables, summarize how each pair moves together in a correlation heatmap that reads at a glance, and scan every pair with a pair plot before choosing what to present."
+    criteria:
+      - "Draws a correlation heatmap on a diverging scale centered on zero, with limits fixed at -1 and 1 and the values printed."
+      - "Checks whether a correlation holds within groups before reporting it: a pooled value can hide or reverse what each group shows."
+      - "Uses a pair plot to explore, not to present."
+    prerequisites: [S01, S02, S05]
+    tools: "pandas: select_dtypes(\"number\").corr(); seaborn: heatmap (cmap=\"vlag\", center=0, vmin=-1, vmax=1, annot=True, mask=), pairplot (corner=True)"
+    outcome: 3
+    to_write: 0
+    gap: "The slice and the mask that show each pair once are taught in Lesson 4, but exercise 4.1 does not ask for them."
+    next_step: ""
+
+  - id: S14
+    name: "Describe what a figure shows"
+    strand: Deliver
+    bloom: Analyze
+    shown_by: "Rubric task"
+    can: "Write the words that let a figure stand on its own: one or two plain sentences that say what it shows, with the caveats that change how it should be read."
+    criteria:
+      - "One or two accurate sentences (a caption or alt text) tell a general reader what the chart shows."
+      - "Each claim points at something the reader can check in the chart: a panel, a group or a value."
+      - "States caveats that change the reading, such as rows left out or groups too small to trust."
+    prerequisites: [S02]
+    tools: "No functions: a caption, alt text, a short written verdict"
+    outcome: 5
+    to_write: 15
+    gap: "No page teaches this. Assignments 1 and 2 ask for a written reading of the charts and score it, and the instructor guide suggests alt text, but no page shows how to write either. Lesson 4 asks once for 'a caveat in the caption'."
+    next_step: "Add a short 'Describe and deliver' section to Lesson 6 or 7, shared with S12: write the figure's alt text and a one-sentence caption. Make alt text a rubric row."
 
   - id: I01
     name: "Decide when interaction earns its place"
@@ -345,7 +380,7 @@ objectives:
       - "Matches the interaction to the task: hover for exact values, zoom for dense regions, filter for subsets, selection for linking views."
       - "Keeps the chart static when the reader needs one message, as on a slide or in print."
     prerequisites: [S09]
-    tools: "No code: a decision. Examples in Plotly or Altair"
+    tools: "No code: a decision. Examples in Plotly"
     outcome: null
     to_write: 30
     gap: "Not written yet."
@@ -469,11 +504,11 @@ objectives:
       - "Unselected marks fade to gray instead of vanishing, so context stays visible."
       - "The chart tells the reader that it is linked and how to clear the selection."
     prerequisites: [I04, I07]
-    tools: "Altair: selection_interval, selection_point, add_params, alt.when(...).then(...).otherwise(...) (its documentation now prefers this to alt.condition), transform_filter. Plotly: linked brushing in px.scatter_matrix, or go.FigureWidget callbacks in a notebook (needs anywidget)"
+    tools: "Plotly: linked brushing in px.scatter_matrix; go.FigureWidget with on_selection callbacks in a notebook (needs anywidget)"
     outcome: null
     to_write: 60
     gap: "Not written yet."
-    next_step: "This is where the choice of library matters most: Altair links views in a few lines, while Plotly links them only inside a scatter matrix or through a notebook widget. Linking two separate Plotly charts waits for section 3, where a selection reruns the Streamlit script (D07)."
+    next_step: "Plotly links views only inside a scatter matrix or through a notebook widget, which needs a running kernel and so cannot sit on a static page. Linking two separate charts is finished in section 3, where a selection reruns the Streamlit script (D07). Decide whether learners practice I08 in a notebook or only see it shown."
 
   - id: I09
     name: "Keep large data fast and readable"
@@ -619,7 +654,7 @@ objectives:
     outcome: null
     to_write: 50
     gap: "Not written yet."
-    next_step: "Streamlit's documentation recommends its Vega-based charts (st.altair_chart among them) for new 2-D charts, and st.plotly_chart for a Plotly figure you already have. Section 2 hands over Plotly figures, so that fits, but it is one more thing to weigh when section 2's library is settled."
+    next_step: "Streamlit's documentation recommends its Vega-based charts (st.altair_chart among them) for new 2-D charts, and st.plotly_chart for a Plotly figure you already have. Section 2 hands over Plotly figures, so st.plotly_chart is the element this section uses for them."
 
   - id: D05
     name: "Choose input widgets and defaults"
@@ -774,7 +809,7 @@ lesson_goals:
   01-first-plot: [S01, S01, S02, S05]
   02-distributions: [S03, S03, S03, S03]
   03-categories: [S04, S04, S04, S04, S04]
-  04-relationships: [S05, S05, S05, S05]
+  04-relationships: [S05, S05, S13, S13]
   05-small-multiples: [S06, S06, S06, S06]
   06-polish: [S08, S07, S10, S08, S12]
   07-capstone: [S09, S10, S10, S11]
@@ -825,6 +860,7 @@ page_map:
     - [make-the-ranking-obvious-sort-and-turn-sideways, S04, T]
     - [make-the-ranking-obvious-sort-and-turn-sideways, S11, I, "The truncated-bar 'DON'T' chart is a two-minute critique (see the Lesson 3 notes in the instructor guide)."]
     - [beyond-the-mean-boxes-violins-and-strips, S04, T]
+    - [beyond-the-mean-boxes-violins-and-strips, S08, I, "The first time the pages say why a legend goes: the x-axis already names each species, so a legend would only repeat it."]
     - [point-plots-compare-when-zero-isnt-meaningful, S04, T]
     - [point-plots-compare-when-zero-isnt-meaningful, S07, T, "SEX_COLORS: a second fixed palette, so sex never borrows the species colors, and marker shapes that carry the distinction without color."]
     - [point-plots-compare-when-zero-isnt-meaningful, S09, I, "Bars or points? Decided by whether zero means anything. Callout: no pies."]
@@ -839,9 +875,10 @@ page_map:
     - [the-paradox-in-one-picture, S05, T]
     - [line-charts-only-when-the-x-axis-has-an-order, S05, T]
     - [line-charts-only-when-the-x-axis-has-an-order, S09, I, "Lines only when x is ordered, and bars or dots for named categories."]
-    - [correlation-heatmaps, S05, T]
+    - [line-charts-only-when-the-x-axis-has-an-order, S14, I, "Small groups 'deserve a caveat in the caption': the one place where the pages ask for one."]
+    - [correlation-heatmaps, S13, T]
     - [correlation-heatmaps, S07, I, "A diverging palette centered on zero: color matched to the data. Lesson 6 names the three palette jobs."]
-    - [everything-at-once-pairplot, S05, T]
+    - [everything-at-once-pairplot, S13, T]
     - ["*", S01, R, "The same grammar, with numbers on both axes."]
     - ["*", S02, R, "Every finished chart relabels its axes and its legend."]
     - ["*", S07, R, "Species keep PENGUIN_COLORS on every chart."]
@@ -851,7 +888,7 @@ page_map:
     - [one-panel-per-island, S06, T]
     - [rows-and-columns, S06, T]
     - [categorical-grids-with-catplot, S06, T]
-    - [categorical-grids-with-catplot, S08, I, "The first time the pages say why a legend goes: the x-axis already names each sex, so legend=False drops one that would only repeat it."]
+    - [categorical-grids-with-catplot, S08, I, "Why a legend goes, where seaborn would draw one: the x-axis already names each sex, so legend=False drops a legend that would only repeat it."]
     - [shared-axes-keep-them-usually, S06, T]
     - [wrapping-a-long-row, S06, T]
     - [custom-panels-with-facetgrid, S06, T]
@@ -897,8 +934,8 @@ evidence:
     "2.1": [S03, S02, S07]
     "2.2": {objectives: [S03, S07, S08], note: "The check sees the reference line but not the printed share."}
     "3.1": [S04, S02, S07]
-    "3.2": {objectives: [S04, S02, S07, S08], note: "S08: the check requires legend=False, since the axis already names the species."}
-    "4.1": {objectives: [S05, S07], note: "S07: the check requires the diverging palette."}
+    "3.2": {objectives: [S04, S02, S07, S08], note: "S08: the check requires that no legend is drawn. Seaborn 0.13 leaves it out by itself when hue repeats the x column, so this assert passes without legend=False."}
+    "4.1": {objectives: [S13, S07], note: "S07: the check requires the diverging palette."}
     "4.2": [S05, S02, S07]
     "5.1": {objectives: [S06, S02, S07, S08], note: "S08: the check requires legend=False, since the panel titles already name the species."}
     "5.2": [S06]
@@ -923,7 +960,7 @@ evidence:
     "4.1": S05
     "4.2": S07
     "4.3": S05
-    "4.4": S05
+    "4.4": S13
     "5.1": S06
     "5.2": S06
     "5.3": S06
@@ -952,9 +989,9 @@ evidence:
     11: S04
     12: S04
     13: S05
-    14: S05
+    14: S13
     15: S05
-    16: S05
+    16: S13
     17: S06
     18: S06
     19: S10
@@ -971,13 +1008,13 @@ evidence:
     "1.2": [S04]
     "1.3": [S07]
     "1.4": [S02]
-    "1.5": {objectives: [S12], note: "A sentence or two for a general reader: the 'words' half of S12."}
+    "1.5": {objectives: [S14], note: "A sentence or two for a general reader."}
     "1.6": [S12]
     "2.1": [S06]
     "2.2": [S04]
-    "2.3": [S05, S07, S10]
+    "2.3": [S13, S07, S10]
     "2.4": {objectives: [S07, S06, S04], note: "Consistent color, shared scales and no truncated bars."}
-    "2.5": {objectives: [S12], note: "A written verdict that cites panels and notes uncertainty: the 'words' half of S12, caveats included."}
+    "2.5": {objectives: [S14], note: "A written verdict that cites panels and notes uncertainty."}
     "2.6": {objectives: [], note: "Python fluency is a course prerequisite, not a visualization objective."}
     "3.1": {objectives: [S03], note: "Reading thresholds off the ECDF is S03. The pandas work is a course prerequisite."}
     "3.2": {objectives: [S04, S03, S07, S08], note: "The task names each panel's chart, so this row is about building the forms, not choosing them. S08: the reference lines on the ECDF."}

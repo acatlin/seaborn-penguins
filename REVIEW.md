@@ -14,8 +14,10 @@ in a follow-up pass. That pass turned up three more Low findings (L13-L15) and f
 them. A second follow-up fixed L6-L9 and the palette half of L15, and wrote down six more Low
 findings (L16-L21) without acting on them. A recheck of the mastery objectives added one more
 (L22) and nine questions about the objectives map (O1-O9). Seven of them (O1-O7) were decided
-as recommended on 2026-11-15 and applied. O8 and O9 are still open, with one more question (O10)
-that came up while the seven were applied.
+as recommended on 2026-11-15 and applied, and a tenth (O10) came up while they were. O8, O9 and
+O10 were decided later that day and applied as version 1.3 of the map. The same pass fixed L22
+and the British spellings (L27), rechecked the first seven as applied, and wrote down four more
+Low findings (L23-L26) and three more questions (O11-O13) without acting on them.
 
 Severity scale:
 
@@ -47,9 +49,12 @@ Severity scale:
 | L13, L14 | Low | Found in the follow-up: `binwidth=` is approximate; unit checks pass on raw column names | Fixed in the follow-up |
 | L15 | Low | Found in the follow-up: exercise 2.2 checks neither its palette nor its printed answer | Palette check fixed in the second follow-up; the printed answer left alone |
 | L16-L21 | Low | Found in the second follow-up: a give-away exam item, a 4.46:1 tick mark, heatmap label rotation, layout advice the course does not follow, an unnamed y-axis, an unshared x-axis | Left alone, see below |
-| L22 | Low | Found while rechecking the objectives: five of the nine pages scroll sideways at phone width | Left alone, see below |
+| L22 | Low | Found while rechecking the objectives: five of the nine pages scroll sideways at phone width | Fixed in a third follow-up |
+| L23-L26 | Low | Found in the third follow-up: a gap inside some quiz options at desktop width, three exercise checks that pass what their brief rules out, a small table that breaks across two printed pages | Left alone, see below |
+| L27 | Low | Found in the third follow-up: British spellings in a course written in American English | Fixed in the third follow-up |
 | O1-O7 | Decision | Questions about the mastery objectives map: a rule that cannot be followed as written, evidence that is tested but not listed, two page roles, overlapping criteria | Decided on 2026-11-15 as recommended, and applied |
-| O8-O10 | Decision | More questions about the map: two objectives that each hold several performances, section 2's library, an objective first taught before one of its prerequisites | Left for a decision, see "Recheck of the mastery objectives" |
+| O8-O10 | Decision | More questions about the map: two objectives that each hold several performances, section 2's library, an objective first taught before one of its prerequisites | Decided on 2026-11-15 (split, Plotly, as recommended) and applied in version 1.3 of the map |
+| O11-O13 | Decision | Questions from the second recheck: an exercise whose check cannot fail on an objective it is listed for, and two parts of the mastery rule that cannot be followed with today's materials | Left for a decision, see "Second recheck of the mastery objectives" |
 
 ## High
 
@@ -79,7 +84,7 @@ raw marker leaks into any notebook or if the design-principle callout is missing
 
 The "before" cell called `sns.set_theme(style="darkgrid")`. On the site every cell runs in a
 fresh process-like state, so the "after" chart was fine. In the notebooks state persists, so
-the "after" chart, the centrepiece of the lesson, rendered with a gray grid background
+the "after" chart, the centerpiece of the lesson, rendered with a gray grid background
 that contradicts both the text ("no box") and the figure on the site.
 
 Fix: the "before" cell now scopes the style with `with sns.axes_style("darkgrid"):`, a
@@ -317,6 +322,42 @@ Fixed in a second follow-up pass:
   names that palette and requires a hint. The other seven already gave one. The second half
   of L15 is still open, see below.
 
+Fixed in a third follow-up pass:
+
+- **L22. Five of the nine pages scrolled sideways on a phone.** In a window 390 px wide the page
+  was wider than the screen on Start here (647 px), on Lessons 1, 5 and 6 (419, 517 and 471) and
+  on the instructor guide (398). Start here did the same in any window narrower than about
+  940 px. There were three causes, and the finding as first written had the third one wrong:
+  - On Start here, the `pip install` line. A code block that is not Python is a plain `pre`, and
+    only the highlighted blocks scrolled inside their own box.
+  - On the guide, the workbook's path in the "Mastery objectives" section: inline code that could
+    not break.
+  - In Lessons 1, 5 and 6, six quiz options that hold inline code, and not "a long call in a quiz
+    question". An option is a flex row, so each piece of inline code and each run of words
+    between two pieces is a flex item of its own, and a row of items cannot wrap the way a
+    sentence does. The quiz and its option list are grids, and their one column grew to fit the
+    widest row.
+
+  Fix, in `site_src/style.css`: inline code may break inside a long name (`overflow-wrap:
+  break-word`), a plain `pre` scrolls inside its own box, and the two quiz grids let their column
+  shrink (`minmax(0, 1fr)`). `tools/build_site.py` now wraps the text of an option in a span.
+  Below 860 px, where the sidebar folds away, the span is one flex item, so the option wraps like
+  a sentence beside its letter. Above 860 px the span is `display: contents`, which leaves the
+  pieces laid out exactly as they were (see L23).
+
+  Measured in Chrome with each of the nine pages in frames 320, 360, 390, 414, 600, 768 and
+  860 px wide: no page is wider than its frame. With the stylesheet and the span changed and
+  nothing else, the position and size of all 8,472 elements of the nine pages at 1600 px are what
+  they were, to a hundredth of a pixel. At 900 px the same holds for eight pages, and Start here
+  differs as intended: its `pip install` block has a scrollbar of its own, and the page no longer
+  scrolls. At 280 px, narrower than any phone in use, the guide is still 19 px too wide, because
+  of a URL used as link text. That is not code, and it was left alone.
+- **L27. British spellings in a course written in American English.** "recognise" in the guide's
+  learning outcome 2, and "labelled" in its accessibility notes and in the README; "modelling",
+  "neighbouring" and "organisation's" in three quiz items (Lessons 2, 3 and 7); "centred" in exam
+  Q11; "neighbours" and "labelled" in the assignments; six in this file and three in code
+  comments. All are American now. The answer statistics given under M4 and M5 are unchanged.
+
 Left alone, with reasons:
 
 - **L4. `pairplot` keeps raw axis labels.** The text frames it as an exploration tool, and
@@ -360,15 +401,28 @@ Found during the follow-up passes, and left alone:
   is twice as wide. With `sharex=True` the figure would also show what the callout under it
   says, a density curve reaching far beyond any real penguin (the heaviest weighs 6,300 g,
   and the curve ends near 8,500 g).
-- **L22. Five of the nine pages scroll sideways on a phone.** In a window 390 px wide the page
-  is wider than the screen on Start here (647 px against 371), on Lessons 1, 5 and 6 (419, 517
-  and 471) and on the instructor guide (398). The cause is the same each time: code that cannot
-  wrap. On the guide it is two inline strings, one of them the workbook's path in the "Mastery
-  objectives" section; in the lessons it is a long call in a quiz question; on Start here it is
-  the `pip install` line. Tables are not the cause, since they scroll inside their own box.
-  Letting inline code wrap (`overflow-wrap: break-word`) and giving plain `pre` blocks
-  `overflow-x: auto` should cure it; neither was tried. Measured in Chrome with each page loaded
-  in a 390 px frame. Left alone because it is site-wide and older than the objectives work.
+- **L23. At desktop width, a quiz option that holds inline code is laid out in pieces.** This is
+  the layout that L22 describes, and above 860 px it is still there: each piece of code and each
+  run of words is a flex item, and the row's 8 px gap stands between them where a space would. In
+  3 of the 18 options that hold code, a comma follows a piece of code and stands apart from it
+  ("`sns.relplot` , the figure-level function", Lesson 6, Q3). The pieces now sit in one span, so
+  the cure is two lines of `site_src/style.css`: drop `display: contents`, and give the span
+  `min-width: 0` at every width. Left alone because the L22 fix was to change nothing at desktop
+  width, and this would move the words of those 18 options by a few pixels.
+- **L24. Exercise 2.2's check does not test that the chart is an ECDF.** It looks for the three
+  species in the legend, the Chinstrap purple, a vertical line at 45 and the range of the x-axis.
+  A histogram of bill length (bars or step outlines) or a density curve passes, and is told to
+  "read it off the plot: the purple line crosses 45 mm near 0.09". It is the gap that L11 closed
+  in exercise 2.1. Requiring a line for each species that climbs from 0 to 1 would close it.
+- **L25. Two more checks pass what their brief rules out.** Exercise 6.1's brief says to drop
+  `style=` and `size=`, and the check tests the sizes only, so a chart that keeps a marker shape
+  for each island passes. Exercise 7.1's brief asks for `layout="constrained"`, and its hint says
+  "keep one legend"; the check tests neither, so a figure with three legends passes. Found by
+  breaking each solution on purpose (see "Second recheck of the mastery objectives").
+- **L26. On the Timing sheet of the workbook, the last small table breaks across two printed
+  pages.** "Check: every lesson's minutes add up to the midpoint" has its heading and one row on
+  the first page and six rows on the second. On screen nothing is wrong. A page break before the
+  heading would keep the table together.
 
 ## What checked out
 
@@ -377,7 +431,7 @@ arguments exist and mean what the text says (`errorbar=`, `linestyle="none"` and
 in categorical plots, `fliersize`, `common_norm`, `bw_adjust`, `cut`, `corner=True`,
 `facet_kws`, `g.figure`, `move_legend`, `loc="outside lower center"` with constrained
 layout, callable tick formatters). The follow-up pass found one nuance: `binwidth=` is
-honoured only approximately (L13). The browser runs matplotlib 3.8.4 under Pyodide 0.27.2;
+honored only approximately (L13). The browser runs matplotlib 3.8.4 under Pyodide 0.27.2;
 every API the course uses exists there too.
 
 Numbers quoted in the text, recomputed from the bundled CSV:
@@ -408,7 +462,8 @@ gap is that no exercise asks learners to critique a chart in words before the as
 the quizzes carry that load. The instructor guide is unusually concrete (live-coding order,
 misconceptions, troubleshooting table) and needed only the corrections above.
 
-A later pass mapped the course onto twelve mastery objectives (instructor guide, "Mastery
+A later pass mapped the course onto twelve mastery objectives, fourteen since version 1.3 of the
+map (instructor guide, "Mastery
 objectives", and `instructor/Seaborn_Mastery_Objectives.xlsx`). It found two more gaps of
 the same kind, both left alone. Nothing assesses the choice of chart form: every assignment
 names its chart types, and no exam question or exercise check asks for the choice. And
@@ -459,7 +514,7 @@ its tests were read for bugs and none was found in the logic.
 **Section 3 is written for Streamlit.** D02-D09, D11 and D12 are reworded in Streamlit's terms
 (the top-to-bottom rerun, session state, caching, fragments, `AppTest`, Community Cloud), and
 D04, D05 and D06 are renamed to match. Every name was checked against Streamlit 1.67.0, installed
-and inspected, and its documentation; the behaviour the criteria describe (a widget's key cannot
+and inspected, and its documentation; the behavior the criteria describe (a widget's key cannot
 be assigned after the widget is drawn, a reset through a button callback, a cache surviving
 reruns, a message and `st.stop` for an empty selection) was run through `AppTest`. Five
 objectives are 10 to 15 minutes shorter, which takes section 3's lessons from 12.5 to 11.4 hours.
@@ -470,7 +525,8 @@ minute to load the first time). It is a second runtime beside the site's own, th
 checker cannot look inside it, and `streamlit.testing` is not in its build.
 
 **Questions about the map.** O1-O7 were decided on 2026-11-15, as recommended, and applied in
-version 1.2 of the map. Each of the seven ends with what was done. O8, O9 and O10 are still open.
+version 1.2 of the map. Each of the seven ends with what was done. O8, O9 and O10 were decided
+later the same day and applied in version 1.3: each ends with the decision.
 
 - **O1. Mastery rule 1 cannot be followed as written.** "An objective is mastered when every
   exercise listed for it passes its automatic check." S02 is listed for nine exercises, the last
@@ -492,7 +548,7 @@ version 1.2 of the map. Each of the seven ends with what was done. O8, O9 and O1
   stated rule ("only when its check tests that objective") is not broken, but the guide explains
   the high counts of S02 and S07 by that rule, and S01 would count higher still. Recommendation:
   add S01 to 1.2, which is in S01's own lesson and makes the learner add `hue=`, and say in the
-  fifth assumption that later checks use the mapping to recognise the chart, not to test S01.
+  fifth assumption that later checks use the mapping to recognize the chart, not to test S01.
   Applied: S01 is listed for exercise 1.2, two exercises in all, and the fifth assumption states
   the convention.
 - **O3. "No redundant legend" is a criterion of S08, and two checks test it without listing
@@ -503,7 +559,9 @@ version 1.2 of the map. Each of the seven ends with what was done. O8, O9 and O1
   Applied: S08 is listed for 3.2 and 5.1, five exercises in all, and Lesson 5's `catplot`
   section is mapped as introducing it. Lesson 3 passes `legend=False` in two examples without
   saying why, so a learner first meets the reason in the hint of exercise 3.2.
-- **O4. Two rubric rows are mapped more narrowly than their neighbours.** A3 R2 asks for "ECDF
+  Since the second recheck, Lesson 3 says why, and is mapped as the page that introduces the
+  idea. That recheck also found exercise 3.2's check weaker than this item took it to be: O11.
+- **O4. Two rubric rows are mapped more narrowly than their neighbors.** A3 R2 asks for "ECDF
   reference lines" and does not list S08, though exercise 2.2 counts a reference line for S08.
   A3 R4, the makeover, is mapped to S11 alone, while exercise 6.1, which is the same task, is
   S11, S02, S07 and S08, and A3 R3 is split in the same way. Recommendation: add S08 to A3 R2,
@@ -519,7 +577,7 @@ version 1.2 of the map. Each of the seven ends with what was done. O8, O9 and O1
   of the criteria) that is teaching. Recommendation: orientation for the first, and "teaches"
   for the second, which makes S07 "taught in Lessons 1, 3, 6".
   Applied: both roles changed, and the guide's table shows S07 as taught in Lessons 1, 3, 6.
-- **O6. S02's fourth criterion reaches into S06.** Labelling "on a grid" with
+- **O6. S02's fourth criterion reaches into S06.** Labeling "on a grid" with
   `g.set_axis_labels` and `g.legend.set_title` cannot be done in Lesson 1, where S02 is taught,
   and S06 has the same criterion. Recommendation: end S02's criterion at the Axes and take
   "seaborn grids" out of its key tools.
@@ -534,12 +592,19 @@ version 1.2 of the map. Each of the seven ends with what was done. O8, O9 and O1
   what a figure shows, which the rubrics already score in separate rows. Recommendation: decide
   before the mastery checks are written, because a check is written per objective. Splitting
   either one ends "twelve per section".
+  Decided on 2026-11-15: split. Applied in version 1.3 of the map, as set out under "Second
+  recheck of the mastery objectives".
 - **O9. Section 2's library is still a placeholder.** Two things learned in this pass bear on
   it. Altair links two views in a few lines, where Plotly needs a scatter matrix, a notebook
   widget or section 3. And Streamlit's documentation now recommends its Vega-based charts,
   `st.altair_chart` among them, for new 2-D charts, and `st.plotly_chart` for a Plotly figure
   you already have. Plotly still fits I03-I06 (tooltips, the figure object, navigation,
   controls), which are written around it.
+  Decided on 2026-11-15: Plotly. Applied in version 1.3: section 2's tools are Plotly's, I08
+  (linked views) lists the scatter matrix and the notebook widget and no longer Altair's
+  functions, and the fourth assumption says what that costs: linking two separate charts is
+  finished in section 3 (D07). Lesson 7's "Where to next?" still tells learners "Plotly or
+  Altair". It was left as it is: advice to a learner about what exists, not the course's plan.
 - **O10. S11 needs S09, but is first taught before it.** S11 (critique and redesign) lists S09
   (choose the chart form) as a prerequisite. S09 is taught in Lesson 7, Step 1, while S11 is
   first taught by the makeover in Lesson 6, where its one exercise, 6.1, sits too. It is the
@@ -548,4 +613,116 @@ version 1.2 of the map. Each of the seven ends with what was done. O8, O9 and O1
   But the Prerequisites column promises "objectives to master first", and that cannot hold for
   the Lesson 6 half of S11. Found while applying O1. Recommendation: leave the map as it is, and
   when the mastery checks are written, place S11's after Lesson 7, where the rest of S11 is
+  taught.
+  Decided on 2026-11-15, as recommended. The map is as it was. S11's "Next step" on the
+  Objectives sheet and step 3 of the guide's "Next steps" now say that S11's mastery check
+  belongs after Lesson 7.
+
+## Second recheck of the mastery objectives
+
+A cold check of the first recheck's last step (O1-O7 as applied in version 1.2 of the map), made
+on 2026-11-15 before anything is planned on top of it. The same pass applied the three decisions
+that were still open.
+
+**Checked, and sound.**
+
+- Rule 1 reads the same in the YAML, on the Read me sheet and in the guide. Worked out by hand
+  from the page map and the evidence map, the exercises it counts for S01-S12 are the ones the
+  Objectives sheet names under "Practice today" and the ones `tests/test_objectives.py` pins.
+- For O2 and O4-O7, the "Applied" note, the YAML, the workbook and the guide agree, and the lesson
+  source, the check code or the rubric text bears each one out. O3 holds for exercise 5.1 and for
+  Lesson 5's `catplot` section, and less well for exercise 3.2 (O11).
+- Each exercise's solution was broken in one way for each objective the map lists for it, 62
+  broken solutions in all, and the exercise's own check was run on each. Every listed objective
+  has at least one that its check rejects. Thirteen pass: the three of L24 and the three of L25,
+  the one of O11, three in which S02 is tested through the title and not through the axis labels
+  (exercises 1.2, 3.1 and 6.2), and three that are no fault of the check.
+- Excel, through COM, recalculated all 703 formula cells of version 1.2 to the stored results,
+  and all 739 of version 1.3. All six sheets were looked at as Excel draws them, both times.
+- The guide's "Mastery objectives" section was looked at in Chrome at 1600 px, and in the Word
+  guide rendered to PDF. After its last two changes the first recheck had compared the built HTML
+  only.
+- Every name in the "Key tools" of D01-D12 exists in Streamlit 1.67.0, which is still the current
+  release. What had only been read in the documentation was run as a two-page app in Chrome:
+  pages made with `st.Page` and `st.navigation`, and a widget in the entry script that keeps its
+  value on both; `bind="query-params"`, which put the choice into the URL, restored it on a reload
+  and from a link to the other page, and dropped a value that is not among the options; and
+  `persist_state="session"`, which kept a widget's value across a page switch while a widget
+  without it went back to its default. The Plotly names of I01-I12 were checked again against
+  Plotly 7.1.0, since section 2 now rests on them.
+
+**Fixed.**
+
+- **The note on exercise 3.2** said that the check "requires legend=False". It requires that no
+  legend is drawn, which is not the same thing (O11). The note now says what the check does.
+- **Lesson 3 now says why its examples pass `legend=False`**, in one sentence under the box,
+  violin and strip plots. That section is mapped as introducing S08, and the note on Lesson 5's
+  `catplot` section no longer calls itself the first.
+- L22 and L27, above.
+
+**O8 as applied.** Splitting took choices that the decision did not make. They are listed so that
+any of them can be reversed.
+
+- *Codes.* The half that keeps the old name's main idea keeps the code, and the halves split off
+  are S13 and S14. A code is never reused, and the builder wants each section's codes in order,
+  so they follow S12, although S13 is taught in Lesson 4.
+- *S05, "Show a trend and check for hidden groups".* The fitted trend, the line chart and
+  Simpson's paradox. Four criteria: three as they were, and "looks at the points before trusting
+  a straight line", which Lesson 4's warning box teaches. It keeps exercises 1.2 and 4.2, quiz
+  L1 Q4, L4 Q1 and L4 Q3, and exam Q13 and Q15. It has no rubric row any more: no assignment asks
+  for a fitted trend or a line chart.
+- *S13, "Show correlations among several variables".* The heatmap and the pair plot. Three
+  criteria: the two that were S05's, and "checks whether a correlation holds within groups",
+  which the last lines of the heatmap section and exercise 4.1 teach. It needs S01, S02 and S05.
+  It takes exercise 4.1, quiz L4 Q4, exam Q14 and Q16, and rubric row A2 R3. Covered.
+- *Lesson 4's 60 minutes* are 35 for S05 and 25 for S13.
+- *S12, "Save a figure that can be reproduced".* The files and the notebook. Three criteria: the
+  old first one is now two (the PNG, and the choice of format for the destination), and the
+  restart. Rubric rows A1 R6 and A3 R6. Still Partial.
+- *S14, "Describe what a figure shows".* The words. Three criteria: the two that were S12's, and
+  "each claim points at something the reader can check", which is what Assignment 2's rubric
+  means by "cites evidence". Rubric rows A1 R5 and A2 R5. Its status is Planned, not Partial: by
+  the sheet's own definition, no page teaches it. Lesson 4's line-chart section, which asks for
+  "a caveat in the caption", is mapped as introducing it.
+- *The 25 minutes to write* that were S12's are 10 for S12 and 15 for S14, so no total of hours
+  changed.
+- *What follows.* 38 objectives, 14 of them static: 11 Covered, 2 Partial (S09 and S12) and 1
+  Planned (S14). The exam has questions on ten of the fourteen. Section 1 averages 30 minutes
+  per objective, not 35. The assumption that spoke of "three sections of twelve" now says
+  fourteen, twelve and twelve.
+
+**Questions for a decision.**
+
+- **O11. Exercise 3.2 is listed for S08, but its check cannot fail on what S08 asks.** The check
+  asserts that the chart has no legend. Seaborn 0.13 leaves a legend out by itself when every
+  value of the `hue` column is the value on the categorical axis, so the solution passes with
+  `legend=False` deleted. The assert fails only if the learner asks for a legend or colors by
+  another column. In exercise 5.1 the same assert is a real test, because `displot` draws the
+  legend unless told not to. Lesson 5's `catplot` example needs its `legend=False` too: eleven
+  penguins have no `sex`, and one missing value is enough for seaborn to bring the legend back.
+  Recommendation: take S08 off exercise 3.2 (S08 would count 4 exercises, not 5; no status
+  changes, and rule 1 does not count 3.2 for S08 in any case). And say in the guide's Lesson 3
+  notes that deleting `legend=False` there changes nothing, so that an instructor who tries it
+  in front of a class is not caught out.
+- **O12. An instructor cannot see whether part 1 of rule 1 is met.** "Every exercise that checks
+  it ... passes its automatic check": the workbook names the exercises, but a pass is a line of
+  text under the learner's editor. The site keeps the editor's text and nothing else, nothing
+  reaches the instructor, and every exercise offers its solution one click away, on purpose (the
+  guide says the exercises "are for practice, not grading"). So the instructor watches, or takes
+  the learner's word. Recommendation: say which in the rule, for example "shown to the
+  instructor, or handed in as the lesson's notebook with its outputs", or word part 1 as what a
+  learner does before asking for the mastery check, which is how the exercises are meant.
+  Recording a pass in the browser, as the quiz records a finished lesson, would give the learner
+  something to show. It is a small change to `live.js`, but a solution that was loaded and run
+  would earn the tick too.
+- **O13. With today's materials, part 2 of rule 1 comes too late.** Part 2 needs a mastery check,
+  and none exists yet. Rule 5 says to use "the exercises and rubric rows" meanwhile. The rubric
+  rows come with the assignments, after Lessons 3, 5 and 7, which is later than the objectives
+  that need them. S01's only row is in Assignment 1, while S02, S03 and S04 all need S01 first.
+  S08's three rows are all in Assignment 3, while S10 and S11 need S08. S05 has no row at all
+  since the split. It is the deadlock that O1 took out of part 1, in part 2, and rule 5 does not
+  say whether the exercises alone let a learner move on. Recommendation: say so. Until the
+  mastery checks are written, a learner moves on when the exercises of rule 1 pass, and the
+  rubric rows of the next assignment confirm the objective or send the learner back. The mastery
+  checks of step 3 remove the problem, since a check can be taken at any time.
   taught.

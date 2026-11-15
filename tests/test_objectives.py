@@ -19,7 +19,9 @@ OBJECTIVES = SPEC["objectives"]
 IDS = [o["id"] for o in OBJECTIVES]
 STATIC = [i for i in IDS if i.startswith("S")]
 GUIDE = (ROOT / "content" / "instructor-guide.md").read_text(encoding="utf-8")
-WORDS = {0: "no", 1: "one", 2: "two", 3: "three", 4: "four", 7: "seven", 9: "nine", 12: "twelve"}
+WORDS = {0: "no", 1: "one", 2: "two", 3: "three", 4: "four", 7: "seven", 9: "nine", 10: "ten", 12: "twelve",
+         14: "fourteen"}
+SIZES = {"S": 14, "I": 12, "D": 12}  # objectives per section
 
 
 @pytest.fixture(scope="module")
@@ -37,9 +39,11 @@ def book():
 
 # ---------------------------------------------------------------- the objectives
 
-def test_thirty_six_objectives_in_three_sections_of_twelve():
-    assert IDS == [f"{key}{n:02d}" for key in "SID" for n in range(1, 13)]
-    assert len({o["name"] for o in OBJECTIVES}) == 36, "two objectives share a name"
+def test_thirty_eight_objectives_in_three_sections():
+    """Section 1 has fourteen since S05 and S12 were split: a code is never reused, so the two
+    halves that were split off are S13 and S14."""
+    assert IDS == [f"{key}{n:02d}" for key, size in SIZES.items() for n in range(1, size + 1)]
+    assert len({o["name"] for o in OBJECTIVES}) == len(IDS) == 38, "two objectives share a name"
 
 
 VAGUE = re.compile(r"\b(understands?|knows?|learns?|appreciates?|is aware|is familiar|grasps?)\b", re.I)
@@ -118,11 +122,14 @@ def test_everything_mapped_is_on_the_built_site(built_site, book):
     assert links > 150, "the page and evidence sheets should link to the site"
 
 
-def test_every_lesson_goal_belongs_to_a_static_objective():
-    """The pages' own 'By the end of this lesson you can' bullets are the first test of the twelve."""
+def test_every_lesson_goal_belongs_to_a_static_objective(joined):
+    """The pages' own 'By the end of this lesson you can' bullets are the first test of the static
+    objectives: every objective that a page teaches is some page's stated goal."""
     goals = [objective for mapped in SPEC["lesson_goals"].values() for objective in mapped]
     assert len(goals) == sum(len(p.goals) for p in COURSE.pages)
-    assert set(goals) == set(STATIC), "every static objective should be some page's stated goal"
+    taught = {i for i in STATIC if joined["summary"][i]["teach"]}
+    assert set(goals) == taught, "every static objective that a page teaches should be some page's stated goal"
+    assert set(STATIC) - taught == {"S14"}, "the static objectives that no page teaches yet changed"
 
 
 def test_each_existing_lesson_is_split_into_its_sixty_minutes():
@@ -132,11 +139,12 @@ def test_each_existing_lesson_is_split_into_its_sixty_minutes():
 
 
 def test_status_follows_from_the_evidence(joined):
-    """Ten static objectives are covered and two are partial. If a new exercise or question
-    changes that on purpose, change this test and the instructor guide with it."""
+    """Eleven static objectives are covered, two are partial, and one (S14, the written description
+    of a figure) is planned: assignments score it, but no page teaches it. If a new section, exercise
+    or question changes that on purpose, change this test and the instructor guide with it."""
     status = {i: joined["summary"][i]["status"] for i in IDS}
-    assert {i for i in STATIC if status[i] != bo.COVERED} == {"S09", "S12"}
-    assert status["S09"] == status["S12"] == bo.PARTIAL
+    assert {i: status[i] for i in STATIC if status[i] != bo.COVERED} == {
+        "S09": bo.PARTIAL, "S12": bo.PARTIAL, "S14": bo.PLANNED}
     assert all(status[i] == bo.PLANNED for i in IDS if i not in STATIC)
 
 
@@ -149,8 +157,8 @@ def test_rule_one_waits_only_for_exercises_on_the_pages_that_teach_the_objective
     assert "on the pages that teach it" in SPEC["mastery_rule"][0]
     assert {i: summary[i]["decisive"] for i in STATIC} == {
         "S01": ["1.1", "1.2"], "S02": ["1.1", "1.2"], "S03": ["2.1", "2.2"], "S04": ["3.1", "3.2"],
-        "S05": ["1.2", "4.1", "4.2"], "S06": ["5.1", "5.2"], "S07": ["1.1", "3.1", "3.2", "6.1", "6.2"],
-        "S08": ["6.1", "6.2"], "S09": [], "S10": ["7.1"], "S11": ["6.1"], "S12": []}
+        "S05": ["1.2", "4.2"], "S06": ["5.1", "5.2"], "S07": ["1.1", "3.1", "3.2", "6.1", "6.2"],
+        "S08": ["6.1", "6.2"], "S09": [], "S10": ["7.1"], "S11": ["6.1"], "S12": [], "S13": ["4.1"], "S14": []}
     order = [p.slug for p in COURSE.pages]
     page_of = {key: order.index(info["page"].slug) for key, info in COURSE.exercises.items()}
     for o in OBJECTIVES:
@@ -174,6 +182,17 @@ def test_evidence_shows_the_code_an_exam_question_is_about(joined):
     assert with_code, "no exam question has a code block any more: this test can go"
     for number, code in with_code:
         assert code in shown[f"Exam Q{number}"], f"Exam Q{number} is listed without its code"
+
+
+def test_section_two_is_written_for_plotly():
+    """Section 2 uses Plotly (decided on 2026-11-15). The alternative that was weighed for linked views
+    is named once, in the assumption about tools, and no interactive objective lists its functions."""
+    section = next(s for s in SPEC["sections"] if s["key"] == "I")
+    assert section["tools"] == "Plotly."
+    interactive = [o for o in OBJECTIVES if o["id"].startswith("I")]
+    assert not [o["id"] for o in interactive if "Altair" in o["tools"]], "an interactive objective still lists Altair"
+    assert sum(1 for o in interactive if "Plotly" in o["tools"]) >= 9, "the interactive objectives should name Plotly's tools"
+    assert sum("Altair" in text for text in SPEC["assumptions"]) == 1
 
 
 def test_section_three_is_written_for_streamlit():
@@ -260,7 +279,7 @@ def test_timing_sheet_adds_up(book, joined):
         assert sheet.cell(row=bo.T_SESSIONS, column=column[label]).value == pytest.approx(sessions), label
     counted = {status: sheet.cell(row=row, column=column["All sections"]).value
                for status, row in ((bo.COVERED, bo.T_COVERED), (bo.PARTIAL, bo.T_PARTIAL), (bo.PLANNED, bo.T_PLANNED))}
-    assert counted == {bo.COVERED: 10, bo.PARTIAL: 2, bo.PLANNED: 24}
+    assert counted == {bo.COVERED: 11, bo.PARTIAL: 2, bo.PLANNED: 25}
 
 
 def test_every_formula_has_its_result_stored_in_the_file(book):
@@ -325,7 +344,8 @@ def test_guide_table_of_static_objectives_matches_the_map(joined):
     for o, (objective, taught, evidence, status) in zip(OBJECTIVES, rows):
         info = joined["summary"][o["id"]]
         assert objective == f"**{o['id']}** {o['name']}"
-        assert taught == bo._page_list([p for p in COURSE.pages if info["roles"].get(p.slug) == "T"]), o["id"]
+        pages = [p for p in COURSE.pages if info["roles"].get(p.slug) == "T"]
+        assert taught == (bo._page_list(pages) or "No page yet"), o["id"]
         counted = [_count(info["exercises"], "exercise"), _count(info["quiz"], "quiz question"),
                    _count(info["exam"], "exam question"), _count(info["rubric"], "rubric row")]
         assert evidence == ", ".join(counted), o["id"]
@@ -377,6 +397,8 @@ def test_guide_counts_match_the_course(joined):
     assert (f"questions on {WORDS[sum(1 for n in exam.values() if n)]} of the {WORDS[len(STATIC)]} objectives, "
             f"and no more than {WORDS[max(exam.values())]} on any one") in GUIDE
     with_n = {n: [i for i in STATIC if exam[i] == n] for n in (0, 1, 2)}
-    assert (with_n[0], with_n[1], with_n[2]) == (["S09", "S11", "S12"], ["S02"], ["S01", "S08", "S10"]), (
+    assert (with_n[0], with_n[1], with_n[2]) == (
+        ["S09", "S11", "S12", "S14"], ["S02"], ["S01", "S05", "S08", "S10", "S13"]), (
         "the exam's thin spots changed: rewrite step 3 of 'Next steps' in the instructor guide")
-    assert "S09, S11 and S12 have no questions, S02 has one, and S01, S08 and S10 have two each." in GUIDE
+    assert ("S09, S11, S12 and S14 have no questions, S02 has one, and S01, S05, S08, S10 and S13 have two each."
+            in GUIDE)

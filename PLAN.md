@@ -5,7 +5,7 @@ objectives" section: the teaching, the exercises and the mastery checks that the
 objectives of section 1 still lack. It was worked out on 2026-11-15 against version 1.3 of the
 objectives map (`instructor/mastery_objectives.yaml`).
 
-**Nothing in this file is built.** Nine of the ten questions under "Decide first" were answered
+**Step A is built** (2026-11-15). Steps B to E are not. Nine of the ten questions under "Decide first" were answered
 on 2026-11-15, each as recommended, and so were O11, O12 and O13 in `REVIEW.md`. The answer is
 written under each question. Question 3 is open, and step E waits for it.
 
@@ -26,17 +26,17 @@ Planned (S14). Five objectives have work waiting:
 
 | Objective | Status | What is missing | Minutes to write | Step |
 |---|---|---|---|---|
-| **S08** Polish a chart with matplotlib | Covered | No exercise checks `ax.annotate` or a tick formatter | 10 | A |
+| **S08** Polish a chart with matplotlib | Covered | Nothing since step A: exercise 6.3 checks `ax.annotate` and a tick formatter | built: 10 | A |
 | **S11** Critique and redesign a chart | Covered | The learner is shown a critique before writing one | 10 | B |
 | **S09** Choose the chart form from the question | Partial | Nothing assesses the choice: no exercise, no exam question, no rubric row | 20 | C |
 | **S12** Save a figure that can be reproduced | Partial | Saving is shown as code that is not run, and no page explains rerunning a notebook | 10 | D |
 | **S14** Describe what a figure shows | Planned | No page teaches it, though two rubric rows score it | 15 | D |
 
-The 65 minutes are the 1.1 hours of additions in the guide's Timings table. The other nine
-objectives need nothing here but their mastery checks (step E). No mastery check exists yet for
-any objective.
+The 65 minutes are the 1.1 hours of additions in the guide's Timings table: 10 are built, and 55
+are still to write. The other nine objectives need nothing here but their mastery checks
+(step E). No mastery check exists yet for any objective.
 
-Today's counts: 13 exercises, 52 figures, 28 quiz questions, 25 exam questions, 30 lesson goals,
+Today's counts: 14 exercises, 53 figures, 28 quiz questions, 25 exam questions, 30 lesson goals,
 and 18 rubric rows in 3 assignments.
 
 The work is about 58 to 73 hours of building and checking in all, most of it in step E, or 59 to
@@ -59,7 +59,10 @@ The work is about 58 to 73 hours of building and checking in all, most of it in 
    no place yet for minutes that were added to a lesson. The first step that is built has to
    make one: about 1 to 2 hours, once, on top of that step's own. Needed for steps A to D.
    Decided on 2026-11-15: as recommended. Each lesson stays at 60 minutes, and the minutes of an
-   addition that is built are counted in a block of their own.
+   addition that is built are counted in a block of their own. Step A made the place: the list
+   `added_minutes` in the map, a column "Minutes: additions built" on the Objectives sheet, and a
+   row and a small table on the Timing sheet. A test holds "additions built" and "to write"
+   together at 65 minutes for section 1.
 3. **How does a learner take a check?** On paper or in Word, or in a learning management
    system, and which one? No recommendation: it depends on where the course runs. The answer
    sets the format that the builder writes, and it may settle O12. Needed for step E.
@@ -125,6 +128,21 @@ The work is about 58 to 73 hours of building and checking in all, most of it in 
 ### Step A. Exercise 6.3: annotate a point and format the ticks (S08)
 
 Step 4 of the guide. About 3 hours. Needs questions 2, 5 and 6.
+
+**Built on 2026-11-15**, as planned, with these particulars:
+
+- The starter draws the scatter with its colors, labels and title, so the learner adds two
+  things only. The check therefore tests S08 alone, and the exercise is listed for S08 alone.
+- The check asks for a little more than the plan said: the annotation needs words, the tick
+  labels or the y-axis label must say "kg", and the data must stay in grams (a chart of
+  `body_mass_g / 1000` is told that a formatter changes the labels, not the data).
+- A test puts nine attempts through the check: seven that must each earn their own hint, and
+  two other correct answers that must pass.
+- Tried in Chrome, where matplotlib is 3.8.4: the solution, the starter and the nine attempts
+  get the same verdict and the same message as in the build.
+- O11 took exercise 3.2 off S08, so S08 counts five exercises, and rule 1 counts 6.1, 6.2 and 6.3.
+
+What the plan said:
 
 - **The learner** draws flipper length against body mass, points at the lightest penguin with
   `ax.annotate` and an arrow, and shows the mass axis in kilograms with a tick formatter. The
@@ -262,7 +280,7 @@ objective as its pages teach it, and steps A to D change what five objectives' p
 ## Order
 
 1. The decisions: questions 1 to 10, and O11 to O13. Done on 2026-11-15, except question 3.
-2. Step A, then step B. They are small, and they change Lesson 6 only.
+2. Step A, then step B. They are small, and they change Lesson 6 only. Step A is built.
 3. Step C, then step D. They change Lesson 7, the assessment pack and the runner.
 4. Step E, in stages, starting where the exam is thinnest.
 
@@ -278,10 +296,10 @@ places. The tests fail until they agree, which is the point:
 - `content/instructor-guide.md`: "Where the pages fit" (the counts in its first paragraph, the
   table, the paragraphs on Partial and Planned), "Timings" (the table and its notes) and "Next
   steps".
-- `instructor/mastery_objectives.yaml`: `lesson_minutes`, `lesson_goals`, `page_map` and
-  `evidence`, and each objective's `to_write`, `gap` and `next_step`.
-- `tests/test_objectives.py`: the statuses, the exercises that rule 1 counts, and the exam's
-  thin spots.
+- `instructor/mastery_objectives.yaml`: `lesson_minutes`, `added_minutes`, `lesson_goals`,
+  `page_map` and `evidence`, and each objective's `to_write`, `gap` and `next_step`.
+- `tests/test_objectives.py`: the statuses, the exercises that rule 1 counts, the exam's thin
+  spots, and the 65 minutes of additions.
 - `tests/test_materials.py`: three assignments, each with a rubric that totals 100.
 - `tests/test_site.py`: the lists of exercises that must reject raw column names and seaborn's
   default colors.
@@ -295,4 +313,5 @@ On 2026-11-15, without changing the repository:
 - Exercise 7.1 listed for S09, on a copy of the map: the condition of the rule-1 test fails for
   S11 (question 10).
 
-Nothing else here has been run. In particular, no check has been tried in the browser.
+Nothing else here was run for the plan. Since then, the checks of the steps that are built
+have been tried in the browser: see each step.

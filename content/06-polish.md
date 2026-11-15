@@ -243,6 +243,56 @@ assert "chinstrap" in ax.get_title().lower(), "Mention Chinstraps in the title."
 print("Spotlight on. Gray is doing the heavy lifting here.")
 ```
 
+```python exercise id=6.3 title="Point at the lightest penguin"
+# The makeover pointed at the heaviest penguin. Point at the lightest one instead:
+#  - find its row with idxmin() (the makeover used idxmax())
+#  - label it with ax.annotate(...) and an arrow: arrowprops={"arrowstyle": "->"}
+#  - show body mass in kilograms ("3.0 kg", not "3000") with a tick formatter
+ax = sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
+                     hue="species", palette=PENGUIN_COLORS, s=22, alpha=0.75)
+ax.get_legend().set_title("Species")
+ax.set(xlabel="Flipper length (mm)", ylabel="Body mass",
+       title="The lightest penguin is a Chinstrap")
+sns.despine()
+```
+
+```python solution for=6.3
+ax = sns.scatterplot(data=penguins, x="flipper_length_mm", y="body_mass_g",
+                     hue="species", palette=PENGUIN_COLORS, s=22, alpha=0.75)
+ax.get_legend().set_title("Species")
+ax.set(xlabel="Flipper length (mm)", ylabel="Body mass",
+       title="The lightest penguin is a Chinstrap")
+sns.despine()
+
+lightest = penguins.loc[penguins["body_mass_g"].idxmin()]
+ax.annotate("Lightest bird: a 2.7 kg Chinstrap",
+            xy=(lightest["flipper_length_mm"], lightest["body_mass_g"]),
+            xytext=(200, 2750), color="0.25", fontsize=9,
+            arrowprops={"arrowstyle": "->", "color": "0.4"})
+ax.yaxis.set_major_formatter(lambda value, pos: f"{value / 1000:.1f} kg")
+```
+
+```python check for=6.3
+ax = chart_axes()[0]
+pts = points(ax)
+assert abs(pts[:, 1].mean() - penguins["body_mass_g"].mean()) < 50, "Keep body_mass_g on y, in grams. A tick formatter changes the labels, not the data."
+from matplotlib.text import Annotation
+notes = [t for t in ax.texts if isinstance(t, Annotation)]
+assert notes, "Label the lightest penguin with ax.annotate(...). ax.text writes words, but it has no arrow to point with."
+arrows = [n for n in notes if n.arrow_patch is not None]
+assert arrows, "Give the annotation an arrow: arrowprops={'arrowstyle': '->'}."
+lightest = penguins.loc[penguins["body_mass_g"].idxmin()]
+on_target = [n for n in arrows if abs(n.xy[0] - lightest["flipper_length_mm"]) < 1 and abs(n.xy[1] - lightest["body_mass_g"]) < 25]
+assert on_target, "Point the arrow at the lightest penguin: xy=(its flipper length, its body mass). Find its row with penguins['body_mass_g'].idxmin()."
+assert any(n.get_text().strip() for n in on_target), "Give the annotation some words, e.g. 'Lightest bird: a 2.7 kg Chinstrap'."
+plt.gcf().canvas.draw()
+import re
+ticks = [t.get_text() for t in ax.get_yticklabels() if t.get_text()]
+assert ticks and not any(re.search(r"[0-9]{4}", s) for s in ticks), "The mass axis still shows grams. Add a tick formatter: ax.yaxis.set_major_formatter(lambda value, pos: f'{value / 1000:.1f} kg')."
+assert all("kg" in s for s in ticks) or "kg" in ax.get_ylabel(), "Say that the numbers are kilograms: put 'kg' in the tick labels, or in the y-axis label."
+print("One arrow, one sentence, and an axis in the units people think in.")
+```
+
 ## Quick quiz
 
 ```quiz

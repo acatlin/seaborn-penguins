@@ -69,6 +69,9 @@ timing:
   to_write_basis: >-
     Learner minutes that do not exist as pages yet. In section 1 these are the additions
     named in the 'Next step' column of the Objectives sheet.
+  added_basis: >-
+    Learner minutes of what was added to a lesson after it was timed. Each lesson stays at
+    its 60-minute midpoint, and an addition is counted here from the day it is built.
 
 # How each existing lesson's 60 minutes divide across the objectives (section 1 only).
 lesson_minutes:
@@ -79,6 +82,12 @@ lesson_minutes:
   05-small-multiples: {S06: 60}
   06-polish: {S07: 15, S08: 15, S10: 10, S11: 15, S12: 5}
   07-capstone: {S09: 10, S10: 35, S11: 15}
+
+# Additions that are built (PLAN.md, question 2). A lesson keeps its 60 minutes above. What is
+# added to it later is listed here, in a block of its own, and its minutes leave the
+# objective's to_write. tests/test_objectives.py holds the two together at 65 minutes.
+added_minutes:
+  - {lesson: 06-polish, objective: S08, minutes: 10, what: "Exercise 6.3: annotate a point and format the tick labels."}
 
 # ---------------------------------------------------------------- read-me text
 mastery_rule:
@@ -95,7 +104,7 @@ assumptions:
   - "Section 2 uses Plotly. Its objectives are worded so that another library would change the 'Key tools' column, not the objective, except I04 and I07, whose criteria name Plotly's own functions. Plotly links two views only inside a scatter matrix or through a notebook widget, so linking two separate charts (I08) is finished in section 3 (D07). Altair, the alternative that was weighed, links them in a few lines. Section 3 uses Streamlit and is written in its terms (the rerun, session state, caching), so the alternative, Dash, would mean rewriting D02 to D09 and D11. The names in 'Key tools' were checked against the documentation of Plotly 7.1 and Streamlit 1.67."
   - "An exercise counts as evidence for an objective only when its automatic check tests that objective. S01 is counted in Lesson 1's two exercises alone: later checks also look at which columns are plotted, but to recognize the chart, not to test the mapping. Every quiz question and every exam question is mapped to exactly one objective. A rubric row is mapped to the objectives its 'full credit' text describes."
   - "Status: Covered means the pages teach the objective, at least one checked exercise practices it, and at least one exam question or rubric row assesses it. Partial means it is taught but practice or assessment is missing. Planned means no page teaches it yet."
-  - "The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson's 60-minute midpoint across its objectives. Sections 2 and 3 are planning figures to revise after a pilot."
+  - "The lesson minutes are estimates (see the Timing sheet). Section 1 splits each existing lesson's 60-minute midpoint across its objectives, and counts what was added to a lesson later on top of it, in a block of its own. Sections 2 and 3 are planning figures to revise after a pilot."
 
 strands:
   Question: "Decide what to show, and whether to show it at all."
@@ -258,9 +267,9 @@ objectives:
     prerequisites: [S02]
     tools: "seaborn: set_theme, axes_style, despine; matplotlib: ax.text, ax.annotate, ax.axvline, ax.axhline, axis.set_major_formatter"
     outcome: 5
-    to_write: 10
-    gap: "No exercise checks ax.annotate or a tick formatter. Both are taught in the makeover, and only exam Q23 asks about annotate. ax.axhline is named in Lesson 6's takeaways but never shown."
-    next_step: "Add an exercise: annotate the heaviest penguin and show the mass axis in kilograms."
+    to_write: 0
+    gap: "ax.axhline is named in Lesson 6's takeaways but never shown."
+    next_step: ""
 
   - id: S09
     name: "Choose the chart form from the question"
@@ -941,6 +950,7 @@ evidence:
     "5.2": [S06]
     "6.1": {objectives: [S11, S02, S07, S08], note: "The brief lists the fixes, so this practices the rebuild, not the critique."}
     "6.2": [S07, S02, S08]
+    "6.3": {objectives: [S08], note: "The check wants ax.annotate with an arrow at the lightest bird, and kilograms on the mass axis. The starter supplies the colors and the labels, so S02 and S07 are not tested."}
     "7.1": {objectives: [S10], note: "The chart type is the learner's choice, but the check does not judge it (S09)."}
 
   # Lesson quiz questions, "lesson.question": exactly one objective each.

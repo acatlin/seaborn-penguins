@@ -371,6 +371,57 @@ def test_exercises_reject_what_their_brief_rules_out(slug, ex_id, old, new, hint
     assert hint in result["check_message"], result["check_message"]
 
 
+def exercise_6_3_attempts():
+    """Attempts at exercise 6.3 as {name: (code, a word of the hint it has to earn, or None if it
+    should pass)}. Each is the solution's chart with a different ending."""
+    import build_site
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / "06-polish.md").read_text(encoding="utf-8"))
+    solution = next(b.body for b in blocks if b.kind == "solution" and b.opts.get("for") == "6.3")
+    chart, rest = solution.split("lightest = ")
+    assert "ax.annotate(" in rest and "set_major_formatter" in rest
+    find = 'lightest = penguins.loc[penguins["body_mass_g"].idxmin()]\n'
+    spot = 'xy=(lightest["flipper_length_mm"], lightest["body_mass_g"]), xytext=(200, 2750)'
+    arrow = ', arrowprops={"arrowstyle": "->"})\n'
+    kilograms = 'ax.yaxis.set_major_formatter(lambda value, pos: f"{value / 1000:.1f} kg")\n'
+    good = chart + find + f'ax.annotate("Lightest bird", {spot}{arrow}'
+    return {
+        "words without an arrow (ax.text)": (chart + 'ax.text(200, 2750, "Lightest bird")\n' + kilograms, "ax.annotate"),
+        "an annotation without an arrow": (chart + find + f'ax.annotate("Lightest bird", {spot})\n' + kilograms,
+                                           "arrowprops"),
+        "the arrow points at the heaviest bird": (good.replace("idxmin", "idxmax") + kilograms, "idxmin"),
+        "an arrow without words": (good.replace('"Lightest bird"', '""') + kilograms, "some words"),
+        "no tick formatter": (good, "tick formatter"),
+        "kilograms without a unit": (good + 'ax.yaxis.set_major_formatter(lambda value, pos: f"{value / 1000:.1f}")\n',
+                                     "'kg'"),
+        "the data divided by 1000": (chart.replace('y="body_mass_g"', 'y=penguins["body_mass_g"] / 1000') + kilograms,
+                                     "in grams"),
+        "the unit on the axis label": (good + 'ax.yaxis.set_major_formatter(lambda value, pos: f"{value / 1000:.1f}")\n'
+                                       'ax.set(ylabel="Body mass (kg)")\n', None),
+        "a format string as the formatter": (good + "from matplotlib.ticker import FuncFormatter\n"
+                                             'ax.yaxis.set_major_formatter(FuncFormatter(lambda v, p: f"{v / 1000:g} kg"))\n',
+                                             None),
+    }
+
+
+def test_exercise_6_3_wants_an_arrow_at_the_lightest_bird_and_kilograms():
+    """Exercise 6.3 is the one that checks ax.annotate and a tick formatter. The lesson's own example
+    annotates the heaviest bird, so pasting its lines must not pass, and neither may ax.text."""
+    import build_site
+    import runner
+
+    _, blocks = build_site.split_blocks((ROOT / "content" / "06-polish.md").read_text(encoding="utf-8"))
+    setup = next(b.body for b in blocks if b.kind == "setup")
+    check = next(b.body for b in blocks if b.kind == "check" and b.opts.get("for") == "6.3")
+    for name, (code, hint) in exercise_6_3_attempts().items():
+        result = runner.run_cell(code, setup=setup, check=check)
+        assert result["error"] is None, (name, result["error"])
+        if hint is None:
+            assert result["check_ok"] is True, (name, result["check_message"])
+        else:
+            assert result["check_ok"] is False and hint in result["check_message"], (name, result["check_message"])
+
+
 def test_bin_width_panels_draw_the_widths_they_name():
     """seaborn fits a whole number of bins to the data's range unless binrange= is given,
     so a panel titled "binwidth = 1000 g" used to draw 900 g bins. The panels don't share a

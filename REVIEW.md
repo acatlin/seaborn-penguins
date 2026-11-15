@@ -722,7 +722,8 @@ in version 1.4 of the map. Each ends with what was done.
   notes that deleting `legend=False` there changes nothing, so that an instructor who tries it
   in front of a class is not caught out.
   Decided on 2026-11-15, as recommended. Applied: exercise 3.2 is listed for S04, S02 and S07,
-  with a note that says why S08 is not among them. S08 counts 4 exercises, not 5. The guide's Lesson 3 notes say what happens when
+  with a note that says why S08 is not among them. S08 counted 4 exercises, and counts 5 again since exercise 6.3 was added (`PLAN.md`, step A).
+  The guide's Lesson 3 notes say what happens when
   `legend=False` is deleted, and when the argument is needed. Run again for this: exercise 3.2
   and both of Lesson 3's examples that pass it draw no legend without it.
 - **O12. An instructor cannot see whether part 1 of rule 1 is met.** "Every exercise that checks
@@ -761,6 +762,6 @@ in version 1.4 of the map. Each ends with what was done.
 **What comes next.** Steps 2 to 4 of the guide's "Next steps" are planned in `PLAN.md`: two
 exercises, a task, a new section in Lesson 7 and the mastery checks, with ten questions to answer
 first. Nine of the ten were answered on 2026-11-15, as recommended, and the answers are written
-under each question there. Question 3 (how a learner takes a check) is still open. None of the
-plan is built. One of the ten follows from O10. An exercise for S09 in Lesson 7
+under each question there. Question 3 (how a learner takes a check) is still open. Step A of
+the plan is built: exercise 6.3, for S08. One of the ten follows from O10. An exercise for S09 in Lesson 7
 would make the rule-1 test fail, because S11 needs S09 and is first taught one lesson earlier.

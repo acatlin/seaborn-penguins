@@ -36,6 +36,7 @@ from openpyxl import Workbook
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.pagebreak import Break
 from openpyxl.worksheet.page import PageMargins
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
@@ -881,6 +882,8 @@ def fill_timing_split(grid, spec, course):
             grid.put(row, 3, minutes, border=BOX, align=CENTER, fill=INPUT_FILL)
     first, last = T_SPLIT + 1, row
     row += 2
+    # Printed, the small table below used to start at the foot of one page and end on the next.
+    grid.ws.row_breaks.append(Break(id=row - 1))
     grid.put(row, T_LABEL, "Check: every lesson's minutes add up to the midpoint", font=HEADING, border=UNDER,
              align=RUN_ON)
     row += 1

@@ -200,6 +200,8 @@ assert abs(pts[:, 0].mean() - penguins["bill_length_mm"].mean()) < 0.5, "Keep bi
 assert near_color(PENGUIN_COLORS["Gentoo"], colors_used(ax)), "Swap the rainbow for palette=PENGUIN_COLORS."
 sizes = set().union(*[set(c.get_sizes()) for c in ax.collections])
 assert len(sizes) == 1, "Drop size= - point size shouldn't encode anything here."
+shapes = {path.vertices.tobytes() for c in ax.collections for path in c.get_paths()}
+assert len(shapes) == 1, "Drop style= - marker shape shouldn't encode anything here."
 assert ax.get_legend() is None, "Remove the legend with legend=False (direct labels are optional)."
 assert "mm" in ax.get_xlabel() and "mm" in ax.get_ylabel() and "_" not in ax.get_xlabel() + ax.get_ylabel(), "Use plain-English axis labels with units, e.g. 'Bill length (mm)'."
 assert len(ax.get_title()) >= 15, "Add a title that states a finding."

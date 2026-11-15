@@ -5,9 +5,9 @@ objectives" section: the teaching, the exercises and the mastery checks that the
 objectives of section 1 still lack. It was worked out on 2026-11-15 against version 1.3 of the
 objectives map (`instructor/mastery_objectives.yaml`).
 
-**Nothing in this file is built.** It is written to be decided from. The questions under
-"Decide first" come before the work, and three open questions in `REVIEW.md` (O11, O12 and O13)
-bear on it too.
+**Nothing in this file is built.** Nine of the ten questions under "Decide first" were answered
+on 2026-11-15, each as recommended, and so were O11, O12 and O13 in `REVIEW.md`. The answer is
+written under each question. Question 3 is open, and step E waits for it.
 
 How to use it:
 
@@ -39,8 +39,8 @@ any objective.
 Today's counts: 13 exercises, 52 figures, 28 quiz questions, 25 exam questions, 30 lesson goals,
 and 18 rubric rows in 3 assignments.
 
-The work is about 60 to 75 hours of building and checking in all, most of it in step E. The
-hours given with each step are rough.
+The work is about 58 to 73 hours of building and checking in all, most of it in step E, or 59 to
+75 with the hour or two that question 2 adds once. The hours given with each step are rough.
 
 ## Decide first
 
@@ -49,6 +49,8 @@ hours given with each step are rough.
    Recommendation: a private companion repository for the questions, the tasks and their keys.
    This repository keeps the builder, the tests of the format and a manifest that holds counts
    only, so that the workbook can say what exists without showing it. Needed for step E.
+   Decided on 2026-11-15: as recommended. The private repository is not made yet: it is made with
+   step E, and the guide now says that the checks live in a private companion to this one.
 2. **How are the minutes of an addition counted?** The map holds every lesson at its 60-minute
    midpoint, and a test enforces the sum.
    Recommendation: leave each lesson at 60 and count the additions as a block of their own: 65
@@ -56,39 +58,53 @@ hours given with each step are rough.
    minutes, past the guide's 45-75. Either way, the map, the builder and the Timing sheet have
    no place yet for minutes that were added to a lesson. The first step that is built has to
    make one: about 1 to 2 hours, once, on top of that step's own. Needed for steps A to D.
+   Decided on 2026-11-15: as recommended. Each lesson stays at 60 minutes, and the minutes of an
+   addition that is built are counted in a block of their own.
 3. **How does a learner take a check?** On paper or in Word, or in a learning management
    system, and which one? No recommendation: it depends on where the course runs. The answer
    sets the format that the builder writes, and it may settle O12. Needed for step E.
+   **Not decided.** It needs an answer in the instructor's own words before step E.
 4. **Is five the number of questions in a check, or the least? And do the five objectives that
    are shown by a task get questions as well?**
    Recommendation: five, in two forms, for the nine objectives that are shown by questions,
    which is 90 questions. The other five get tasks only. Questions for all fourteen would be
    140. Needed for step E.
+   Decided on 2026-11-15: as recommended. Rule 2 and the third assumption now say "five questions", where
+   they said "five or more", and step 3 of the guide's "Next steps" gives the 90 questions and
+   the ten tasks.
 5. **O11, O12 and O13 in `REVIEW.md`.** O11 changes how many exercises count for S08 (step A).
    O12 and O13 change the mastery rule, which the checks carry out (step E).
    Recommendation: as given there.
+   Decided on 2026-11-15: all three as recommended, and applied in version 1.4 of the map. What was done
+   is written under each of them in `REVIEW.md`.
 6. **May exercises be renumbered to follow the page?** A new exercise does not always belong at
    the end of its lesson: step B's sits above exercise 6.1.
    Recommendation: no. A new exercise takes the next free number, even where that puts 6.4
    above 6.1 on the page. The site keeps a learner's code in the browser under the exercise's
    number, so after a renumbering a returning learner would find old code in the wrong editor.
    Needed for steps A to D.
+   Decided on 2026-11-15: as recommended. Numbers are not reused or moved.
 7. **Is the "questions only" task a task of its own, or a part of Assignment 3? And may the
    rubrics be re-weighted?** Every rubric totals 100, so a new row takes points from others.
    Recommendation: a short task of its own after Lesson 7, with its own 100-point rubric, and
    Assignment 3 left as it is. For alt text (step D), a row of 10 points in Assignment 3, with
    5 points taken from each of its two "Report figure" rows: it is the only assignment in which
    no row scores a description of a figure. Needed for steps C and D.
+   Decided on 2026-11-15: as recommended, for the task and for the 10-point row.
 8. **Does "Describe and deliver" go in Lesson 6 or in Lesson 7? And is it acceptable that two
    things are done in the notebook and not on the page: opening the saved file, and restarting
    and running all cells?**
    Recommendation: Lesson 7, as Step 5, where the finished report is the figure to hand over.
    And yes: the page can check a saved file and the words, and it has no kernel to restart.
    Needed for step D.
+   Decided on 2026-11-15: as recommended: Lesson 7, Step 5, and yes. The map's next steps for S12 and S14
+   and step 2 of the guide's "Next steps" now name Lesson 7.
 9. **Do the questions of a check use the penguins only?**
    Recommendation: penguins for the first form of each check. A second dataset in the second
    form would show that the skill carries over, at the price of new figures for every question
    that shows a chart. Needed for step E.
+   Decided on 2026-11-15: as recommended. Whether the second form uses a second dataset was not asked
+   and is not decided: the recommendation covers the first form only.
 10. **What gives way when S09 gets an exercise?** S11 lists S09 as a prerequisite and is first
     taught in Lesson 6, one lesson before S09 (O10, decided: leave the map as it is). Today
     that costs nothing, because S09 has no exercise. Once an exercise in Lesson 7 counts for
@@ -101,6 +117,8 @@ hours given with each step are rough.
 
     Recommendation: the first. S11's mastery check already belongs after Lesson 7.
     Needed for step C.
+    Decided on 2026-11-15: the first, as recommended. The test is changed with step C, when the
+    exercise exists. Until then it passes as it stands.
 
 ## The steps
 
@@ -243,14 +261,13 @@ objective as its pages teach it, and steps A to D change what five objectives' p
 
 ## Order
 
-1. The decisions: questions 1 to 10, and O11 to O13.
+1. The decisions: questions 1 to 10, and O11 to O13. Done on 2026-11-15, except question 3.
 2. Step A, then step B. They are small, and they change Lesson 6 only.
 3. Step C, then step D. They change Lesson 7, the assessment pack and the runner.
 4. Step E, in stages, starting where the exam is thinnest.
 
-L24 and L25 in `REVIEW.md` (three exercise checks that pass what their brief rules out) are not
-part of this plan. The one in exercise 2.2 is worth closing before step E, since rule 1 counts
-that exercise for S03.
+L24 and L25 in `REVIEW.md` (three exercise checks that passed what their brief rules out) were
+not part of this plan. They were closed on 2026-11-15, with the decisions.
 
 ## Places that hold a number
 

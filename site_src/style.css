@@ -167,9 +167,9 @@ details.solution > button { margin-top: 0.6rem; }
 .quiz-options label:hover { background: var(--surface-2); }
 .quiz-options input { accent-color: var(--accent); }
 .opt-letter { font-weight: 600; color: var(--ink-3); }
-/* The text of an option. In a wide window its words and its inline code stay separate flex items, as
-   they always were. On a narrow screen (below) it becomes one item, so that it wraps like a sentence. */
-.opt-text { display: contents; }
+/* The text of an option is one flex item, so its words and its inline code wrap like a sentence and
+   a comma stays next to the code it follows. min-width: 0 lets a long piece of code break. */
+.opt-text { min-width: 0; }
 .quiz-options label.is-correct { border-color: var(--good); background: color-mix(in srgb, var(--good) 10%, var(--surface)); }
 .quiz-options label.is-wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 8%, var(--surface)); }
 .quiz-feedback { font-weight: 600; margin-top: 0.5rem; }
@@ -208,5 +208,4 @@ details.solution > button { margin-top: 0.6rem; }
   .content { padding: 1.25rem 16px 2rem; }
   article h1 { font-size: 1.7rem; }
   .pager { grid-template-columns: minmax(0, 1fr); }
-  .opt-text { display: block; min-width: 0; }
 }

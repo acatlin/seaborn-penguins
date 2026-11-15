@@ -17,8 +17,9 @@ findings (L16-L21) without acting on them. A recheck of the mastery objectives a
 as recommended on 2026-11-15 and applied, and a tenth (O10) came up while they were. O8, O9 and
 O10 were decided later that day and applied as version 1.3 of the map. The same pass fixed L22
 and the British spellings (L27), rechecked the first seven as applied, and wrote down four more
-Low findings (L23-L26) and three more questions (O11-O13) without acting on them. What comes
-next is planned in `PLAN.md`.
+Low findings (L23-L26) and three more questions (O11-O13) without acting on them. All seven were
+decided on 2026-11-15, as recommended, and applied in a fourth follow-up, with version 1.4 of the
+map. What comes next is planned in `PLAN.md`.
 
 Severity scale:
 
@@ -51,11 +52,11 @@ Severity scale:
 | L15 | Low | Found in the follow-up: exercise 2.2 checks neither its palette nor its printed answer | Palette check fixed in the second follow-up; the printed answer left alone |
 | L16-L21 | Low | Found in the second follow-up: a give-away exam item, a 4.46:1 tick mark, heatmap label rotation, layout advice the course does not follow, an unnamed y-axis, an unshared x-axis | Left alone, see below |
 | L22 | Low | Found while rechecking the objectives: five of the nine pages scroll sideways at phone width | Fixed in a third follow-up |
-| L23-L26 | Low | Found in the third follow-up: a gap inside some quiz options at desktop width, three exercise checks that pass what their brief rules out, a small table that breaks across two printed pages | Left alone, see below |
+| L23-L26 | Low | Found in the third follow-up: a gap inside some quiz options at desktop width, three exercise checks that pass what their brief rules out, a small table that breaks across two printed pages | Fixed in a fourth follow-up |
 | L27 | Low | Found in the third follow-up: British spellings in a course written in American English | Fixed in the third follow-up |
 | O1-O7 | Decision | Questions about the mastery objectives map: a rule that cannot be followed as written, evidence that is tested but not listed, two page roles, overlapping criteria | Decided on 2026-11-15 as recommended, and applied |
 | O8-O10 | Decision | More questions about the map: two objectives that each hold several performances, section 2's library, an objective first taught before one of its prerequisites | Decided on 2026-11-15 (split, Plotly, as recommended) and applied in version 1.3 of the map |
-| O11-O13 | Decision | Questions from the second recheck: an exercise whose check cannot fail on an objective it is listed for, and two parts of the mastery rule that cannot be followed with today's materials | Left for a decision, see "Second recheck of the mastery objectives" |
+| O11-O13 | Decision | Questions from the second recheck: an exercise whose check cannot fail on an objective it is listed for, and two parts of the mastery rule that cannot be followed with today's materials | Decided on 2026-11-15 as recommended, and applied in version 1.4 of the map |
 
 ## High
 
@@ -309,7 +310,7 @@ Fixed in a second follow-up pass:
   rendered page in Chrome. The token stays well apart from `--ink-2` (7.0:1 or more). The
   dark theme already passed (4.56:1 at worst) and is unchanged. A new test computes the ratio
   from `site_src/style.css` for both themes, the two quiz tints included.
-- **L9. Exercise 4.1's solution heatmap** showed raw column names and an unlabelled
+- **L9. Exercise 4.1's solution heatmap** showed raw column names and an unlabeled
   colorbar. Fix: the solution renames the columns with the lesson's own `nice` dictionary and
   passes `cbar_kws={"label": "Pearson r"}`, under a comment that marks both as optional
   polish. The brief and the checker are as they were, so the exercise is no longer than
@@ -359,6 +360,42 @@ Fixed in a third follow-up pass:
   Q11; "neighbours" and "labelled" in the assignments; six in this file and three in code
   comments. All are American now. The answer statistics given under M4 and M5 are unchanged.
 
+Fixed in a fourth follow-up pass, after each was decided on 2026-11-15 ("as recommended", which
+for these four is the cure the finding itself names):
+
+- **L23. At desktop width, a quiz option that held inline code was laid out in pieces.** This is
+  the layout that L22 describes, and above 860 px it was still there: each piece of code and each
+  run of words was a flex item, and the row's 8 px gap stood between them where a space would. In
+  3 of the 18 options that hold code, a punctuation mark followed a piece of code and stood apart
+  from it: a comma in two ("`sns.relplot` , the figure-level function", Lesson 6, Q3) and a
+  closing parenthesis in one. The finding as first written counted three commas. Fix, in
+  `site_src/style.css`: the option's span is no longer `display: contents` and has
+  `min-width: 0` at every width, so an option is one flex item beside its letter and wraps like a
+  sentence. Measured in Chrome at 1600 px against the pages as they were: the code inside those
+  options sits 3 to 10 px further left, an option that holds code is 1.5 px less tall, and what
+  follows it on the page moves up by as much (15 px at most, at the foot of Lesson 5). Nothing
+  outside a quiz changed its size or its horizontal position. No page is wider than its window
+  at 320 to 860 px.
+- **L24. Exercise 2.2's check did not test that the chart is an ECDF.** It looked for the three
+  species in the legend, the Chinstrap purple, a vertical line at 45 and the range of the x-axis.
+  A histogram of bill length (bars or step outlines) or a density curve passed, and was told to
+  "read it off the plot: the purple line crosses 45 mm near 0.09". It is the gap that L11 closed
+  in exercise 2.1. Fix: the check requires three lines that each climb from 0 to 1, with a hint
+  that names `sns.ecdfplot`. A cumulative histogram scaled to 1 still passes: it is a binned
+  ECDF.
+- **L25. Two more checks passed what their brief rules out.** Exercise 6.1's brief says to drop
+  `style=` and `size=`, and the check tested the sizes only, so a chart that kept a marker shape
+  for each island passed. Exercise 7.1's brief asks for `layout="constrained"`, and its hint says
+  "keep one legend"; the check tested neither, so a figure with three legends passed. Fix: 6.1
+  requires one marker shape, and 7.1 requires the constrained layout and exactly one legend,
+  wherever it is. A new test puts six such changes into the three solutions (L24's three among
+  them) and requires a hint for each.
+- **L26. On the Timing sheet of the workbook, the last small table broke across two printed
+  pages.** "Check: every lesson's minutes add up to the midpoint" had its heading and one row on
+  the first page and six rows on the second. Fix: the builder puts a page break before the
+  heading. Excel honors it although the sheet is fitted to one page wide: its second page now
+  starts at the heading.
+
 Left alone, with reasons:
 
 - **L4. `pairplot` keeps raw axis labels.** The text frames it as an exploration tool, and
@@ -402,28 +439,6 @@ Found during the follow-up passes, and left alone:
   is twice as wide. With `sharex=True` the figure would also show what the callout under it
   says, a density curve reaching far beyond any real penguin (the heaviest weighs 6,300 g,
   and the curve ends near 8,500 g).
-- **L23. At desktop width, a quiz option that holds inline code is laid out in pieces.** This is
-  the layout that L22 describes, and above 860 px it is still there: each piece of code and each
-  run of words is a flex item, and the row's 8 px gap stands between them where a space would. In
-  3 of the 18 options that hold code, a comma follows a piece of code and stands apart from it
-  ("`sns.relplot` , the figure-level function", Lesson 6, Q3). The pieces now sit in one span, so
-  the cure is two lines of `site_src/style.css`: drop `display: contents`, and give the span
-  `min-width: 0` at every width. Left alone because the L22 fix was to change nothing at desktop
-  width, and this would move the words of those 18 options by a few pixels.
-- **L24. Exercise 2.2's check does not test that the chart is an ECDF.** It looks for the three
-  species in the legend, the Chinstrap purple, a vertical line at 45 and the range of the x-axis.
-  A histogram of bill length (bars or step outlines) or a density curve passes, and is told to
-  "read it off the plot: the purple line crosses 45 mm near 0.09". It is the gap that L11 closed
-  in exercise 2.1. Requiring a line for each species that climbs from 0 to 1 would close it.
-- **L25. Two more checks pass what their brief rules out.** Exercise 6.1's brief says to drop
-  `style=` and `size=`, and the check tests the sizes only, so a chart that keeps a marker shape
-  for each island passes. Exercise 7.1's brief asks for `layout="constrained"`, and its hint says
-  "keep one legend"; the check tests neither, so a figure with three legends passes. Found by
-  breaking each solution on purpose (see "Second recheck of the mastery objectives").
-- **L26. On the Timing sheet of the workbook, the last small table breaks across two printed
-  pages.** "Check: every lesson's minutes add up to the midpoint" has its heading and one row on
-  the first page and six rows on the second. On screen nothing is wrong. A page break before the
-  heading would keep the table together.
 
 ## What checked out
 
@@ -692,7 +707,8 @@ any of them can be reversed.
   per objective, not 35. The assumption that spoke of "three sections of twelve" now says
   fourteen, twelve and twelve.
 
-**Questions for a decision.**
+**Questions for a decision.** All three were decided on 2026-11-15, as recommended, and applied
+in version 1.4 of the map. Each ends with what was done.
 
 - **O11. Exercise 3.2 is listed for S08, but its check cannot fail on what S08 asks.** The check
   asserts that the chart has no legend. Seaborn 0.13 leaves a legend out by itself when every
@@ -705,6 +721,10 @@ any of them can be reversed.
   changes, and rule 1 does not count 3.2 for S08 in any case). And say in the guide's Lesson 3
   notes that deleting `legend=False` there changes nothing, so that an instructor who tries it
   in front of a class is not caught out.
+  Decided on 2026-11-15, as recommended. Applied: exercise 3.2 is listed for S04, S02 and S07,
+  with a note that says why S08 is not among them. S08 counts 4 exercises, not 5. The guide's Lesson 3 notes say what happens when
+  `legend=False` is deleted, and when the argument is needed. Run again for this: exercise 3.2
+  and both of Lesson 3's examples that pass it draw no legend without it.
 - **O12. An instructor cannot see whether part 1 of rule 1 is met.** "Every exercise that checks
   it ... passes its automatic check": the workbook names the exercises, but a pass is a line of
   text under the learner's editor. The site keeps the editor's text and nothing else, nothing
@@ -716,6 +736,12 @@ any of them can be reversed.
   Recording a pass in the browser, as the quiz records a finished lesson, would give the learner
   something to show. It is a small change to `live.js`, but a solution that was loaded and run
   would earn the tick too.
+  Decided on 2026-11-15: the first wording. Applied: part 1 of rule 1 now ends "passes its
+  automatic check, shown to the instructor or handed in as the lesson's notebook with its
+  outputs", in the YAML, on the Read me sheet and in the guide. One thing the wording leaves to
+  the instructor: a notebook has no automatic check, so a notebook that is handed in shows the
+  charts, and the instructor compares them with the solutions notebook. How a learner takes a
+  mastery check (`PLAN.md`, question 3) is still open, and may change this again.
 - **O13. With today's materials, part 2 of rule 1 comes too late.** Part 2 needs a mastery check,
   and none exists yet. Rule 5 says to use "the exercises and rubric rows" meanwhile. The rubric
   rows come with the assignments, after Lessons 3, 5 and 7, which is later than the objectives
@@ -726,8 +752,15 @@ any of them can be reversed.
   mastery checks are written, a learner moves on when the exercises of rule 1 pass, and the
   rubric rows of the next assignment confirm the objective or send the learner back. The mastery
   checks of step 3 remove the problem, since a check can be taken at any time.
+  Decided on 2026-11-15, as recommended. Applied: rule 5 now says that no mastery check is
+  written yet, that until one is a learner moves on when the exercises of rule 1 pass, and that
+  the rubric rows of the next assignment confirm the objective or send the learner back. The
+  exam's questions are for finding what to rework, as before. Rule 5 is rewritten again when the
+  checks exist (`PLAN.md`, step E).
 
 **What comes next.** Steps 2 to 4 of the guide's "Next steps" are planned in `PLAN.md`: two
 exercises, a task, a new section in Lesson 7 and the mastery checks, with ten questions to answer
-first. None of it is built. One of the ten follows from O10. An exercise for S09 in Lesson 7
+first. Nine of the ten were answered on 2026-11-15, as recommended, and the answers are written
+under each question there. Question 3 (how a learner takes a check) is still open. None of the
+plan is built. One of the ten follows from O10. An exercise for S09 in Lesson 7
 would make the rule-1 test fail, because S11 needs S09 and is first taught one lesson earlier.

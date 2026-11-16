@@ -1,13 +1,20 @@
 # Handoff: picking the work up on another machine
 
-Written on 2026-11-15, at the end of the session that built steps C and D of `PLAN.md`. Read
-`README.md`, `REVIEW.md` and `PLAN.md` as well: this file adds what those three do not say, and
-what was kept until now in notes on one machine only.
+Written on 2026-11-15, at the end of the session that built steps C and D of `PLAN.md`, and
+brought up to date on 2026-11-16 by the first session on the second machine, which set that machine
+up and rechecked steps C and D cold (`REVIEW.md`, L31-L33, all left alone). Read `README.md`,
+`REVIEW.md` and `PLAN.md` as well: this file adds what those three do not say.
 
 ## Where things stand
 
 - `main` and `develop` hold the same files, and GitHub Pages serves `main:docs/`.
 - Steps A, B, C and D of `PLAN.md` are built. Step E, the mastery checks, is not started.
+- Steps C and D were rechecked cold on 2026-11-16: 86 attempts at exercise 7.2 and 44 at 7.3
+  beyond their tests, the runner's temporary folder under CPython and in the browser, both Word
+  editions, the Timing sheet against the guide, and the browser run and widths. Nothing needed a
+  fix. Three Low findings were written down and left alone (`REVIEW.md`, L31-L33).
+- Both machines are set up. The second has no Anaconda: its `.venv` is Python 3.14 with the pinned
+  packages, and the suite, the builds and the browser check all pass from it.
 - All fourteen static objectives are Covered. The objectives map is version 1.6.
 - 17 exercises, 56 figures, 28 quiz questions, 25 exam questions, 32 lesson goals, 3 assignments
   and a short task with 23 rubric rows.
@@ -33,7 +40,11 @@ what was kept until now in notes on one machine only.
    ```
 
    On the first machine this was Anaconda's Python, whose packages matched the pins. Any Python
-   3.13 with the pinned packages does.
+   with the pinned packages does: the second machine runs them on Python 3.14.4 from
+   `C:\Python314`, in the repository's `.venv`, and all 124 tests pass. On Windows, use
+   `.venv\Scripts\python.exe` in place of `python` throughout, and paste the two lines above one
+   at a time: pasted together into PowerShell, they once created two empty venvs named `#` and
+   `Python` in the repository root (git ignored them, because `venv` writes its own `.gitignore`).
 
 3. The GitHub CLI, signed in as the owner of the repository (`gh auth login`). Pull requests,
    their checks and the merges all go through `gh`.
@@ -97,7 +108,11 @@ Word and Excel draw it.
   changed although no lesson was touched, the machine draws them differently (other fonts, for
   one). Then commit only the figures whose code changed, and restore the rest with
   `git checkout -- docs/img/NAME.png`. The first machine draws in Arial, and the browser in
-  DejaVu Sans.
+  DejaVu Sans. On the second machine this happened as predicted: a build marks all 56 figures and
+  nothing else, so after a build there, `git checkout -- docs/img` before reading `git status`.
+- **An old prompt.** The prompt at the end of this file is replaced each session. The one from
+  two sessions back was pasted once by mistake; its state lines failed at once (other commit ids,
+  119 tests, "steps A and B are built"), which is what they are for. Stop when they fail.
 - **Word files.** `build_materials.py` rewrites all three `.docx` with new timestamps even when
   nothing changed. Before a commit, restore the ones whose parts are unchanged
   (`git checkout -- instructor/NAME.docx`). To tell: unzip the old and the new file and compare
@@ -122,6 +137,9 @@ Each is written where its question is, with what was recommended.
 | `PLAN.md`, step B | Fold the page's own list of faults away under exercise 6.4, or leave it in plain view | Not decided. It is in plain view |
 | `REVIEW.md`, L27 | "afterwards" (Lesson 6, and D05 in the map) and "backwards": leave, or change to -ward | Not decided. They are left |
 | `REVIEW.md`, L29 and L30 | Exercise 6.4 turns away an honest sentence of under 20 characters, and recognizes faults from letters inside other words | Left alone. Recommended: count words, and match whole words |
+| `REVIEW.md`, L31 | Exercise 7.2 misreads four honest forms the lessons do not teach (frequency polygon, hexbin, markers-only `plot`, a colorbar as a fourth panel) | Left alone. Recommended: leave; if any, read a markers-only line as a scatter |
+| `REVIEW.md`, L32 | Exercise 7.3 names a folder as a file, passes another letter case on Windows only, and gives the generic line for a file that is not an image | Left alone. Recommended: quote the names, list files only, catch the Pillow error |
+| `REVIEW.md`, L33 | Exercise 7.3 turns away an honest alt text of 11 words and a caption of 7 | Left alone. Recommended: leave the floors (12 and 8) |
 | `PLAN.md`, step C | The short task's fourth rubric row is mapped to S09 and S02, where the plan said S09 alone | Done that way. Say so if S09 alone is wanted |
 | `PLAN.md`, step D | The guide now says to plan the capstone as two sessions, since 45 added minutes fall in Lesson 7 | Added by the builder, not asked for |
 
@@ -151,7 +169,8 @@ decisions. Keep the lines short: a long line was once cut off when pasted.
 ```text
 Read README.md, REVIEW.md, PLAN.md and HANDOFF.md
 before anything else. PLAN.md is the plan.
-Steps A to D are built. Step E is not.
+Steps A to D are built and rechecked. Step E
+is not started.
 
 STATE TO CONFIRM FIRST. Stop and tell me if a
 line fails.
@@ -159,32 +178,15 @@ line fails.
 - develop and main hold the same files:
   git diff origin/develop origin/main --stat
   prints nothing.
-- Full suite: 124 passed.
+- Full suite: 124 passed. On this machine run
+  Python as .venv\Scripts\python.exe.
 - Every file under origin/main:docs/ is
   identical to the live site.
 - mastery_objectives.yaml: version 1.6.
 - 17 exercises, 56 figures.
-- If this is a new machine: HANDOFF.md,
-  "Setting up the other machine", step 5.
+- REVIEW.md ends its Low findings at L33.
 
-TASK 1. RECHECK STEPS C AND D, COLD.
-a. Exercise 7.2: break the solution in ways
-   the test does not try. Does an honest form
-   fail? Does a misleading one pass?
-b. Exercise 7.3: same. Try a file saved in a
-   subfolder, and honest short words.
-c. tools/runner.py: does a cell that saves a
-   file leave anything behind, here and in
-   the browser?
-d. The short task and Assignment 3's new
-   row: read them in both Word editions.
-e. The Timing sheet: additions built 65 min,
-   to write 0, projects 7.0 h. Do the guide's
-   sentences match?
-f. python tools/browser_check.py run
-   and widths.
-
-TASK 2. MY DECISIONS. Blank = not decided.
+TASK 1. MY DECISIONS. Blank = not decided.
   Q3a  who scores a check ........ [ ]
        (learner with the key / instructor)
   Q3b  where check and key live .. [ ]
@@ -197,10 +199,14 @@ TASK 2. MY DECISIONS. Blank = not decided.
   sp   -wards spellings .......... [ ]
   L29  6.4: count words .......... [ ]
   L30  6.4: whole words .......... [ ]
+  L31  7.2: markers-only scatter . [ ]
+  L32  7.3: names, case, Pillow .. [ ]
+  L33  7.3: word floors .......... [ ]
 Record each where its question is written,
-with the date.
+with the date. A decided fix is a small PR of
+its own, with a near-miss test, before step E.
 
-TASK 3. STEP E, FIRST STAGE ONLY.
+TASK 2. STEP E, FIRST STAGE ONLY.
 - The tooling in this repository: builder,
   format tests, a manifest of counts.
 - The first batch in the private repository:
@@ -217,8 +223,7 @@ RULES
   work from its sense and tell me how you
   read it.
 
-FINISH WITH: what the recheck found and what
-you fixed; what changed for each decision;
+FINISH WITH: what changed for each decision;
 what was built and how it was verified; the
 judgment calls for me; what is left.
 ```

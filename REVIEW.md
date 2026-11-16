@@ -19,8 +19,9 @@ O10 were decided later that day and applied as version 1.3 of the map. The same 
 and the British spellings (L27), rechecked the first seven as applied, and wrote down four more
 Low findings (L23-L26) and three more questions (O11-O13) without acting on them. All seven were
 decided on 2026-11-15, as recommended, and applied in a fourth follow-up, with version 1.4 of the
-map. What comes next is planned in `PLAN.md`. Steps A to D of that plan are built, and a
-recheck of steps A and B added three more Low findings (L28-L30).
+map. What comes next is planned in `PLAN.md`. Steps A to D of that plan are built, a
+recheck of steps A and B added three more Low findings (L28-L30), and a recheck of steps C and D
+three more (L31-L33), all left alone.
 
 Severity scale:
 
@@ -56,6 +57,7 @@ Severity scale:
 | L23-L26 | Low | Found in the third follow-up: a gap inside some quiz options at desktop width, three exercise checks that pass what their brief rules out, a small table that breaks across two printed pages | Fixed in a fourth follow-up |
 | L27 | Low | Found in the third follow-up: British spellings in a course written in American English | Fixed in the third follow-up |
 | L28-L30 | Low | Found in a recheck of exercises 6.3 and 6.4: grams with a thousands comma passed as kilograms, an honest sentence of under 20 characters is turned away, kinds of fault are recognized from letters inside other words | L28 fixed; L29 and L30 left alone, see below |
+| L31-L33 | Low | Found in a recheck of exercises 7.2 and 7.3: four chart forms the lessons do not teach earn the wrong hint, a file saved in a subfolder is named as if it were a file, an honest alt text of 11 words and a caption of 7 are turned away | Left alone, see below |
 | O1-O7 | Decision | Questions about the mastery objectives map: a rule that cannot be followed as written, evidence that is tested but not listed, two page roles, overlapping criteria | Decided on 2026-11-15 as recommended, and applied |
 | O8-O10 | Decision | More questions about the map: two objectives that each hold several performances, section 2's library, an objective first taught before one of its prerequisites | Decided on 2026-11-15 (split, Plotly, as recommended) and applied in version 1.3 of the map |
 | O11-O13 | Decision | Questions from the second recheck: an exercise whose check cannot fail on an objective it is listed for, and two parts of the mastery rule that cannot be followed with today's materials | Decided on 2026-11-15 as recommended, and applied in version 1.4 of the map |
@@ -420,6 +422,35 @@ ways its test does not try (eight for exercise 6.3, ten for 6.4), and the check 
   sentence written three times with different punctuation counts as three. Both touch the
   message only, and the check says of itself that it counts and cannot judge. Matching whole
   words, and comparing statements without their punctuation, would close both.
+
+Found in a recheck of steps C and D of `PLAN.md`, on 2026-11-16, on a second machine. 86 attempts
+at exercise 7.2 and 44 at exercise 7.3 beyond the ones their tests keep, and the runner was asked
+what a cell that saves a file leaves behind, under CPython and in headless Chrome. No misleading
+form passed 7.2, and nothing is left behind in either runtime (a path that leaves the cell's folder,
+`../name.png` or an absolute path, does land outside it under CPython; nothing in the lessons does
+that, and in the browser the file system is in memory and lost on reload):
+
+- **L31. Exercise 7.2 reads four honest forms wrongly, none of them taught (left alone).** A
+  frequency polygon (`histplot` with `element="poly"`) in panel A and a hexbin in panel C each get
+  the hint for the other kind of question; a scatter drawn as markers only with `axes[2].plot(x,
+  y, "o")` gets "I can't tell which form this is"; and a 2-D histogram with `cbar=True` counts its
+  colorbar as a fourth panel. The lessons teach none of the four, and the hint names the forms the
+  check knows. The markers-only case is the one worth closing if any: `chart_forms` in
+  `tools/runner.py` skips a marked line with no line style on numeric axes, and could read it as
+  "scatter".
+- **L32. Exercise 7.3 looks only in the cell's own folder, and names what it finds as files (left
+  alone).** A figure saved under `out/` is told "I found out, but the slide needs a file named
+  penguin-sexes.png": the verdict is right and the sentence names a folder as if it were a file.
+  Two smaller things of the same kind: a file name in another case (`penguin-sexes.PNG`) passes on
+  Windows and fails in the browser and on Linux, because only Windows ignores case; and a file that
+  is not an image at all (PDF bytes under a `.png` name) gets the generic "could not inspect your
+  chart" line instead of a hint. Quoting the names, listing files only, and catching the Pillow
+  error would close all three.
+- **L33. Exercise 7.3 turns away an honest alt text of 11 words and a caption of 7 (left
+  alone).** "Males are heavier than females in Adelie, Chinstrap and Gentoo penguins." is told it
+  says too little, and "Males weigh more; 11 unsexed penguins omitted." that it has no room for a
+  finding and a caveat. The floors (12 and 8 words) are the plan's, as L29's 20 characters are, and
+  the solution models why longer is better: the alt text that the floor wants carries the numbers.
 
 Left alone, with reasons:
 
